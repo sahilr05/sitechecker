@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}<!DOCTYPE html>
+{% block body %}
+    <div class="container">
+      <ol class="breadcrumb my-4">
+        <li class="breadcrumb-item active">{{site.site_name}}</li>
+      </ol>
+      <h1>{{site.sitename}}</h1>
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Status</th>
+            <th>Time</th>
+            <th>Last Down Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% comment %} {% for ping in pingreport %} {% endcomment %}
+            <tr>
+              {% comment %} <td class="align-middle">{{site.pk}}</td> {% endcomment %}
+              {% comment %} <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td> {% endcomment %}
+              <td class="align-middle">{{pingreport.status}}</td>
+              <td class="align-middle">{{pingreport.time}}lll</td>
+              <td class="align-middle">131113</td>
+            </tr>
+          {% comment %} {% endfor %} {% endcomment %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+{% endblock body %}
