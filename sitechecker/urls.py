@@ -21,8 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
       path('', include('checker.urls')),
     # path('checksite',checker_views.checksite, name='checksite'),
-    path('',checker_views.home, name='home'),
-    path('signup',checker_views.signup, name = 'signup'),
-    path('login/',checker_views.login_request, name= 'login'),
-    path('logout',checker_views.logout_request, name= 'logout')
+    # path('',checker_views.home, name='home'),
+    # path('login/',checker_views.login_request, name= 'login'),
+    # path('logout',checker_views.logout_request, name= 'logout')
 ]

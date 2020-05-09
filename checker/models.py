@@ -1,7 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
 
 class PersonalDetails(models.Model):
@@ -15,7 +13,7 @@ class PersonalDetails(models.Model):
 
 class SiteList(models.Model):
     site_name = models.CharField(max_length=30, unique=True)
-    admin = models.ForeignKey(PersonalDetails, related_name='sitelist',on_delete=models.CASCADE)
+    admin = models.ForeignKey(User, related_name='sitelist',on_delete=models.CASCADE)
     interval = models.IntegerField()
     # owner = models.ForeignKey(User,related_name='list', on_delete=models.CASCADE)
 

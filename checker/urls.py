@@ -23,7 +23,8 @@ urlpatterns = [
     path('',views.home, name='home'),
     # path('ping/<int:pk>/',views.info, name = 'info'),
     path('ping/<int:pk>/',views.info, name= 'info'),
-    path('signup',views.signup, name = 'signup'),
+    path('adduser',views.add_user, name = 'add_user'),
+    # path('signup',views.signup, name = 'signup'),
     path('login/',views.login_request, name= 'login'),
     path('logout',views.logout_request, name= 'logout'),
 ]
