@@ -19,12 +19,6 @@ def pingsite(hostname):
     stdout, stderr = process.communicate()
     packetloss = float([x for x in stdout.decode('utf-8').split('\n') if x.find('packet loss') != -1][0].split('%')[0].split(' ')[-1])
     return packetloss
-
-
- 
- 
- 
- 
  
     # response = os.system("ping -T tsandaddr -c 5  " + hostname)
 

@@ -95,14 +95,13 @@ def login_request(request):
 				  "login.html",
 				  {"form":form})
 
-
 @app.task
 def checksite(request=True):
-    val = pingsite('justkart.com')
-    if val:
-        return val
+    val = pingsite('google.com')
+    if val==0:
+        return 'Up'
     else:
-        return Up 
+        return 'Down'
 
 app.conf.beat_schedule = {
     "ping-task": {
