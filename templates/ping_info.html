@@ -18,14 +18,14 @@
           </tr>
         </thead>
         <tbody>
-          {% comment %} {% for ping in pingreport %} {% endcomment %}
+          {% for status in result %}
             <tr>
               {% comment %} <td class="align-middle">{{site.pk}}</td> {% endcomment %}
               {% comment %} <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td> {% endcomment %}
-              <td class="align-middle">{{pingreport.status}}</td>
-              <td class="align-middle">{{pingreport.time}}</td>
+              <td class="align-middle">{{status.result}}</td>
+              <td class="align-middle">{{status.date_done}}</td>
             </tr>
-          {% comment %} {% endfor %} {% endcomment %}
+          {% endfor %}
         </tbody>
       </table>
       <div class="col-3 "></div>

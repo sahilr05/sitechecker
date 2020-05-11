@@ -12,6 +12,7 @@ from .models import SiteList, PingInfo, User
 from .forms import UserForm, LoginForm, UserCreationForm
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.decorators import login_required
+from django_celery_results.models import TaskResult
 
 # Create your views here.
 def home(request):
@@ -21,7 +22,8 @@ def home(request):
 @login_required
 def info(request, pk):
 	pingreport = PingInfo.objects.get(id=pk)	
-	return render(request, 'ping_info.html', {'pingreport': pingreport, 'user': User.objects.filter(is_staff=False) ,'site': SiteList.objects.get(id=pk)})
+	result = TaskResult.objects.all()
+	return render(request, 'ping_info.html', {'result' :result,'pingreport': pingreport, 'user': User.objects.filter(is_staff=False) ,'site': SiteList.objects.get(id=pk)})
 
 # def signup(request):
 # 	if request.method == "POST":
