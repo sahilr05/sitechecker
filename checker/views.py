@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django_celery_results.models import TaskResult
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .redis_utils import RedisManager
 
 # Create your views here.
 def home(request):
@@ -80,14 +81,18 @@ def login_request(request):
 
 @app.task
 def checksite(request=True):
-	sl = SiteList.objects.get(id=1)
-	val = pingsite(sl.site_name)	
+	sl = SiteList.objects.get(id=2)
+	name = sl.site_name
+	val = pingsite(name)	
 	# TaskResult.objects.create(site=sl.site_name)
 	# TaskResult.save()
 	if val==0:
-		return sl.site_name + ' is Up'
+		op = 'Up'
 	else:
-		return 'Down'
+		op = 'Down'
+	return op
+	r = RedisManager(name)
+	r.set_value(op)
 
 app.conf.beat_schedule = {
     "ping-task": {
