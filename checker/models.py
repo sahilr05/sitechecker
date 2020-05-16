@@ -1,35 +1,43 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django_celery_results.models import TaskResult
 
-class PersonalDetails(models.Model):
-    firstname = models.CharField(max_length=50)
-    lastname = models.CharField(max_length=50)
-    email = models.CharField(max_length=100)
-    contact = models.DecimalField(max_digits=10, decimal_places=0)
-
-    def __str__(self):
-        return self.email
 
 class SiteList(models.Model):
     site_name = models.CharField(max_length=30, unique=True)
     admin = models.ForeignKey(User, related_name='sitelist',on_delete=models.CASCADE)
+    users = models.ManyToManyField(User, related_name = 'sitelist_users')
     interval = models.IntegerField()
-    # owner = models.ForeignKey(User,related_name='list', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.site_name
 
-class PingInfo(models.Model):
-    DOWN, UP = list(range(2))
-    STATUS_CHOICES = ((UP, "UP"), (DOWN, "DOWN"))
-    status = models.SmallIntegerField(choices=STATUS_CHOICES)
-    site = models.ForeignKey(SiteList, on_delete=models.CASCADE)
-    # status = models.TextField(max_length=10)
-    time = models.DateTimeField(auto_now_add=True)
+class Report(models.Model):
+    site = models.OneToOneField(TaskResult, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.status
+    @receiver(post_save, sender=TaskResult)
+    def create_site_entry(sender, instance, created, **kwargs):
+        if created:
+            Report.objects.create(site=instance)
+
+    @receiver(post_save, sender=TaskResult)
+    def save_site_entry(sender, instance, **kwargs):
+        instance.report.save()
+
+
+# class PingInfo(models.Model):
+#     DOWN, UP = list(range(2))
+#     STATUS_CHOICES = ((UP, "UP"), (DOWN, "DOWN")) 
+#     status = models.SmallIntegerField(choices=STATUS_CHOICES)
+#     site = models.ForeignKey(SiteList, on_delete=models.CASCADE)
+#     # status = models.TextField(max_length=10)
+#     time = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return self.status
     
 
 # class Topic(models.Model):
