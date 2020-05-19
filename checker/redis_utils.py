@@ -68,3 +68,19 @@ class RedisManager:
 
     def get_value(self):
         return self.connection.get(self.key)
+
+    def set_multiple(self, data):
+        # for k,v in kwargs.items():
+        # self.connection.hmset(self.key, 'status', status_val, 'date', date_val)
+        self.connection.hmset(self.key, data)
+
+    def get_multiple(self, *hash_key):
+        op = []
+        for k in hash_key:
+            q = self.connection.hmget(self.key, k)
+            op.append(q)
+            
+        return op
+
+    def get_all(self):
+        return self.connection.hgetall(self.key)

@@ -13,31 +13,18 @@ class SiteList(models.Model):
     interval = models.IntegerField()
 
     def __str__(self):
-        return self.site_name
+        return f"{self.site_name}"
+        # self.site_name,self.users
 
-class Report(models.Model):
-    site = models.OneToOneField(TaskResult, on_delete=models.CASCADE)
+class PingInfo(models.Model):
+    # DOWN, UP = list(range(2))
+    STATUS_CHOICES = (('UP', "UP"), ('DOWN', "DOWN")) 
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    site = models.ForeignKey(SiteList, on_delete=models.CASCADE)
+    date_time = models.DateTimeField(auto_now_add=True)
 
-    @receiver(post_save, sender=TaskResult)
-    def create_site_entry(sender, instance, created, **kwargs):
-        if created:
-            Report.objects.create(site=instance)
-
-    @receiver(post_save, sender=TaskResult)
-    def save_site_entry(sender, instance, **kwargs):
-        instance.report.save()
-
-
-# class PingInfo(models.Model):
-#     DOWN, UP = list(range(2))
-#     STATUS_CHOICES = ((UP, "UP"), (DOWN, "DOWN")) 
-#     status = models.SmallIntegerField(choices=STATUS_CHOICES)
-#     site = models.ForeignKey(SiteList, on_delete=models.CASCADE)
-#     # status = models.TextField(max_length=10)
-#     time = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return self.status
+    def __str__(self):
+        return self.status
     
 
 # class Topic(models.Model):
