@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from celery.task.schedules import crontab
 from .models import SiteList, User, PingInfo
-from .forms import UserForm, LoginForm, UserCreationForm
+from .forms import UserForm, LoginForm, UserCreationForm, SiteForm
 # from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.decorators import login_required
 # from django_celery_results.models import TaskResult
@@ -44,7 +44,15 @@ def info(request, pk):
 	# op = r.get_multiple('status', 'date')
 	# return HttpResponse(op)
 	# result = 
-	return render(request, 'ping_info.html', {'result' :pingreport, 'add_users': User.objects.all() ,'users': user ,'site': SiteList.objects.get(id=pk)})
+	# return render(request, 'ping_info.html', {'result' :pingreport, 'add_users': User.objects.all() ,'users': user ,'site': SiteList.objects.get(id=pk)})
+
+@login_required
+def user_list(request):
+	list_of_users = User.objects.filter(is_superuser=False)
+	return render(request,
+				  "user_list.html",
+				  context={"users":list_of_users})
+
 
 @login_required
 def add_user(request):
@@ -62,6 +70,25 @@ def add_user(request):
 	form = UserForm()
 	return render(request,
 				  "add_user.html",
+				  context={"form":form})
+
+@login_required
+def add_site(request):
+	if request.method == "POST":
+		form = SiteForm(request.POST)
+		if form.is_valid():
+			# email = BaseUserManager.normalize_email(email)
+			site_name = form.cleaned_data.get('site_name')
+			interval = form.cleaned_data.get('interval')
+			failure_count = form.cleaned_data.get('number_of_failure')
+			# admin = 
+			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.first())
+			site.save()
+			return redirect("home")
+
+	form = SiteForm()
+	return render(request,
+				  "add_site.html",
 				  context={"form":form})
 
 @login_required

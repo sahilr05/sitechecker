@@ -3,10 +3,16 @@
 {% block body %}
   {% if user.is_authenticated %}
     <div class="container">
-      <ol class="breadcrumb my-4">
-        <li class="breadcrumb-item active">Sites</li>
-      </ol>
-      <table class="table">
+      <div class="col-12">
+        <ol class="breadcrumb my-4">
+          <li class="breadcrumb-item active">Sites</li>
+        </ol>
+      </div>
+      <div class="col-3"> 
+        <a href="{% url 'add_site' %}" class="btn btn-primary">Add site</a>
+      </div>
+      
+      <table class="mt-2 table">
         <thead class="thead-inverse">
           <tr>
             <th>PK</th>

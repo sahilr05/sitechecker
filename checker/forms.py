@@ -18,6 +18,14 @@ class UserForm(forms.Form):
         model = User
         fields = ('username', 'email', 'password', 'confirm_password')
 
+class SiteForm(forms.Form):
+    site_name = forms.CharField(label="Site name", widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+    interval = forms.CharField(label="Interval", widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+    number_of_failure = forms.CharField(label="Number of failures", widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+
 class LoginForm(forms.Form):
     username = forms.CharField(
         label="Username", widget=forms.TextInput(attrs={'class': 'form-control'}))

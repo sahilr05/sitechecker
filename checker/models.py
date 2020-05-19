@@ -11,6 +11,7 @@ class SiteList(models.Model):
     admin = models.ForeignKey(User, related_name='sitelist',on_delete=models.CASCADE)
     users = models.ManyToManyField(User, related_name = 'sitelist_users')
     interval = models.IntegerField()
+    failure_count = models.IntegerField()
 
     def __str__(self):
         return f"{self.site_name}"

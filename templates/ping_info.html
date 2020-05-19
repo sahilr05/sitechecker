@@ -8,7 +8,7 @@
       <div>
         <p>Last Down Time : xxxx</p>
       </div>
-      <a href="{% url 'add_user' %}"><button type="submit" class="btn btn-primary mb-2">Add user</button></a>
+      {% comment %} <a href="{% url 'add_user' %}"><button type="submit" class="btn btn-primary mb-2">Add user</button></a> {% endcomment %}
       <div class="row">
       <table class="table jumbotron col-6">
         <thead class="thead-inverse">
@@ -17,17 +17,20 @@
             <th>Time</th>
           </tr>
         </thead>
+        {% if result is not None %}
         <tbody>
           {% for status in result %}
-          {% comment %} {% if status.result != 0  %} {% endcomment %}
             <tr>
-              {% comment %} <td class="align-middle">{{site.pk}}</td> {% endcomment %}
-              {% comment %} <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td> {% endcomment %}
               <td class="align-middle">{{status.status}}</td>
               <td class="align-middle">{{status.date_time}}</td>
             </tr>
           {% endfor %}
         </tbody>
+        {% else %}
+        <tbody>
+          <tr><td>No checks</td></tr>
+        </tbody>
+        {% endif %}
       </table>
       <div class="col-3 "></div>
       <table class="table jumbotron col-3">
