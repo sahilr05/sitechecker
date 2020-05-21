@@ -28,17 +28,17 @@ def check_interval():
         interval_dict = interval_query.first()
         interval = int(interval_dict['interval'])
         if last_run_query:
-            last_run_dict = last_run_query.first()
+            last_run_dict = last_run_query.last()
             last_run = last_run_dict['date_time']
             last_run = last_run.replace(tzinfo=None)
             difference = int(datetime.now().strftime('%M')) - int(last_run.strftime('%M'))
         else:
-            difference = 9999
+            difference = 999
 
         retrieved_site_name = SiteList.objects.get(id=site_id)
         site_to_ping = retrieved_site_name.site_name
         if difference > interval:
-            checksite.apply_async(args=("site_to_ping",))
+            checksite.apply_async(args=(site_to_ping,))
 
 @app.task
 def checksite(site_name):
@@ -47,7 +47,8 @@ def checksite(site_name):
         status = 'UP'
     else:
         status = 'DOWN'
-    select_id = SiteList.objects.filter(site_name=site).values('id')
+
+    select_id = SiteList.objects.filter(site_name=site_name).values('id')
     new_info = PingInfo.objects.create(status=status,site_id=select_id)
     new_info.save()
 
