@@ -20,31 +20,31 @@ from datetime import datetime
 
 # Create your views here.
 def home(request):
-    sitenames = SiteList.objects.all().order_by('id')
-    return render(request, 'home.html', {'sitenames': sitenames})
+	site_names = SiteList.objects.all().order_by('id')
+	return render(request, 'home.html', {'sitenames': site_names,})
 
 @login_required
 def info(request, pk):
 	if request.method == "POST":
-		SelectedUsers = request.POST.getlist('listxblocks')
+		selected_users = request.POST.getlist('listxblocks')
 		# return HttpResponse(SelectedUsers)
-		rel = SiteList.objects.get(id=pk)
-		for s in SelectedUsers:
-			rel.users.add(User.objects.get(id=s))
-			rel.save()
+		add_user_in_site = SiteList.objects.get(id=pk)
+		for user in selected_users:
+			add_user_in_site.users.add(User.objects.get(id=user))
+			add_user_in_site.save()
 
-	pingreport = PingInfo.objects.filter(site_id=pk)	
-	sl = SiteList.objects.get(id=pk)
-	user = sl.users.all()
-	# user = SiteList.objects.filter(sitelist_users=2)	
-	# user = SiteList.sitelist_users.objects.filter(sitelist_id=pk)
-	# result = TaskResult.objects.all()
-	# r = RedisManager('google.com 20 : 05 : 17 : 13*')
-	# google.com 20 : 05 : 17 : 13*
-	# op = r.get_multiple('status', 'date')
-	# return HttpResponse(op)
-	# result = 
-	# return render(request, 'ping_info.html', {'result' :pingreport, 'add_users': User.objects.all() ,'users': user ,'site': SiteList.objects.get(id=pk)})
+	ping_report = PingInfo.objects.filter(site_id=pk)	
+	site_list_obj = SiteList.objects.get(id=pk)
+	user_list = site_list_obj.users.all()
+
+	last_down_time = ping_report.filter(status='DOWN').order_by('-date_time').first()
+
+	return render(request, 'ping_info.html', {'result' :ping_report, 
+				'add_users': User.objects.all(),
+				'users': user_list,
+				'site': SiteList.objects.get(id=pk),
+				'last_down_time': last_down_time,
+				})
 
 @login_required
 def user_list(request):
@@ -59,7 +59,6 @@ def add_user(request):
 	if request.method == "POST":
 		form = UserForm(request.POST)
 		if form.is_valid():
-			# email = BaseUserManager.normalize_email(email)
 			email = form.cleaned_data.get('email')
 			username = form.cleaned_data.get('username')
 			password = form.cleaned_data.get('password')
@@ -77,15 +76,14 @@ def add_site(request):
 	if request.method == "POST":
 		form = SiteForm(request.POST)
 		if form.is_valid():
-			# email = BaseUserManager.normalize_email(email)
 			site_name = form.cleaned_data.get('site_name')
-			interval = form.cleaned_data.get('interval')
+			interval_temp = form.cleaned_data.get('interval')
+			interval = ' '.join(list(interval_temp))
 			failure_count = form.cleaned_data.get('number_of_failure')
-			# admin = 
-			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.first())
+			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
 			site.save()
 			return redirect("home")
-
+		
 	form = SiteForm()
 	return render(request,
 				  "add_site.html",
@@ -117,43 +115,44 @@ def login_request(request):
 				  "login.html",
 				  {"form":form})
 
-@app.task
-def checksite(request=True):
-	sl = SiteList.objects.values_list('site_name', flat=True)
-	for site in sl:
-		val = pingsite(site)
-		if val==0:
-			op = 'UP'
-		else:
-			op = 'DOWN'
-		select_id = SiteList.objects.filter(site_name=site).values('id')
-		new_info = PingInfo.objects.create(status=op,site_id=select_id)
-		new_info.save()
-	
-	# name = sl.site_name 
-	# val = pingsite(name)
-	# if val==0:
-	# 	op = 'UP'
-	# else:
-	# 	op = 'DOWN'
-
-app.conf.beat_schedule = {
-    "ping-task": {
-        "task": "checker.views.checksite",
-        "schedule": crontab(hour="*", minute="*")
-    }
-}
-# sites = SiteList.objects.all()
-# for site in sites:
-#     if site.need_to_be_checked():
-#         another_task.apply_async(args=[site.name], queue="foobar")
 
 
-	# dt = datetime.now().strftime('%H:%M:%S')
-	# day = datetime.now().strftime('%y : %m : %d : %H : %M : %S')
-	# strftime('%y : %m : %H : %M : %S')
+			# email = BaseUserManager.normalize_email(email)
+			
+	# ExcludeUsers = SiteListObj.users.filter('username')
+	# AddUsers = User.objects.exclude(ExcludeUsers)
+	# pl = PingInfo.objects.filter(site_id=2)
+	# last_down_time = pingreport.order_by('-date_time').filter(status='DOWN').values('date_time').first()
 
-	# r = RedisManager(name + ' ' + day)
-	# data = {'status':op,'date':dt}
-	# r.set_multiple(data)
-	# r.set_value(op)
+# @app.task
+# def checksite(request=True):
+# 	sl = SiteList.objects.values_list('site_name', flat=True)
+# 	for site in sl:
+# 		val = pingsite(site)
+# 		if val==0:
+# 			op = 'UP'
+# 		else:
+# 			op = 'DOWN'
+# 		select_id = SiteList.objects.filter(site_name=site).values('id')
+# 		new_info = PingInfo.objects.create(status=op,site_id=select_id)
+# 		new_info.save()
+
+# app.conf.beat_schedule = {
+#     "ping-task": {
+#         "task": "checker.views.checksite",
+#         "schedule": crontab(minute="*", hour="*", day_of_week='*')
+#     }
+# }
+
+# backup
+# def checksite(request=True):
+# 	sl = SiteList.objects.values_list('site_name', flat=True)
+# 	for site in sl:
+# 		val = pingsite(site)
+# 		if val==0:
+# 			op = 'UP'
+# 		else:
+# 			op = 'DOWN'
+# 		select_id = SiteList.objects.filter(site_name=site).values('id')
+# 		new_info = PingInfo.objects.create(status=op,site_id=select_id)
+# 		new_info.save()

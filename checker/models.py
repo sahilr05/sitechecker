@@ -10,7 +10,7 @@ class SiteList(models.Model):
     site_name = models.CharField(max_length=30, unique=True)
     admin = models.ForeignKey(User, related_name='sitelist',on_delete=models.CASCADE)
     users = models.ManyToManyField(User, related_name = 'sitelist_users')
-    interval = models.IntegerField()
+    interval = models.CharField(max_length=10)
     failure_count = models.IntegerField()
 
     def __str__(self):

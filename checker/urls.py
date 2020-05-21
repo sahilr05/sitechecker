@@ -11,6 +11,7 @@ urlpatterns = [
     path('login/',views.login_request, name= 'login'),
     path('logout',views.logout_request, name= 'logout'),
     path('add_site',views.add_site, name='add_site'),
+    # path('test/<int:pk>/', views.test, name='test'),
 ]
 
 

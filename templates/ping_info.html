@@ -5,8 +5,27 @@
       <ol class="breadcrumb my-4">
         <li class="breadcrumb-item active">{{site.site_name}}</li>
       </ol>
-      <div>
-        <p>Last Down Time : xxxx</p>
+      <div class="row col-12">
+       <div class='col-6'>
+       {% if last_down_time%}
+        <p>Last Down Time : {{last_down_time.date_time}}</p>
+        {% else %}
+        <p>Last Down Time : No down time</p>
+        {% endif %}
+       </div>
+      <div class="ml-auto dropdown">
+        <form method='POST'>
+        {% csrf_token %}
+        <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
+          {% for add_user in add_users %}
+            {% if add_user not in users %}
+              <option value="{{add_user.id}}" >{{add_user.username}}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary mb-2">Add users</button>
+        </form>
+      </div>
       </div>
       {% comment %} <a href="{% url 'add_user' %}"><button type="submit" class="btn btn-primary mb-2">Add user</button></a> {% endcomment %}
       <div class="row">
@@ -17,7 +36,7 @@
             <th>Time</th>
           </tr>
         </thead>
-        {% if result is not None %}
+        {% if result %}
         <tbody>
           {% for status in result %}
             <tr>
@@ -32,18 +51,22 @@
         </tbody>
         {% endif %}
       </table>
-      <div class="col-3 "></div>
-      <table class="table jumbotron col-3">
+      <div class="col-1 "></div>
+      <table class="table jumbotron col-5">
       <tr class="danger"><th>Users</th></tr>
-      {% for user in users %}
-        <tbody>
-        <tr class="info">
-          <td>{{user.username}}</td>
-        </tr>
-        </tbody>
-      {% endfor %}
+      {% if users %}
+        {% for user in users %}
+          <tbody>
+          <tr class="info">
+            <td>{{user.username}}</td>
+          </tr>
+          </tbody>
+        {% endfor %}
+      {% else %}
+        <tr><td>No users added</td></tr>
+      {% endif %}
       </table>
-        <div class="col-6 dropdown">
+        {% comment %} <div class="col-6 dropdown">
         <form method='POST'>
         {% csrf_token %}
         <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
@@ -53,7 +76,7 @@
         </select>
         <button type="submit" class="btn btn-primary mb-2">Add users</button>
         </form>
-      </div>
+      </div> {% endcomment %}
       </div>
     </div>
   </body>

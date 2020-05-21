@@ -5,3 +5,4 @@ commented.stuff
 */__pycache__
 *.pyc
 checker/__pycache__/*
+temp.py

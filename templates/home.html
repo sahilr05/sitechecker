@@ -9,7 +9,9 @@
         </ol>
       </div>
       <div class="col-3"> 
-        <a href="{% url 'add_site' %}" class="btn btn-primary">Add site</a>
+        {% comment %} <a href="{% url 'add_site' request.user.pk %}" class="btn btn-primary">Add site</a> {% endcomment %}
+
+        <a href="{% url 'add_site' %}" class="btn btn-primary">Add Site</a>
       </div>
       
       <table class="mt-2 table">
@@ -18,7 +20,6 @@
             <th>PK</th>
             <th>Site</th>
             <th>Interval</th>
-            <th>Last Down Time</th>
             <th>Admin</th>
           </tr>
         </thead>
@@ -27,8 +28,7 @@
             <tr>
               <td class="align-middle">{{site.pk}}</td>
               <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td>
-              <td class="align-middle">{{site.interval}} mins.</td>
-              <td class="align-middle">0</td>
+              <td class="align-middle">{{site.interval}}</td>
               <td class="align-middle">{{site.admin.username}}</td>
             </tr>
           {% endfor %}
