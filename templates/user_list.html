@@ -4,7 +4,7 @@
 
 {% block body %}
   <div class="mt-3 row justify-content-center">
-    <div class="col-lg-3 col-md-8 col-sm-4">
+    <div class="col-lg-6 col-md-8 col-sm-4">
       <div class="card">
       
         <div class="card-body">
@@ -13,7 +13,8 @@
             <thead class="thead-inverse">
                 <tr>
                     <th class="justify-content-center">PK</th>
-                    <th>Users</th>
+                    <th class="justify-content-center">Users</th>
+                    <th class="justify-content-center">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -21,6 +22,10 @@
                     <tr>
                     <td class="align-middle">{{user.pk}}</td>
                     <td class="align-middle">{{user.username}}</td>
+                    <td>  
+                        <a href="{% url 'edit_user' user.pk %}"><span class="glyphicon glyphicon-pencil">Edit</span></a>  
+                        <a href="{% url 'delete_user' user.pk %}">Delete</a>  
+                    </td> 
                     </tr>
                 {% endfor %}
                 <tr><td></td><td><a href="{% url 'add_user' %}">Add user</a></td></tr>

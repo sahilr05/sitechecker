@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 import os
 import schedule, datetime
@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from celery.task.schedules import crontab
 from .models import SiteList, User, PingInfo
-from .forms import UserForm, LoginForm, UserCreationForm, SiteForm
+from .forms import *
 # from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.decorators import login_required
 # from django_celery_results.models import TaskResult
@@ -46,6 +46,49 @@ def info(request, pk):
 				'last_down_time': last_down_time,
 				})
 
+# @login_required
+# def edit_site(request, pk):
+# 	# site_info = SiteList.objects.get(id=pk)
+# 	if request.method == "POST":
+# 		form = EditSiteForm(request.POST)
+# 		if form.is_valid():
+# 			site_name = form.cleaned_data.get('site_name')
+# 			interval_temp = form.cleaned_data.get('interval')
+# 			interval = ' '.join(list(interval_temp))
+# 			failure_count = form.cleaned_data.get('number_of_failure')
+# 			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
+# 			site.save()
+# 			return redirect("home")
+
+# 	form = EditSiteForm()
+# 	return render(request,
+# 				  "edit_site.html",
+# 				  context={"form":form})
+
+
+@login_required
+def edit_site(request, pk):
+	site = SiteList.objects.get(id=pk)
+	form = SiteForm(request.POST or None, instance=site)
+	if form.is_valid():
+		site_name = form.cleaned_data.get('site_name')
+		interval = form.cleaned_data.get('interval')
+		failure_count = form.cleaned_data.get('failure_count')
+		site = SiteList.objects.filter(id=pk).update(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
+		return redirect('home')
+	return render(request, "edit_site.html", {'form':form})	
+
+@login_required
+def edit_user(request, pk):
+	user_info = User.objects.get(id=pk)
+	form = EditUserForm(request.POST or None, instance=user_info)
+	if form.is_valid():
+		email = form.cleaned_data.get('email')
+		username = form.cleaned_data.get('username')
+		user = User.objects.filter(id=pk).update(email=email, username=username)
+		return redirect('user_list')
+	return render(request, "edit_user.html", {'form':form})	
+	
 @login_required
 def user_list(request):
 	list_of_users = User.objects.filter(is_superuser=False)
@@ -64,7 +107,7 @@ def add_user(request):
 			password = form.cleaned_data.get('password')
 			user = User.objects.create_user(email=email, username=username, password=password)
 			user.save()
-			return redirect("home")
+			return redirect("user_list")
 
 	form = UserForm()
 	return render(request,
@@ -77,9 +120,8 @@ def add_site(request):
 		form = SiteForm(request.POST)
 		if form.is_valid():
 			site_name = form.cleaned_data.get('site_name')
-			interval_temp = form.cleaned_data.get('interval')
-			interval = ' '.join(list(interval_temp))
-			failure_count = form.cleaned_data.get('number_of_failure')
+			interval = form.cleaned_data.get('interval')
+			failure_count = form.cleaned_data.get('failure_count')
 			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
 			site.save()
 			return redirect("home")
@@ -88,6 +130,18 @@ def add_site(request):
 	return render(request,
 				  "add_site.html",
 				  context={"form":form})
+
+@login_required
+def delete_user(request, pk):
+	user_to_delete = User.objects.get(id=pk)
+	user_to_delete.delete()
+	return redirect('user_list')
+
+@login_required
+def delete_site(request, pk):
+	site_to_delete = SiteList.objects.get(id=pk)
+	site_to_delete.delete()
+	return redirect('home')
 
 @login_required
 def logout_request(request):

@@ -21,6 +21,7 @@
             <th>Site</th>
             <th>Interval</th>
             <th>Admin</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -28,8 +29,12 @@
             <tr>
               <td class="align-middle">{{site.pk}}</td>
               <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td>
-              <td class="align-middle">{{site.interval}}</td>
+              <td class="align-middle">{{site.interval}} minutes</td>
               <td class="align-middle">{{site.admin.username}}</td>
+              <td>  
+                  <a href="{% url 'edit_site' site.pk %}"><span class="glyphicon glyphicon-pencil" >Edit</span></a>  
+                  <a href="{% url 'delete_site' site.pk %}">Delete</a>  
+              </td>  
             </tr>
           {% endfor %}
         </tbody>

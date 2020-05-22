@@ -11,6 +11,12 @@ urlpatterns = [
     path('login/',views.login_request, name= 'login'),
     path('logout',views.logout_request, name= 'logout'),
     path('add_site',views.add_site, name='add_site'),
+    path('edit_site/<int:pk>',views.edit_site, name='edit_site'),
+    path('edit_user/<int:pk>',views.edit_user, name='edit_user'),
+    path('delete_site/<int:pk>',views.delete_site, name='delete_site'),
+    path('delete_user/<int:pk>',views.delete_user, name='delete_user'),
+    
+
     # path('test/<int:pk>/', views.test, name='test'),
 ]
 

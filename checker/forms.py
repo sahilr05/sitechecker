@@ -4,13 +4,7 @@ from django.contrib.auth.models import User
 from .models import *
 
 
-class UserForm(forms.Form):
-    email = forms.EmailField(required=True, widget=forms.TextInput(
-        attrs={'class': 'form-control', 'type': 'email'}))
-    username = forms.CharField(label="Username", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-    password = forms.CharField(max_length=32, widget=forms.TextInput(
-        attrs={'class': 'form-control', 'type': 'password'}), required=True)
+class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(max_length=32, widget=forms.TextInput(
         attrs={'class': 'form-control', 'type': 'password'}), required=True)
 
@@ -18,13 +12,16 @@ class UserForm(forms.Form):
         model = User
         fields = ('username', 'email', 'password', 'confirm_password')
 
-class SiteForm(forms.Form):
-    site_name = forms.CharField(label="Site name", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-    interval = forms.CharField(label="Interval", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-    number_of_failure = forms.CharField(label="Number of failures", widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+class SiteForm(forms.ModelForm):
+    class Meta:
+        model = SiteList
+        fields = ('site_name', 'interval', 'failure_count')
+    
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -42,3 +39,20 @@ class PersonalDetailsForm(forms.Form):
     contact = forms.CharField(label='Contact Number', required=True, widget=forms.TextInput(
         attrs={'class': 'form-control', 'type': 'number'}))
 
+
+
+    # email = forms.EmailField(required=True, widget=forms.TextInput(
+    #     attrs={'class': 'form-control', 'type': 'email'}))
+    # username = forms.CharField(label="Username", widget=forms.TextInput(
+    #     attrs={'class': 'form-control'}))
+    # password = forms.CharField(max_length=32, widget=forms.TextInput(
+    #     attrs={'class': 'form-control', 'type': 'password'}), required=True)
+
+
+# class SiteForm(forms.Form):
+#     site_name = forms.CharField(label="Site name", widget=forms.TextInput(
+#         attrs={'class': 'form-control'}))
+#     interval = forms.CharField(label="Interval", widget=forms.TextInput(
+#         attrs={'class': 'form-control'}))
+#     number_of_failure = forms.CharField(label="Number of failures", widget=forms.TextInput(
+#         attrs={'class': 'form-control'}))
