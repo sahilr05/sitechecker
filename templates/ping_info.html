@@ -66,18 +66,30 @@
         <tr><td>No users added</td></tr>
       {% endif %}
       </table>
-        {% comment %} <div class="col-6 dropdown">
-        <form method='POST'>
-        {% csrf_token %}
-        <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
-          {% for add_user in add_users %}
-            <option value="{{add_user.id}}" >{{add_user.username}}</option>
-          {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-primary mb-2">Add users</button>
-        </form>
-      </div> {% endcomment %}
       </div>
+    {% comment %} </div> {% endcomment %}
+
+{% if result.has_other_pages %}
+  <ul class="pagination">
+    {% if result.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ result.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span></span></li>
+    {% endif %}
+    {% for i in result.paginator.page_range %}
+      {% if result.number == i %}
+        <li class="page-item active page-link"><span>{{ i }} <span class="sr-only page-link">(current)</span></span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if result.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ result.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span></span></li>
+    {% endif %}
+  </ul>
+{% endif %}
     </div>
-  </body>
+ </body>
 {% endblock body %}

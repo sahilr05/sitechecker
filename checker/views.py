@@ -17,6 +17,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 # from .redis_utils import RedisManager
 from datetime import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def home(request):
@@ -33,16 +34,25 @@ def info(request, pk):
 			add_user_in_site.users.add(User.objects.get(id=user))
 			add_user_in_site.save()
 
-	ping_report = PingInfo.objects.filter(site_id=pk)	
+	ping_report_obj = PingInfo.objects.filter(site_id=pk)	
 	site_list_obj = SiteList.objects.get(id=pk)
 	user_list = site_list_obj.users.all()
+	last_down_time = ping_report_obj.filter(status='DOWN').order_by('-date_time').first()
 
-	last_down_time = ping_report.filter(status='DOWN').order_by('-date_time').first()
+	#pagination 
+	page = request.GET.get('page', 1)
+	paginator = Paginator(ping_report_obj, 5)
+	try:
+		ping_report = paginator.page(page)
+	except PageNotAnInteger:
+		ping_report = paginator.page(1)
+	except EmptyPage:
+		ping_report = paginator.page(paginator.num_pages)
 
 	return render(request, 'ping_info.html', {'result' :ping_report, 
 				'add_users': User.objects.all(),
 				'users': user_list,
-				'site': SiteList.objects.get(id=pk),
+				'site': site_list_obj,
 				'last_down_time': last_down_time,
 				})
 

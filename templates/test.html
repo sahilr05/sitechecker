@@ -1,6 +1,12 @@
-{% comment %} {% for v in var %}
+
+{% extends 'base.html' %}
+{% load static %}<!DOCTYPE html>
+{% block body %}
+{% for v in var %}
     <p>{{v}}</p
 {% endfor %} {% endcomment %}
-{% for v in result %}
+{% comment %} {% for v in result %}
     <p>{{v}}</p
 {% endfor %}
+
+{% endblock body %}

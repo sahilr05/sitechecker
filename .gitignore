@@ -6,3 +6,4 @@ commented.stuff
 *.pyc
 checker/__pycache__/*
 temp.py
+checker/templates/test.html
