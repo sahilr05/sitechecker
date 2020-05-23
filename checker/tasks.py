@@ -6,6 +6,8 @@ import celery
 import subprocess
 from subprocess import Popen, PIPE
 from sitechecker.celery import app
+from django.core.mail import send_mail
+from celery import shared_task
 
 from datetime import timedelta, datetime, timezone
 from .models import SiteList, PingInfo
@@ -14,11 +16,13 @@ from .models import SiteList, PingInfo
 app.conf.enable_utc = False
 
 def pingsite(hostname):
-    process = subprocess.Popen(['ping', '-T', 'tsandaddr', '-c', '5', hostname],
-    stdout=PIPE, stderr=PIPE)
-    stdout, stderr = process.communicate()
-    packetloss = float([x for x in stdout.decode('utf-8').split('\n') if x.find('packet loss') != -1][0].split('%')[0].split(' ')[-1])
-    return packetloss
+    response = os.system("ping -c 1 " + hostname)
+    return response
+    # process = subprocess.Popen(['ping', '-T', 'tsandaddr', '-c', '5', hostname],
+    # stdout=PIPE, stderr=PIPE)
+    # stdout, stderr = process.communicate()
+    # packetloss = float([x for x in stdout.decode('utf-8').split('\n') if x.find('packet loss') != -1][0].split('%')[0].split(' ')[-1])
+    # return packetloss
 
 @app.task
 def check_interval():
@@ -31,7 +35,7 @@ def check_interval():
             last_run_dict = last_run_query.last()
             last_run = last_run_dict['date_time']
             last_run = last_run.replace(tzinfo=None)
-            difference = int(datetime.now().strftime('%M')) - int(last_run.strftime('%M'))
+            difference = abs(int(datetime.now().strftime('%M')) - int(last_run.strftime('%M')))
         else:
             difference = 999
 
@@ -51,6 +55,35 @@ def checksite(site_name):
     select_id = SiteList.objects.filter(site_name=site_name).values('id')
     new_info = PingInfo.objects.create(status=status,site_id=select_id)
     new_info.save()
+    check_failure.apply_async(args=(site_name,))
+
+@app.task
+def check_failure(site_name):
+    calculated_failure_count = 0
+    site_id = SiteList.objects.filter(site_name=site_name).values('id')
+    failure_count_query = SiteList.objects.filter(site_name=site_name).values('failure_count')
+    failure_count_dict = failure_count_query.first()
+    failure_count = failure_count_dict['failure_count']
+    last_n_failures = list(PingInfo.objects.filter(site_id__in=site_id).values_list('status')[:failure_count])
+                        
+    for last_status in last_n_failures:
+        if last_status[0] == 'DOWN':
+            calculated_failure_count+=1
+        if calculated_failure_count == failure_count:
+            send_mail_task.apply_async(args=(site_name,))
+
+@shared_task
+def send_mail_task(site_name):  
+    site_info_query = SiteList.objects.filter(site_name=site_name)
+    site_info = site_info_query.first()
+    user_list = list(site_info.users.all()) #many-to-many relationship
+    send_mail(
+    'Report from site checker',
+    'Website down',
+    'sahilrajpal05@gmail.com',
+    user_list,
+    )
+    return 'Sent'
 
 app.conf.beat_schedule = {
     "ping-task": {
