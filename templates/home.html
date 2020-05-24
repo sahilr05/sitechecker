@@ -11,7 +11,9 @@
       <div class="col-3"> 
         {% comment %} <a href="{% url 'add_site' request.user.pk %}" class="btn btn-primary">Add site</a> {% endcomment %}
 
+      {% if user.is_superuser %}
         <a href="{% url 'add_site' %}" class="btn btn-primary">Add Site</a>
+      {% endif %}
       </div>
       
       <table class="mt-2 table">
