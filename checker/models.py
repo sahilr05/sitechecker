@@ -12,6 +12,7 @@ class SiteList(models.Model):
     users = models.ManyToManyField(User, related_name = 'sitelist_users')
     interval = models.CharField(max_length=10)
     failure_count = models.IntegerField()
+    maintenance_mode = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.site_name}"

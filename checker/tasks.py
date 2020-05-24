@@ -26,7 +26,8 @@ def pingsite(hostname):
 
 @app.task
 def check_interval():
-    for site_id in SiteList.objects.values_list('id', flat=True):
+    # for site_id in SiteList.objects.values_list('id', flat=True):
+    for site_id in SiteList.objects.exclude(maintenance_mode=1).values_list('id', flat=True).order_by('id'):
         last_run_query = PingInfo.objects.filter(site=site_id).values('date_time')
         interval_query = SiteList.objects.filter(id=site_id).values('interval')
         interval_dict = interval_query.first()
@@ -74,15 +75,15 @@ def check_failure(site_name):
 
 @shared_task
 def send_mail_task(site_name):  
-    site_info_query = SiteList.objects.filter(site_name=site_name)
-    site_info = site_info_query.first()
-    user_list = list(site_info.users.all()) #many-to-many relationship
-    send_mail(
-    'Report from site checker',
-    'Website down',
-    'sahilrajpal05@gmail.com',
-    user_list,
-    )
+    # site_info_query = SiteList.objects.filter(site_name=site_name)
+    # site_info = site_info_query.first()
+    # user_list = list(site_info.users.all()) #many-to-many relationship
+    # send_mail(
+    # 'Report from site checker',
+    # 'Website down',
+    # 'sahilrajpal05@gmail.com',
+    # user_list,
+    # )
     return 'Sent'
 
 app.conf.beat_schedule = {

@@ -8,20 +8,19 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from celery.task.schedules import crontab
-from .models import SiteList, User, PingInfo
+from .models import *
 from .forms import *
-# from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.decorators import login_required
-# from django_celery_results.models import TaskResult
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-# from .redis_utils import RedisManager
 from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 def home(request):
 	site_names = SiteList.objects.all().order_by('id')
+	# site = SiteList.objects.get(id=pk)
+	# maintenance_status = site.maintenance_mode
 	return render(request, 'home.html', {'sitenames': site_names,})
 
 @login_required
@@ -55,25 +54,6 @@ def info(request, pk):
 				'site': site_list_obj,
 				'last_down_time': last_down_time,
 				})
-
-# @login_required
-# def edit_site(request, pk):
-# 	# site_info = SiteList.objects.get(id=pk)
-# 	if request.method == "POST":
-# 		form = EditSiteForm(request.POST)
-# 		if form.is_valid():
-# 			site_name = form.cleaned_data.get('site_name')
-# 			interval_temp = form.cleaned_data.get('interval')
-# 			interval = ' '.join(list(interval_temp))
-# 			failure_count = form.cleaned_data.get('number_of_failure')
-# 			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
-# 			site.save()
-# 			return redirect("home")
-
-# 	form = EditSiteForm()
-# 	return render(request,
-# 				  "edit_site.html",
-# 				  context={"form":form})
 
 
 @login_required
@@ -151,6 +131,17 @@ def delete_user(request, pk):
 def delete_site(request, pk):
 	site_to_delete = SiteList.objects.get(id=pk)
 	site_to_delete.delete()
+	return redirect('home')
+
+@login_required
+def maintenance(request, pk):
+	site = SiteList.objects.get(id=pk)
+	maintenance_status = site.maintenance_mode
+	if maintenance_status is 1:
+		site.maintenance_mode = 0
+	else:
+		site.maintenance_mode = 1
+	site.save()
 	return redirect('home')
 
 @login_required

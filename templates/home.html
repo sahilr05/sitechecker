@@ -32,8 +32,13 @@
               <td class="align-middle">{{site.interval}} minutes</td>
               <td class="align-middle">{{site.admin.username}}</td>
               <td>  
-                  <a href="{% url 'edit_site' site.pk %}"><span class="glyphicon glyphicon-pencil" >Edit</span></a>  
+                  <a href="{% url 'edit_site' site.pk %}">Edit</a>  
                   <a href="{% url 'delete_site' site.pk %}">Delete</a>  
+                  {% if site.maintenance_mode is 0 %}
+                    <a class="btn btn-outline-success" href="{% url 'maintenance' site.pk %}">Turn off</a>  
+                  {% else %}
+                    <a class="btn btn-outline-danger" href="{% url 'maintenance' site.pk %}">Turn on</a>  
+                  {% endif %}
               </td>  
             </tr>
           {% endfor %}
