@@ -52,10 +52,10 @@
       </table>
     </div>
     {% else %}
-      <div class="text">
+      <div class="d-flex justify-content-center">
         <h1> Hello there ! </h1>
-        <h3>Please <a href="{% url 'login' %}">Log in !</a> </h3>
       </div>
+        <h3 class="d-flex justify-content-center">Please<a href="{% url 'login' %}"> &nbsp Log in !</a> </h3>
     {% endif %}
   </body>
 {% endblock body %}
