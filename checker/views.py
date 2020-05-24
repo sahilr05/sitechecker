@@ -19,8 +19,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 def home(request):
 	site_names = SiteList.objects.all().order_by('id')
-	# site = SiteList.objects.get(id=pk)
-	# maintenance_status = site.maintenance_mode
 	return render(request, 'home.html', {'sitenames': site_names,})
 
 @login_required
@@ -58,6 +56,8 @@ def info(request, pk):
 
 @login_required
 def edit_site(request, pk):
+	if not request.user.is_superuser:
+		return redirect('home')
 	site = SiteList.objects.get(id=pk)
 	form = SiteForm(request.POST or None, instance=site)
 	if form.is_valid():
@@ -70,6 +70,8 @@ def edit_site(request, pk):
 
 @login_required
 def edit_user(request, pk):
+	if not request.user.is_superuser:
+		return redirect('home')
 	user_info = User.objects.get(id=pk)
 	form = EditUserForm(request.POST or None, instance=user_info)
 	if form.is_valid():
@@ -81,6 +83,8 @@ def edit_user(request, pk):
 	
 @login_required
 def user_list(request):
+	if not request.user.is_superuser:
+		return redirect('home')
 	list_of_users = User.objects.filter(is_superuser=False)
 	return render(request,
 				  "user_list.html",
@@ -99,6 +103,8 @@ def add_user(request):
 			user.save()
 			return redirect("user_list")
 
+	if not request.user.is_superuser:
+		return redirect('home')
 	form = UserForm()
 	return render(request,
 				  "add_user.html",
@@ -116,6 +122,8 @@ def add_site(request):
 			site.save()
 			return redirect("home")
 		
+	if not request.user.is_superuser:
+		return redirect('home')	
 	form = SiteForm()
 	return render(request,
 				  "add_site.html",

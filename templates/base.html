@@ -29,7 +29,9 @@
                 </div>
               </li>
             </ul>
+            {% if user.is_superuser %}
             <a href="{% url 'user_list' %}" class="btn btn-primary">Users</a>
+            {% endif %} 
           {% else %}
             <form class="form-inline ml-auto">
               {% comment %} <a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a> {% endcomment %}

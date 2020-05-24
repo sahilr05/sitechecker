@@ -13,20 +13,30 @@
         <p>Last Down Time : No down time</p>
         {% endif %}
        </div>
+
+      {% comment %} {% if user.is_superuser %} {% endcomment %}
       <div class="ml-auto dropdown">
         <form method='POST'>
         {% csrf_token %}
         <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
+        {% if not user.is_superuser %}
+          <option>Only admin can add</option>
+        {% else %}
           {% for add_user in add_users %}
             {% if add_user not in users %}
               <option value="{{add_user.id}}" >{{add_user.username}}</option>
             {% endif %}
           {% endfor %}
+        {% endif %}
         </select>
-        <button type="submit" class="btn btn-primary mb-2">Add users</button>
+        {% if user.is_superuser %}
+          <button type="submit" class="btn btn-primary ">Add users</button>
+        {% endif %}
         </form>
       </div>
       </div>
+      {% comment %} {% endif %} {% endcomment %}
+
       {% comment %} <a href="{% url 'add_user' %}"><button type="submit" class="btn btn-primary mb-2">Add user</button></a> {% endcomment %}
       <div class="row">
       <table class="table jumbotron col-6">

@@ -21,7 +21,9 @@
             <th>Site</th>
             <th>Interval</th>
             <th>Admin</th>
+            {% if user.is_superuser %}
             <th>Actions</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -31,6 +33,7 @@
               <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td>
               <td class="align-middle">{{site.interval}} minutes</td>
               <td class="align-middle">{{site.admin.username}}</td>
+              {% if user.is_superuser %}
               <td>  
                   <a href="{% url 'edit_site' site.pk %}">Edit</a>  
                   <a href="{% url 'delete_site' site.pk %}">Delete</a>  
@@ -40,6 +43,7 @@
                     <a class="btn btn-outline-danger" href="{% url 'maintenance' site.pk %}">Turn on</a>  
                   {% endif %}
               </td>  
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
