@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12.2
+    environment: 
+        - POSTGRES_PASSWORD=8149547570
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=sitechecker
+    restart: always
+
+  redis:
+    image: "redis:latest"
+    restart: always
+    ports:
+      - '6379:6379'
+
+  web:
+    build: .
+    command: bash -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: celery -A sitechecker worker -l info
+    restart: always
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A sitechecker beat -l info
+    restart: always
+    depends_on:
+      - db
+      - redis
+

@@ -116,6 +116,8 @@ def add_site(request):
 		form = SiteForm(request.POST)
 		if form.is_valid():
 			site_name = form.cleaned_data.get('site_name')
+			if site in list(SiteList.objects.filter(site_name=site).values_list()):
+				return 'Site already exists'
 			interval = form.cleaned_data.get('interval')
 			failure_count = form.cleaned_data.get('failure_count')
 			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))

@@ -1,0 +1,66 @@
+version: '3.7'
+
+services:
+    app:
+        build: .
+        environment: 
+            - docker=True
+        networks: 
+            - backend
+        command: >
+            sh -c "python manage.py migrate &&
+                    python manage.py runserver 0.0.0.0:8000"
+        restart: always
+        ports:
+            - 8080:8000
+        depends_on:
+            - broker
+            - db
+    
+    celery:
+        build: .
+        environment: 
+            - docker=True
+        command: ["celery", "-A", "sitechecker", "worker", "-l", "info"]
+        restart: always
+        networks: 
+            - backend
+        depends_on:
+            - broker
+            - db
+
+    celery-beat:
+        build: .
+        environment: 
+            - docker=True
+        command: ["celery", "-A", "sitechecker", "beat", "-l", "info"]
+        restart: always
+        networks: 
+            - backend
+        depends_on:
+            - broker
+            - db
+
+    broker:
+        image: redis:alpine
+        restart: always
+        command: ["sudo", "redis-server"]
+        networks: 
+            - backend
+        expose:
+            - "6379"
+    
+    db:
+        image: postgres:12
+        # restart: always
+        environment: 
+            - POSTGRES_PASSWORD=8149547570
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=sitechecker
+        networks: 
+            - backend
+        expose:
+            - "5432"
+
+networks: 
+    backend:

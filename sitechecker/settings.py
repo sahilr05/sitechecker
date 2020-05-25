@@ -83,7 +83,9 @@ DATABASES = {
         'NAME': 'sitechecker',
         'USER':'postgres',
         'PASSWORD':'8149547570',
-        'HOST':'localhost'
+        # 'HOST':'localhost'
+        'HOST': 'db', #docker
+        'PORT': 5432, #docker
     }
 }
 
@@ -142,8 +144,11 @@ EMAIL_USE_SSL = True
 
 
 # CELERY STUFF
-BROKER_URL = 'redis://127.0.0.1:6379/0'
-CELERY_RESULT_BACKEND = "redis"
+
+# BROKER_URL = 'redis://127.0.0.1:6379' #localhost
+BROKER_URL = 'redis://redis:6379/0' #docker
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0' #docker
+
 CELERY_REDIS_HOST = "localhost"
 CELERY_REDIS_PORT = 6379
 CELERY_REDIS_DB = 0
@@ -153,13 +158,3 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 
-# CELERY_IMPORTS = ('tasks')
-#  Define which task that will executed in periodic task
-
-# from datetime import timedelta
-# CELERYBEAT_SCHEDULE = {
-#     'every-minute': {
-#         'task': 'checker.tasks.pingsite',
-#         'schedule': timedelta(seconds=10),
-#     },
-# }
