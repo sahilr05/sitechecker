@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from datetime import timezone
 from django.http import HttpResponse
 import os
 import schedule, datetime
@@ -15,6 +16,44 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from datetime import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+#render to pdf
+from io import BytesIO
+from django.template.loader import get_template
+import xhtml2pdf.pisa as pisa
+from django.views.generic import View
+
+class Render_pdf:
+
+    @staticmethod
+    def render(path: str, params: dict):
+        template = get_template(path)
+        html = template.render(params)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
+
+class Pdf(View):
+
+	def get(self, request, pk):
+
+		ping_report_obj = PingInfo.objects.filter(site_id=pk).order_by('-date_time')
+		site_list_obj = SiteList.objects.get(id=pk)
+
+		last_down_time = ping_report_obj.filter(status='DOWN').order_by('-date_time').first()
+		today = datetime.now()
+
+		params = {
+			'today': today,
+			'site_name' : site_list_obj,
+			'last_down_time' : last_down_time,
+			'result': ping_report_obj,
+			'request': request
+		}
+		return Render_pdf.render('pdf.html', params)
 
 # Create your views here.
 def home(request):
@@ -147,7 +186,7 @@ def delete_site(request, pk):
 def maintenance(request, pk):
 	site = SiteList.objects.get(id=pk)
 	maintenance_status = site.maintenance_mode
-	if maintenance_status is 1:
+	if maintenance_status == 1:
 		site.maintenance_mode = 0
 	else:
 		site.maintenance_mode = 1

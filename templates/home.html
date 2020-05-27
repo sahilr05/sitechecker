@@ -23,6 +23,7 @@
             <th>Site</th>
             <th>Interval</th>
             <th>Admin</th>
+            <th>Report</th>
             {% if user.is_superuser %}
             <th>Actions</th>
             {% endif %}
@@ -35,6 +36,8 @@
               <td><a href="{% url 'info' site.pk %}">{{ site.site_name }}</a></td>
               <td class="align-middle">{{site.interval}} minutes</td>
               <td class="align-middle">{{site.admin.username}}</td>
+              <td class="align-middle"><a href="{% url 'report' site.pk %}">View</a></td>
+              
               {% if user.is_superuser %}
               <td>  
                   <a href="{% url 'edit_site' site.pk %}">Edit</a>  
