@@ -38,7 +38,7 @@ services:
         - POSTGRES_PASSWORD=8149547570
         - POSTGRES_USER=postgres
         - POSTGRES_DB=sitechecker
-    restart: always
+    restart: on-failure
     
   redis:
     image: "redis:latest"
