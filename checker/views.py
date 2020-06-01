@@ -23,45 +23,23 @@ from django.template.loader import get_template
 import xhtml2pdf.pisa as pisa
 from django.views.generic import View
 
-class Render_pdf:
-
-    @staticmethod
-    def render(path: str, params: dict):
-        template = get_template(path)
-        html = template.render(params)
-        response = BytesIO()
-        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
-        if not pdf.err:
-            return HttpResponse(response.getvalue(), content_type='application/pdf')
-        else:
-            return HttpResponse("Error Rendering PDF", status=400)
-
-class Pdf(View):
-
-	def get(self, request, pk):
-
-		ping_report_obj = PingInfo.objects.filter(site_id=pk).order_by('-date_time')
-		site_list_obj = SiteList.objects.get(id=pk)
-
-		last_down_time = ping_report_obj.filter(status='DOWN').order_by('-date_time').first()
-		today = datetime.now()
-
-		params = {
-			'today': today,
-			'site_name' : site_list_obj,
-			'last_down_time' : last_down_time,
-			'result': ping_report_obj,
-			'request': request
-		}
-		return Render_pdf.render('pdf.html', params)
 
 # Create your views here.
 def home(request):
+	if  request.user.is_authenticated and not request.user.is_superuser:	
+		user = User.objects.get(id=request.user.id)
+		site_names =  user.sitelist_users.all()
+		return render(request, 'home.html', {'sitenames': site_names,})
+
 	site_names = SiteList.objects.all().order_by('id')
 	return render(request, 'home.html', {'sitenames': site_names,})
 
+def test(request):
+	site_names = SiteList.objects.all().order_by('id')
+	return render(request, 'test.html', {'sitenames': site_names,})
+
 @login_required
-def info(request, pk):
+def ping_info(request, pk):
 	if request.method == "POST":
 		selected_users = request.POST.getlist('listxblocks')
 		# return HttpResponse(SelectedUsers)
@@ -92,6 +70,14 @@ def info(request, pk):
 				'last_down_time': last_down_time,
 				})
 
+@login_required
+def remove_user(request, site_pk, user_pk):
+	user_to_remove = User.objects.get(id=user_pk)
+	site = SiteList.objects.get(id=site_pk)
+	site.users.remove(user_to_remove)
+	site.save()
+	return redirect('ping_info', pk=site_pk)
+
 
 @login_required
 def edit_site(request, pk):
@@ -102,8 +88,9 @@ def edit_site(request, pk):
 	if form.is_valid():
 		site_name = form.cleaned_data.get('site_name')
 		interval = form.cleaned_data.get('interval')
+		alert_type= form.cleaned_data.get('alert_type')
 		failure_count = form.cleaned_data.get('failure_count')
-		site = SiteList.objects.filter(id=pk).update(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
+		site = SiteList.objects.filter(id=pk).update(site_name=site_name, alert_type=alert_type, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
 		return redirect('home')
 	return render(request, "edit_site.html", {'form':form})	
 
@@ -142,8 +129,8 @@ def add_user(request):
 			user.save()
 			return redirect("user_list")
 
-	if not request.user.is_superuser:
-		return redirect('home')
+	# if not request.user.is_superuser:
+	# 	return redirect('home')
 	form = UserForm()
 	return render(request,
 				  "add_user.html",
@@ -155,11 +142,10 @@ def add_site(request):
 		form = SiteForm(request.POST)
 		if form.is_valid():
 			site_name = form.cleaned_data.get('site_name')
-			if site in list(SiteList.objects.filter(site_name=site).values_list()):
-				return 'Site already exists'
 			interval = form.cleaned_data.get('interval')
 			failure_count = form.cleaned_data.get('failure_count')
-			site = SiteList.objects.create(site_name=site_name, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
+			alert_type = form.cleaned_data.get('alert_type')
+			site = SiteList.objects.create(site_name=site_name, alert_type=alert_type, interval=interval, failure_count = failure_count, admin=User.objects.get(id=request.user.pk))
 			site.save()
 			return redirect("home")
 		
@@ -220,6 +206,37 @@ def login_request(request):
 				  {"form":form})
 
 
+class Render_pdf:
+
+    @staticmethod
+    def render(path: str, params: dict):
+        template = get_template(path)
+        html = template.render(params)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type='application/pdf')
+        else:
+            return HttpResponse("Error Rendering PDF", status=400)
+
+class Pdf(View):
+
+	def get(self, request, pk):
+
+		ping_report_obj = PingInfo.objects.filter(site_id=pk).order_by('-date_time')
+		site_list_obj = SiteList.objects.get(id=pk)
+
+		last_down_time = ping_report_obj.filter(status='DOWN').order_by('-date_time').first()
+		today = datetime.now()
+
+		params = {
+			'today': today,
+			'site_name' : site_list_obj,
+			'last_down_time' : last_down_time,
+			'result': ping_report_obj,
+			'request': request
+		}
+		return Render_pdf.render('pdf.html', params)
 
 			# email = BaseUserManager.normalize_email(email)
 			

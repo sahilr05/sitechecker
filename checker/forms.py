@@ -3,6 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import *
 
+ALERT_CHOICES =( 
+    ("email", "Email"), 
+    ("phone", "Phone"), 
+    ("both", "Both"), 
+)
 
 class UserForm(forms.ModelForm):
     confirm_password = forms.CharField(max_length=32, widget=forms.TextInput(
@@ -18,9 +23,10 @@ class EditUserForm(forms.ModelForm):
         fields = ('username', 'email')
 
 class SiteForm(forms.ModelForm):
+    alert_type = forms.ChoiceField(choices=ALERT_CHOICES, required=True)
     class Meta:
         model = SiteList
-        fields = ('site_name', 'interval', 'failure_count')
+        fields = ('site_name', 'interval', 'failure_count', 'alert_type')
     
 
 class LoginForm(forms.Form):

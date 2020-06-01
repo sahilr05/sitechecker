@@ -16,15 +16,15 @@ from .models import SiteList, PingInfo
 app.conf.enable_utc = False
 
 def pingsite(hostname):
-    response = os.system("ping -c 1 " + hostname)
-    return response
-    # process = subprocess.Popen(['ping', '-T', 'tsandaddr', '-c', '5', hostname],
-    # stdout=PIPE, stderr=PIPE)
-    # stdout, stderr = process.communicate()
-    # packetloss = float([x for x in stdout.decode('utf-8').split('\n') if x.find('packet loss') != -1][0].split('%')[0].split(' ')[-1])
-    # return packetloss
+    # response = os.system("ping -c 1 " + hostname)
+    # return response
+    process = subprocess.Popen(['ping', '-T', 'tsandaddr', '-c', '5', hostname],
+    stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    packetloss = float([x for x in stdout.decode('utf-8').split('\n') if x.find('packet loss') != -1][0].split('%')[0].split(' ')[-1])
+    return packetloss
 
-@app.task
+@shared_task
 def check_interval():
     # for site_id in SiteList.objects.values_list('id', flat=True):
     for site_id in SiteList.objects.exclude(maintenance_mode=1).values_list('id', flat=True).order_by('id'):
@@ -45,7 +45,7 @@ def check_interval():
         if difference > interval:
             checksite.apply_async(args=(site_to_ping,))
 
-@app.task
+@shared_task
 def checksite(site_name):
     result = pingsite(site_name)
     if result==0:
@@ -58,7 +58,7 @@ def checksite(site_name):
     new_info.save()
     check_failure.apply_async(args=(site_name,))
 
-@app.task
+@shared_task
 def check_failure(site_name):
     calculated_failure_count = 0
     site_id = SiteList.objects.filter(site_name=site_name).values('id')
@@ -71,19 +71,29 @@ def check_failure(site_name):
         if last_status[0] == 'DOWN':
             calculated_failure_count+=1
         if calculated_failure_count == failure_count:
-            send_mail_task.apply_async(args=(site_name,))
+            alert_user.apply_async(args=(site_name,))
 
 @shared_task
-def send_mail_task(site_name):  
-    # site_info_query = SiteList.objects.filter(site_name=site_name)
-    # site_info = site_info_query.first()
+def alert_user(site_name):  
+    site_info = SiteList.objects.get(site_name=site_name)
     # user_list = list(site_info.users.all()) #many-to-many relationship
-    # send_mail(
-    # 'Report from site checker',
-    # 'Website down',
-    # 'sahilrajpal05@gmail.com',
-    # user_list,
-    # )
+    if site_info.alert_type == 'email':
+        send_email_task.apply_async(args=(site_name,))
+    elif site_info.alert_type == 'phone':
+        pass
+    else:
+        return 'failed'
+
+@shared_task
+def send_email_task(site_name):  
+    site_info = SiteList.objects.get(site_name=site_name)
+    user_list = list(site_info.users.values_list('email'))
+    send_mail(
+    'Report from site checker',
+    'Website down',
+    'sahilrajpal05@gmail.com',
+    user_list,
+    )
     return 'Sent'
 
 app.conf.beat_schedule = {
@@ -92,8 +102,6 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="*", hour="*")
     }
 }
-
-
 
  
     # response = os.system("ping -T tsandaddr -c 5  " + hostname)

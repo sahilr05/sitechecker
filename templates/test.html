@@ -2,11 +2,21 @@
 {% extends 'base.html' %}
 {% load static %}<!DOCTYPE html>
 {% block body %}
+
+{% if sitenames %}
+<h2><a href="{% url 'admin:index' %}">If</a></h2>
+{% else %}
+{{sitenames}}
+<h2><a href="{% url 'admin:index' %}">Admin</a></h2>
+<h2>Hi</h2>
+{% endif %}
+{% comment %} 
 {% for v in var %}
     <p>{{v}}</p
-{% endfor %} {% endcomment %}
-{% comment %} {% for v in result %}
+{% endfor %} 
+
+{% for v in result %}
     <p>{{v}}</p
-{% endfor %}
+{% endfor %} {% endcomment %}
 
 {% endblock body %}

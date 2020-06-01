@@ -77,15 +77,26 @@ WSGI_APPLICATION = 'sitechecker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'sitechecker',
+#         'USER':'postgres',
+#         'PASSWORD':'8149547570',
+#         'HOST':'localhost'
+#         # 'HOST': 'db', #docker
+#         # 'PORT': 5432, #docker
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sitechecker',
-        'USER':'postgres',
-        'PASSWORD':'8149547570',
-        'HOST':'localhost'
-        # 'HOST': 'db', #docker
-        # 'PORT': 5432, #docker
+    "default": {
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.environ.get("SQL_DATABASE", 'sitechecker'),
+        "USER": os.environ.get("SQL_USER", "postgres"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "8149547570"),
+        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
 
@@ -137,24 +148,29 @@ STATICFILES_DIRS = [
 #EMAIL stuff
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = ''
-EMAIL_HOST_USER = ''
+EMAIL_HOST_USER = ' '
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
+# if(os.environ.get('DOCKER')):
+#     BROKER_URL = 'redis://redis:6379/0'
+# else:
+#     BROKER_URL= 'redis://127.0.0.1:6379/0'
 
 # CELERY STUFF
 
-BROKER_URL = 'redis://127.0.0.1:6379' #localhost
-# BROKER_URL = 'redis://redis:6379/0' #docker
 # CELERY_RESULT_BACKEND = 'redis://redis:6379/0' #docker
 
-CELERY_REDIS_HOST = "localhost"
+# CELERY_REDIS_HOST = "localhost"
+
+# BROKER_URL = 'redis://127.0.0.1:6379' #localhost
+BROKER_URL = os.environ.get('REDIS_HOST', 'redis://127.0.0.1:6379/0'), #docker
 CELERY_REDIS_PORT = 6379
 CELERY_REDIS_DB = 0
+
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
-

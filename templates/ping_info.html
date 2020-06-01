@@ -9,6 +9,7 @@
        <div class='col-6'>
        {% if last_down_time%}
         <p>Last Down Time : {{last_down_time.date_time}}</p>
+        <p>Alert Type : {{site.alert_type}}</p>
         {% else %}
         <p>Last Down Time : No down time</p>
         {% endif %}
@@ -63,12 +64,16 @@
       </table>
       <div class="col-1 "></div>
       <table class="table jumbotron col-5">
-      <tr class="danger"><th>Users</th></tr>
+      <tr class="danger">
+      <th>Users</th>
+      <th>Action</th>
+      </tr>
       {% if users %}
         {% for user in users %}
           <tbody>
           <tr class="info">
             <td>{{user.username}}</td>
+            <td><a href="{% url 'remove_user' site.pk user.pk %}">Remove</a></td>
           </tr>
           </tbody>
         {% endfor %}
