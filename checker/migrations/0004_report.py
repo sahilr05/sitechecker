@@ -7,16 +7,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('django_celery_results', '0007_remove_taskresult_hidden'),
-        ('checker', '0003_auto_20200515_1049'),
+        ("django_celery_results", "0007_remove_taskresult_hidden"),
+        ("checker", "0003_auto_20200515_1049"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Report',
+            name="Report",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('site', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='django_celery_results.TaskResult')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "site",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="django_celery_results.TaskResult",
+                    ),
+                ),
             ],
         ),
     ]

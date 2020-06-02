@@ -9,13 +9,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('checker', '0001_initial'),
+        ("checker", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sitelist',
-            name='admin',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sitelist', to=settings.AUTH_USER_MODEL),
+            model_name="sitelist",
+            name="admin",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="sitelist",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

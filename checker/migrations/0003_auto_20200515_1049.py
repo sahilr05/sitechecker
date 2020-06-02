@@ -8,19 +8,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('checker', '0002_auto_20200509_1754'),
+        ("checker", "0002_auto_20200509_1754"),
     ]
 
     operations = [
-        migrations.DeleteModel(
-            name='PersonalDetails',
-        ),
+        migrations.DeleteModel(name="PersonalDetails",),
         migrations.AddField(
-            model_name='sitelist',
-            name='users',
-            field=models.ManyToManyField(related_name='sitelist_users', to=settings.AUTH_USER_MODEL),
+            model_name="sitelist",
+            name="users",
+            field=models.ManyToManyField(
+                related_name="sitelist_users", to=settings.AUTH_USER_MODEL
+            ),
         ),
-        migrations.DeleteModel(
-            name='PingInfo',
-        ),
+        migrations.DeleteModel(name="PingInfo",),
     ]

@@ -6,14 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checker', '0005_auto_20200517_1908'),
+        ("checker", "0005_auto_20200517_1908"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pinginfo',
-            name='status',
-            field=models.CharField(choices=[('UP', 'UP'), ('DOWN', 'DOWN')], default=1, max_length=50),
+            model_name="pinginfo",
+            name="status",
+            field=models.CharField(
+                choices=[("UP", "UP"), ("DOWN", "DOWN")], default=1, max_length=50
+            ),
             preserve_default=False,
         ),
     ]

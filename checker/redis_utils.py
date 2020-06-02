@@ -1,6 +1,7 @@
 from django.conf import settings
 import redis
 
+
 class RedisManager:
     """Simple Manager for Redis Backend"""
 
@@ -8,12 +9,12 @@ class RedisManager:
         """The default connection parameters are: host='localhost', port=6379, connection=0"""
         # host = settings.REDIS_HOST_NAME
         # port = settings.REDIS_PORT
-        self.connection = redis.StrictRedis(host="localhost", port = 6379, db=0)
+        self.connection = redis.StrictRedis(host="localhost", port=6379, db=0)
         # host = "localhost"
         # port = 6379
 
         # self.connection = redis.StrictRedis(host, port, decode_responses=True)
-        self.key = '%s' % (name)
+        self.key = "%s" % (name)
 
     def qsize(self):
         """Return the approximate size of the queue."""
@@ -51,7 +52,7 @@ class RedisManager:
         #     item = item[1]
         # return item
         # self.val =
-        return  self.connection.get(self.key)
+        return self.connection.get(self.key)
 
     def get_nowait(self):
         """Equivalent to get(False)."""
@@ -79,7 +80,7 @@ class RedisManager:
         for k in hash_key:
             q = self.connection.hmget(self.key, k)
             op.append(q)
-            
+
         return op
 
     def get_all(self):

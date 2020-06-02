@@ -7,19 +7,31 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checker', '0004_report'),
+        ("checker", "0004_report"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PingInfo',
+            name="PingInfo",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_time', models.DateTimeField(auto_now_add=True)),
-                ('site', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='checker.SiteList')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date_time", models.DateTimeField(auto_now_add=True)),
+                (
+                    "site",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="checker.SiteList",
+                    ),
+                ),
             ],
         ),
-        migrations.DeleteModel(
-            name='Report',
-        ),
+        migrations.DeleteModel(name="Report",),
     ]

@@ -18,8 +18,8 @@ from django.urls import path, include
 from checker import views as checker_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-      path('', include('checker.urls')),
+    path("admin/", admin.site.urls),
+    path("", include("checker.urls")),
     # path('checksite',checker_views.checksite, name='checksite'),
     # path('',checker_views.home, name='home'),
     # path('login/',checker_views.login_request, name= 'login'),

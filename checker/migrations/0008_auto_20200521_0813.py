@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checker', '0007_sitelist_failure_count'),
+        ("checker", "0007_sitelist_failure_count"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sitelist',
-            name='interval',
+            model_name="sitelist",
+            name="interval",
             field=models.CharField(max_length=10),
         ),
     ]

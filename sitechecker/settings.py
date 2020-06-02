@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY'),
+SECRET_KEY = (os.getenv("DJANGO_SECRET_KEY"),)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,47 +31,47 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'celery',
-    'checker',
-    'widget_tweaks',
-    'django_celery_results',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "celery",
+    "checker",
+    "widget_tweaks",
+    "django_celery_results",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'sitechecker.urls'
+ROOT_URLCONF = "sitechecker.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'sitechecker.wsgi.application'
+WSGI_APPLICATION = "sitechecker.wsgi.application"
 
 
 # Database
@@ -105,26 +105,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -132,23 +126,23 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGOUT_REDIRECT_URL = 'home'
-LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL = '/login'
+LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "home"
+LOGIN_URL = "/login"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 ]
 
-#EMAIL stuff
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = ''
-EMAIL_HOST_USER = ' '
+# EMAIL stuff
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = ""
+EMAIL_HOST_USER = " "
 EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
@@ -165,12 +159,12 @@ EMAIL_USE_SSL = True
 # CELERY_REDIS_HOST = "localhost"
 
 # BROKER_URL = 'redis://127.0.0.1:6379' #localhost
-BROKER_URL = os.environ.get('REDIS_HOST', 'redis://127.0.0.1:6379/0'), #docker
+BROKER_URL = (os.environ.get("REDIS_HOST", "redis://127.0.0.1:6379/0"),)  # docker
 CELERY_REDIS_PORT = 6379
 CELERY_REDIS_DB = 0
 
 # CELERY_RESULT_BACKEND = 'django-db'
 # CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"

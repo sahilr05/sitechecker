@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('checker', '0009_sitelist_maintenance_mode'),
+        ("checker", "0009_sitelist_maintenance_mode"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sitelist',
-            name='alert_type',
-            field=models.CharField(default='email', max_length=10),
+            model_name="sitelist",
+            name="alert_type",
+            field=models.CharField(default="email", max_length=10),
         ),
     ]
