@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -37,10 +36,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party
     "celery",
-    "checker",
     "widget_tweaks",
-    "django_celery_results",
+    # Custom
+    "checker",
 ]
 
 MIDDLEWARE = [
@@ -66,28 +66,12 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
+            ]
         },
-    },
+    }
 ]
 
 WSGI_APPLICATION = "sitechecker.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'sitechecker',
-#         'USER':'postgres',
-#         'PASSWORD':'8149547570',
-#         'HOST':'localhost'
-#         # 'HOST': 'db', #docker
-#         # 'PORT': 5432, #docker
-#     }
-# }
 
 DATABASES = {
     "default": {
@@ -105,11 +89,11 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -135,9 +119,7 @@ LOGIN_URL = "/login"
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # EMAIL stuff
 EMAIL_HOST = "smtp.gmail.com"
@@ -147,18 +129,7 @@ EMAIL_HOST_PASSWORD = ""
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
-# if(os.environ.get('DOCKER')):
-#     BROKER_URL = 'redis://redis:6379/0'
-# else:
-#     BROKER_URL= 'redis://127.0.0.1:6379/0'
-
-# CELERY STUFF
-
-# CELERY_RESULT_BACKEND = 'redis://redis:6379/0' #docker
-
-# CELERY_REDIS_HOST = "localhost"
-
-# BROKER_URL = 'redis://127.0.0.1:6379' #localhost
+# Celery
 BROKER_URL = (os.environ.get("REDIS_HOST", "redis://127.0.0.1:6379/0"),)  # docker
 CELERY_REDIS_PORT = 6379
 CELERY_REDIS_DB = 0

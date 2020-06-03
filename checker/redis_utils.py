@@ -1,5 +1,5 @@
-from django.conf import settings
 import redis
+from django.conf import settings
 
 
 class RedisManager:
@@ -44,14 +44,6 @@ class RedisManager:
         """Remove and return an item from the queue.
         If optional args block is true and timeout is None (the default), block
         if necessary until an item is available."""
-        # if block:
-        #     item = self.connection.blpop(self.key, timeout=timeout)
-        # else:
-        #     item = self.connection.lpop(self.key)
-        # if item:
-        #     item = item[1]
-        # return item
-        # self.val =
         return self.connection.get(self.key)
 
     def get_nowait(self):

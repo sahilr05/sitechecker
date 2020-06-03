@@ -1,27 +1,36 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from datetime import timezone
-from django.http import HttpResponse
+import datetime
 import os
-import schedule, datetime
-from checker.tasks import pingsite
-from sitechecker.celery import app
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth import login, logout, authenticate
+from datetime import datetime
+from datetime import timezone
+from io import BytesIO
+
+import schedule
+import xhtml2pdf.pisa as pisa
 from celery.task.schedules import crontab
-from .models import *
-from .forms import *
+from django.contrib import messages
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.template.loader import get_template
+from django.views.generic import View
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from datetime import datetime
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from .forms import *
+from .models import *
+from checker.tasks import pingsite
+from sitechecker.celery import app
 
 # render to pdf
-from io import BytesIO
-from django.template.loader import get_template
-import xhtml2pdf.pisa as pisa
-from django.views.generic import View
 
 
 # Create your views here.
@@ -29,15 +38,15 @@ def home(request):
     if request.user.is_authenticated and not request.user.is_superuser:
         user = User.objects.get(id=request.user.id)
         site_names = user.sitelist_users.all()
-        return render(request, "home.html", {"sitenames": site_names,})
+        return render(request, "home.html", {"sitenames": site_names})
 
     site_names = SiteList.objects.all().order_by("id")
-    return render(request, "home.html", {"sitenames": site_names,})
+    return render(request, "home.html", {"sitenames": site_names})
 
 
 def test(request):
     site_names = SiteList.objects.all().order_by("id")
-    return render(request, "test.html", {"sitenames": site_names,})
+    return render(request, "test.html", {"sitenames": site_names})
 
 
 @login_required
@@ -147,8 +156,6 @@ def add_user(request):
             user.save()
             return redirect("user_list")
 
-    # if not request.user.is_superuser:
-    # 	return redirect('home')
     form = UserForm()
     return render(request, "add_user.html", context={"form": form})
 
@@ -262,44 +269,3 @@ class Pdf(View):
             "request": request,
         }
         return Render_pdf.render("pdf.html", params)
-
-        # email = BaseUserManager.normalize_email(email)
-
-    # ExcludeUsers = SiteListObj.users.filter('username')
-    # AddUsers = User.objects.exclude(ExcludeUsers)
-    # pl = PingInfo.objects.filter(site_id=2)
-    # last_down_time = pingreport.order_by('-date_time').filter(status='DOWN').values('date_time').first()
-
-
-# @app.task
-# def checksite(request=True):
-# 	sl = SiteList.objects.values_list('site_name', flat=True)
-# 	for site in sl:
-# 		val = pingsite(site)
-# 		if val==0:
-# 			op = 'UP'
-# 		else:
-# 			op = 'DOWN'
-# 		select_id = SiteList.objects.filter(site_name=site).values('id')
-# 		new_info = PingInfo.objects.create(status=op,site_id=select_id)
-# 		new_info.save()
-
-# app.conf.beat_schedule = {
-#     "ping-task": {
-#         "task": "checker.views.checksite",
-#         "schedule": crontab(minute="*", hour="*", day_of_week='*')
-#     }
-# }
-
-# backup
-# def checksite(request=True):
-# 	sl = SiteList.objects.values_list('site_name', flat=True)
-# 	for site in sl:
-# 		val = pingsite(site)
-# 		if val==0:
-# 			op = 'UP'
-# 		else:
-# 			op = 'DOWN'
-# 		select_id = SiteList.objects.filter(site_name=site).values('id')
-# 		new_info = PingInfo.objects.create(status=op,site_id=select_id)
-# 		new_info.save()

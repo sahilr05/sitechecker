@@ -1,13 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+
 from .models import *
 
-ALERT_CHOICES = (
-    ("email", "Email"),
-    ("phone", "Phone"),
-    ("both", "Both"),
-)
+ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
 
 
 class UserForm(forms.ModelForm):
@@ -68,19 +65,3 @@ class PersonalDetailsForm(forms.Form):
         required=True,
         widget=forms.TextInput(attrs={"class": "form-control", "type": "number"}),
     )
-
-    # email = forms.EmailField(required=True, widget=forms.TextInput(
-    #     attrs={'class': 'form-control', 'type': 'email'}))
-    # username = forms.CharField(label="Username", widget=forms.TextInput(
-    #     attrs={'class': 'form-control'}))
-    # password = forms.CharField(max_length=32, widget=forms.TextInput(
-    #     attrs={'class': 'form-control', 'type': 'password'}), required=True)
-
-
-# class SiteForm(forms.Form):
-#     site_name = forms.CharField(label="Site name", widget=forms.TextInput(
-#         attrs={'class': 'form-control'}))
-#     interval = forms.CharField(label="Interval", widget=forms.TextInput(
-#         attrs={'class': 'form-control'}))
-#     number_of_failure = forms.CharField(label="Number of failures", widget=forms.TextInput(
-#         attrs={'class': 'form-control'}))

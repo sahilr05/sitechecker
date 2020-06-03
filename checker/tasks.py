@@ -1,16 +1,22 @@
+import datetime
 import os
-import schedule, datetime
+import subprocess
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+from subprocess import PIPE
+from subprocess import Popen
+
+import celery
+import schedule
+from celery import shared_task
 from celery.decorators import periodic_task
 from celery.task.schedules import crontab
-import celery
-import subprocess
-from subprocess import Popen, PIPE
-from sitechecker.celery import app
 from django.core.mail import send_mail
-from celery import shared_task
 
-from datetime import timedelta, datetime, timezone
-from .models import SiteList, PingInfo
+from .models import PingInfo
+from .models import SiteList
+from sitechecker.celery import app
 
 # disable UTC so that Celery can use local time
 app.conf.enable_utc = False
@@ -114,10 +120,7 @@ def send_email_task(site_name):
     site_info = SiteList.objects.get(site_name=site_name)
     user_list = list(site_info.users.values_list("email"))
     send_mail(
-        "Report from site checker",
-        "Website down",
-        "sahilrajpal05@gmail.com",
-        user_list,
+        "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
     )
     return "Sent"
 
@@ -128,17 +131,3 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute="*", hour="*"),
     }
 }
-
-
-# response = os.system("ping -T tsandaddr -c 5  " + hostname)
-
-# @app.task
-# val = app.conf.beat_schedule = {
-#     "ping-task": {
-#         "task": "checker.tasks.pingsite",
-#         "schedule": crontab(hour="*", minute="*")
-#     }
-# }
-# response = urllib.request.urlopen(hostname).getcode()
-# A periodic task that will run every minute (the symbol "*" means every)
-# @periodic_task(run_every=(crontab(hour="*", minute="*", day_of_week="*")))
