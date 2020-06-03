@@ -127,7 +127,7 @@ def send_email_task(site_name):
 
 app.conf.beat_schedule = {
     "ping-task": {
-        "task": "checker.tasks.check_interval",
+        "task": "checkerapp.tasks.check_interval",
         "schedule": crontab(minute="*", hour="*"),
     }
 }

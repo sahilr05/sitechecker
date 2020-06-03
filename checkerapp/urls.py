@@ -1,10 +1,10 @@
 from django.urls import include
 from django.urls import path
 
-from checker import views
-from checker.views import Pdf
+from checkerapp import views
+from checkerapp.views import Pdf
 
-# app_name = 'checker'
+# app_name = 'checkerapp'
 
 urlpatterns = [
     path("", views.home, name="home"),

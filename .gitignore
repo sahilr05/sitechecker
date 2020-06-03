@@ -1,9 +1,8 @@
-$GIT_DIR/checker/__pycache__/
+
 db.sqlite3
-commented.stuff
 *.pyo
 */__pycache__
 *.pyc
-checker/__pycache__/*
+checkerapp/__pycache__/*
 temp.py
-checker/templates/test.html
+checkerapp/templates/test.html

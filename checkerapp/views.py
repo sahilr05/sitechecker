@@ -27,7 +27,7 @@ from rest_framework.response import Response
 
 from .forms import *
 from .models import *
-from checker.tasks import pingsite
+from checkerapp.tasks import pingsite
 from sitechecker.celery import app
 
 # render to pdf
