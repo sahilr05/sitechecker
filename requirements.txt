@@ -22,6 +22,7 @@ idna==2.9
 jsonify==0.5
 kombu==4.6.8
 Pillow==7.1.2
+pre-commit==2.4.0
 psycopg2==2.8.5
 PyPDF2==1.26.0
 python-dateutil==2.8.1
