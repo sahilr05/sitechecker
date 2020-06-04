@@ -1,0 +1,28 @@
+# Ignored rules
+
+# E203 - whitespace before ':' " on list slice
+# PEP 8 recommends to treat : in slices as a binary operator with the lowest
+# priority, and to leave an equal amount of space on either side, except if a
+# parameter is omitted. Black enforces these rules consistently.
+
+# E266
+# Too many leading ‘#’ for block comment
+
+# E501
+# line too long > 80 characters
+# We ignore this error from flake because black automatically enforces it
+# most of the times. Only place where it doesn't enforce is with strings.
+# For that we have B950 enabled.
+
+
+# W503
+# Black will break a line before a binary operator when splitting a block
+# of code over multiple lines. This is so that Black is compliant with
+# the recent changes in the PEP 8 style guide
+
+
+[flake8]
+ignore = E203, E266, E501, W503, F405
+max-line-length = 80
+max-complexity = 18
+select = B,C,E,F,W,T4,B9

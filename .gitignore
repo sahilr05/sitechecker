@@ -1,8 +1,5 @@
-
 db.sqlite3
 *.pyo
 */__pycache__
 *.pyc
 checkerapp/__pycache__/*
-temp.py
-checkerapp/templates/test.html
