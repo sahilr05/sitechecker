@@ -8,14 +8,14 @@
           <li class="breadcrumb-item active">Sites</li>
         </ol>
       </div>
-      <div class="col-3"> 
+      <div class="col-3">
         {% comment %} <a href="{% url 'add_site' request.user.pk %}" class="btn btn-primary">Add site</a> {% endcomment %}
 
       {% if user.is_superuser %}
-        <a href="{% url 'add_site' %}" class="btn btn-primary">Add Site</a>
+        <a href="{% url 'checkerapp:add_site' %}" class="btn btn-primary">Add Site</a>
       {% endif %}
       </div>
-      
+
       <table class="mt-2 table">
         <thead class="thead-inverse">
           <tr>
@@ -34,22 +34,22 @@
           {% for site in sitenames %}
             <tr>
               <td class="align-middle">{{site.pk}}</td>
-              <td><a href="{% url 'ping_info' site.pk %}">{{ site.site_name }}</a></td>
+              <td><a href="{% url 'checkerapp:ping_info' site.pk %}">{{ site.site_name }}</a></td>
               <td class="align-middle">{{site.interval}} minutes</td>
               <td class="align-middle">{{site.admin.username}}</td>
               <td class="align-middle">{{site.alert_type}}</td>
-              <td class="align-middle"><a href="{% url 'report' site.pk %}">View</a></td>
-              
+              <td class="align-middle"><a href="{% url 'checkerapp:report' site.pk %}">View</a></td>
+
               {% if user.is_superuser %}
-              <td>  
-                  <a href="{% url 'edit_site' site.pk %}">Edit</a>  
-                  <a href="{% url 'delete_site' site.pk %}">Delete</a>  
+              <td>
+                  <a href="{% url 'checkerapp:edit_site' site.pk %}">Edit</a>
+                  <a href="{% url 'checkerapp:delete_site' site.pk %}">Delete</a>
                   {% if site.maintenance_mode is 0 %}
-                    <a class="btn btn-outline-success" href="{% url 'maintenance' site.pk %}">Turn off</a>  
+                    <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.pk %}">Turn off</a>
                   {% else %}
-                    <a class="btn btn-outline-danger" href="{% url 'maintenance' site.pk %}">Turn on</a>  
+                    <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.pk %}">Turn on</a>
                   {% endif %}
-              </td>  
+              </td>
               {% endif %}
             </tr>
           {% endfor %}
@@ -60,13 +60,13 @@
       <div class="d-flex justify-content-center">
         <h1> Hello there ! </h1>
       </div>
-        <h3 class="d-flex justify-content-center">Please create super-user and then <a href="{% url 'login' %}"> &nbsp Log in !</a> !</h3>
+        <h3 class="d-flex justify-content-center">Please create super-user and then <a href="{% url 'accounts:login' %}"> &nbsp Log in !</a> !</h3>
 
     {% else %}
       <div class="d-flex justify-content-center">
         <h1> Hello there ! </h1>
       </div>
-        <h3 class="d-flex justify-content-center">Please<a href="{% url 'login' %}"> &nbsp Log in !</a> </h3>
+        <h3 class="d-flex justify-content-center">Please<a href="{% url 'accounts:login' %}"> &nbsp Log in !</a> </h3>
     {% endif %}
   </body>
 {% endblock body %}

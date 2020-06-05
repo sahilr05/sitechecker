@@ -78,7 +78,7 @@ def ping_info(request, pk):
 @login_required
 def edit_site(request, pk):
     if not request.user.is_superuser:
-        return redirect("home")
+        return redirect("checkerapp:home")
     site = SiteList.objects.get(id=pk)
     form = SiteForm(request.POST or None, instance=site)
     if form.is_valid():
@@ -93,7 +93,7 @@ def edit_site(request, pk):
             failure_count=failure_count,
             admin=User.objects.get(id=request.user.pk),
         )
-        return redirect("home")
+        return redirect("checkerapp:home")
     return render(request, "edit_site.html", {"form": form})
 
 
@@ -114,10 +114,10 @@ def add_site(request):
                 admin=User.objects.get(id=request.user.pk),
             )
             site.save()
-            return redirect("home")
+            return redirect("checkerapp:home")
 
     if not request.user.is_superuser:
-        return redirect("home")
+        return redirect("checkerapp:home")
     form = SiteForm()
     return render(request, "add_site.html", context={"form": form})
 
@@ -133,7 +133,7 @@ def delete_user(request, pk):
 def delete_site(request, pk):
     site_to_delete = SiteList.objects.get(id=pk)
     site_to_delete.delete()
-    return redirect("home")
+    return redirect("checkerapp:home")
 
 
 @login_required
@@ -145,7 +145,7 @@ def maintenance(request, pk):
     else:
         site.maintenance_mode = 1
     site.save()
-    return redirect("home")
+    return redirect("checkerapp:home")
 
 
 class Render_pdf:

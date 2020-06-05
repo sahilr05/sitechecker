@@ -17,11 +17,10 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-import checkerapp
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("checkerapp.urls")),
+    path("accounts/", include("accounts.urls", namespace="accounts")),
+    path("", include("checkerapp.urls", namespace="checker")),
     # path('checksite',checker_views.checksite, name='checksite'),
     # path('',checker_views.home, name='home'),
     # path('login/',checker_views.login_request, name= 'login'),

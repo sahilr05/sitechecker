@@ -9,7 +9,7 @@
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">Site Checker</a>
+        <a class="navbar-brand" href="{% url 'checkerapp:home' %}">Site Checker</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,12 +25,12 @@
                   <a class="dropdown-item" href="#">My account</a>
                   <a class="dropdown-item" href="#">Change password</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+                  <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
                 </div>
               </li>
             </ul>
             {% if user.is_superuser %}
-            <a href="{% url 'user_list' %}" class="btn btn-primary">Users</a>
+            <a href="{% url 'accounts:user_list' %}" class="btn btn-primary">Users</a>
             {% endif %}
           {% else %}
             <form class="form-inline ml-auto">
