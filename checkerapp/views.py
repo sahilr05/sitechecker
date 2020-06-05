@@ -1,12 +1,7 @@
-import datetime
-import os
 from datetime import datetime
-from datetime import timezone
 from io import BytesIO
 
-import schedule
 import xhtml2pdf.pisa as pisa
-from celery.task.schedules import crontab
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -17,18 +12,13 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template.loader import get_template
 from django.views.generic import View
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
-from .forms import *
-from .models import *
-from checkerapp.tasks import pingsite
-from sitechecker.celery import app
+from .forms import *  # NOQA
+from .models import *  # NOQA
 
 # render to pdf
 
@@ -68,7 +58,7 @@ def ping_info(request, pk):
 
     # pagination
     page = request.GET.get("page", 1)
-    paginator = Paginator(ping_report_obj, 5)
+    paginator = Paginator(ping_report_obj, 10)
     try:
         ping_report = paginator.page(page)
     except PageNotAnInteger:
@@ -129,7 +119,7 @@ def edit_user(request, pk):
     if form.is_valid():
         email = form.cleaned_data.get("email")
         username = form.cleaned_data.get("username")
-        user = User.objects.filter(id=pk).update(email=email, username=username)
+        user = User.objects.filter(id=pk).update(email=email, username=username)  # NOQA
         return redirect("user_list")
     return render(request, "edit_user.html", {"form": form})
 
