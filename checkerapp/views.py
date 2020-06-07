@@ -146,7 +146,7 @@ def maintenance(request, pk):
     return redirect("checkerapp:home")
 
 
-class Render_pdf:
+class RenderPDF:
     @staticmethod
     def render(path: str, params: dict):
         template = get_template(path)
@@ -155,8 +155,6 @@ class Render_pdf:
         pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
         if not pdf.err:
             return HttpResponse(response.getvalue(), content_type="application/pdf")
-        else:
-            return HttpResponse("Error Rendering PDF", status=400)
 
 
 class Pdf(View):
@@ -177,4 +175,4 @@ class Pdf(View):
             "result": ping_report_obj,
             "request": request,
         }
-        return Render_pdf.render("pdf.html", params)
+        return RenderPDF.render("pdf.html", params)
