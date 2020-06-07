@@ -88,6 +88,8 @@ DATABASES = {
     }
 }
 
+WSGI_APPLICATION = "sitechecker.wsgi.application"
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
