@@ -13,13 +13,11 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.views.generic import View
 
-from .forms import *  # NOQA
-from .models import *  # NOQA
+from .forms import SiteForm
+from .models import PingInfo
+from .models import SiteList
 
-# render to pdf
 
-
-# Create your views here.
 def home(request):
     if request.user.is_authenticated and not request.user.is_superuser:
         user = User.objects.get(id=request.user.id)

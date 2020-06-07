@@ -4,10 +4,9 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from checkerapp.forms import *  # NOQA
-from checkerapp.models import *  # NOQA
-
-# Create your views here.
+from checkerapp.forms import EditUserForm
+from checkerapp.forms import UserForm
+from checkerapp.models import SiteList
 
 
 def test(request):
