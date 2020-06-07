@@ -51,7 +51,7 @@
         <tbody>
           {% for status in result %}
             <tr>
-              <td class="align-middle">{{status.status}}</td>
+              <td class="align-middle">{{status.get_status_display}}</td>
               <td class="align-middle">{{status.date_time}}</td>
             </tr>
           {% endfor %}

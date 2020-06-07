@@ -47,7 +47,7 @@ def ping_info(request, pk):
     site_list_obj = SiteList.objects.get(id=pk)
     user_list = site_list_obj.users.all()
     last_down_time = (
-        ping_report_obj.filter(status="DOWN").order_by("-date_time").first()
+        ping_report_obj.filter(status=PingInfo.DOWN).order_by("-date_time").first()
     )
 
     # pagination

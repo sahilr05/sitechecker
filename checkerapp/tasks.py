@@ -1,22 +1,17 @@
-import datetime
-import os
+# import os
 import subprocess
 from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
 from subprocess import PIPE
-from subprocess import Popen
 
-import celery
-import schedule
 from celery import shared_task
-from celery.decorators import periodic_task
 from celery.task.schedules import crontab
 from django.core.mail import send_mail
 
 from .models import PingInfo
 from .models import SiteList
 from sitechecker.celery import app
+
+# from subprocess import Popen
 
 # disable UTC so that Celery can use local time
 app.conf.enable_utc = False
@@ -71,9 +66,9 @@ def check_interval():
 def checksite(site_name):
     result = pingsite(site_name)
     if result == 0:
-        status = "UP"
+        status = 1
     else:
-        status = "DOWN"
+        status = 0
 
     select_id = SiteList.objects.filter(site_name=site_name).values("id")
     new_info = PingInfo.objects.create(status=status, site_id=select_id)
