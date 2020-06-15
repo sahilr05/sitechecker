@@ -1,8 +1,9 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from .models import *
+# from django.contrib.auth.forms import UserCreationForm
+
+# from .models import Service
 
 ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
 
@@ -25,12 +26,12 @@ class EditUserForm(forms.ModelForm):
         fields = ("username", "email")
 
 
-class SiteForm(forms.ModelForm):
-    alert_type = forms.ChoiceField(choices=ALERT_CHOICES, required=True)
+# class SiteForm(forms.ModelForm):
+#     alert_type = forms.ChoiceField(choices=ALERT_CHOICES, required=True)
 
-    class Meta:
-        model = SiteList
-        fields = ("site_name", "interval", "failure_count", "alert_type")
+#     class Meta:
+#         model = SiteList
+#         fields = ("site_name", "interval", "failure_count", "alert_type")
 
 
 class LoginForm(forms.Form):

@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     # Third-party
     "celery",
     "widget_tweaks",
-    "django_celery_results",
     # Custom
     "accounts",
     "checkerapp",

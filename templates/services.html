@@ -5,14 +5,13 @@
     <div class="container">
       <div class="col-12">
         <ol class="breadcrumb my-4">
-          <li class="breadcrumb-item active">Sites</li>
+          <li class="breadcrumb-item active">Services</li>
         </ol>
       </div>
       <div class="col-3">
-        {% comment %} <a href="{% url 'add_site' request.user.pk %}" class="btn btn-primary">Add site</a> {% endcomment %}
 
       {% if user.is_superuser %}
-        {% comment %} <a href="{% url 'checkerapp:add_site' %}" class="btn btn-primary">Add Site</a> {% endcomment %}
+        {% comment %} <a href="{% url 'checkerapp:add_service' %}" class="btn btn-primary">Add Service</a> {% endcomment %}
       {% endif %}
       </div>
 
@@ -20,25 +19,19 @@
         <thead class="thead-inverse">
           <tr>
             <th>PK</th>
-            <th>Site</th>
-            <th>Interval</th>
+            <th>Service</th>
             <th>Admin</th>
-            <th>Alert</th>
-            {% comment %} <th>Report</th> {% endcomment %}
             {% if user.is_superuser %}
             <th>Actions</th>
             {% endif %}
           </tr>
         </thead>
         <tbody>
-          {% for site,base_check in http_checks_info %}
+          {% for service in services %}
             <tr>
-              <td class="align-middle">{{site.pk}}</td>
-              <td><a href="{% url 'checkerapp:http_info' site.pk %}">{{ site.site_name }}</a></td>
-              {% comment %} <td class="align-middle">{{site.site_name}}</td> {% endcomment %}
-              <td class="align-middle">{{base_check.interval}} minutes</td>
-              <td class="align-middle">{{base_check.creator.username}}</td>
-              <td class="align-middle">{{base_check.get_alert_type_display}}</td>
+              <td class="align-middle">{{service.pk}}</td>
+              <td class="align-middle"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</td>
+              <td class="align-middle">{{request.user.username}}</td>
               {% comment %} <td class="align-middle"><a href="{% url 'checkerapp:report' site.pk %}">View</a></td> {% endcomment %}
 
               {% comment %} {% if user.is_superuser %}
@@ -57,7 +50,7 @@
         </tbody>
       </table>
     </div>
-    {% elif not sitenames %}
+    {% elif not services %}
       <div class="d-flex justify-content-center">
         <h1> Hello there ! </h1>
       </div>

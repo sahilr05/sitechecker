@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}<!DOCTYPE html>
+{% block body %}
+  {% if user.is_authenticated %}
+    <div class="container">
+      <div class="col-12">
+        <ol class="breadcrumb my-4">
+          <li class="breadcrumb-item active">{{service.name}}</li>
+        </ol>
+      </div>
+      <div class="col-12">
+        <h3 class="text-center">Http Checks</h3>
+        <table class="mt-2 table">
+            <thead class="thead-inverse">
+            <tr>
+                <th>PK</th>
+                <th>Site Name</th>
+                <th>Status</th>
+                <th>Checked at</th>
+                <th>Report</th>
+                {% if user.is_superuser %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for site in http_checks %}
+                <tr>
+                <td class="align-middle">{{site.pk}}</td>
+                <td class="align-middle">{{site.content_object.site_name}}</td>
+                <td class="align-middle">{{site.content_object.results.last.get_result_display}}</td>
+                <td class="align-middle">{{site.created_at}}</td>
+
+                <td class="align-middle">View</td>
+
+                {% if user.is_superuser %}
+                <td>
+                    <a href="{% url 'checkerapp:test' %}">Edit</a>
+                    <a href="{% url 'checkerapp:test' %}">Delete</a>
+                    {% if site.maintenance_mode is 0 %}
+                        <a class="btn btn-outline-success" href="{% url 'checkerapp:test' %}">Turn off</a>
+                    {% else %}
+                        <a class="btn btn-outline-danger" href="{% url 'checkerapp:test' %}">Turn on</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-12">
+        <h3 class="text-center">Ping Checks</h3>
+        <table class="mt-2 table">
+            <thead class="thead-inverse">
+            <tr>
+                <th>PK</th>
+                <th>Site Name</th>
+                <th>Status</th>
+                <th>Checked at</th>
+                <th>Report</th>
+                {% if user.is_superuser %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for ip_address in ping_checks %}
+                <tr>
+                <td class="align-middle">{{ip_address.pk}}</td>
+                <td class="align-middle">{{ip_address.content_object.ip_address}}</td>
+                <td class="align-middle">{{ip_address.content_object.results.last.get_result_display}}</td>
+                <td class="align-middle">{{ip_address.created_at}}</td>
+
+                <td class="align-middle">View</td>
+
+                {% if user.is_superuser %}
+                <td>
+                    <a href="{% url 'checkerapp:test' %}">Edit</a>
+                    <a href="{% url 'checkerapp:test' %}">Delete</a>
+                    {% if site.maintenance_mode is 0 %}
+                        <a class="btn btn-outline-success" href="{% url 'checkerapp:test' %}">Turn off</a>
+                    {% else %}
+                        <a class="btn btn-outline-danger" href="{% url 'checkerapp:test' %}">Turn on</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+    {% elif not http_checks %}
+      <div class="d-flex justify-content-center">
+        <h1> Hello there ! </h1>
+      </div>
+        <h3 class="d-flex justify-content-center">Please create super-user and then <a href="{% url 'accounts:login' %}"> &nbsp Log in !</a> !</h3>
+
+    {% else %}
+      <div class="d-flex justify-content-center">
+        <h1> Hello there ! </h1>
+      </div>
+        <h3 class="d-flex justify-content-center">Please<a href="{% url 'accounts:login' %}"> &nbsp Log in !</a> </h3>
+    {% endif %}
+  </body>
+{% endblock body %}

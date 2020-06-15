@@ -8,8 +8,8 @@
       <div class="row col-12">
        <div class='col-6'>
        {% if last_down_time%}
-        <p>Last Down Time : {{last_down_time.date_time}}</p>
-        <p>Alert Type : {{site.alert_type}}</p>
+        {% comment %} <p>Last Down Time : {{last_down_time.date_time}}</p> {% endcomment %}
+        <p>Alert Type : {{base_check.alert_type}}</p>
         {% else %}
         <p>Last Down Time : No down time</p>
         {% endif %}
@@ -23,11 +23,11 @@
         {% if not user.is_superuser %}
           <option>Only admin can add</option>
         {% else %}
-          {% for add_user in add_users %}
+          {% comment %} {% for add_user in add_users %}
             {% if add_user not in users %}
-              <option value="{{add_user.id}}" >{{add_user.username}}</option>
-            {% endif %}
-          {% endfor %}
+              <option value="{{add_user.id}}" >{{add_user.username}}</option> {% endcomment %}
+            {% comment %} {% endif %}
+          {% endfor %} {% endcomment %}
         {% endif %}
         </select>
         {% if user.is_superuser %}
@@ -51,8 +51,8 @@
         <tbody>
           {% for status in result %}
             <tr>
-              <td class="align-middle">{{status.get_status_display}}</td>
-              <td class="align-middle">{{status.date_time}}</td>
+              <td class="align-middle">{{status.get_result_display}}</td>
+              <td class="align-middle">{{status.created_at}}</td>
             </tr>
           {% endfor %}
         </tbody>
@@ -73,7 +73,7 @@
           <tbody>
           <tr class="info">
             <td>{{user.username}}</td>
-            <td><a href="{% url 'accounts:remove_user' site.pk user.pk %}">Remove</a></td>
+            {% comment %} <td><a href="{% url 'accounts:remove_user' site.pk user.pk %}">Remove</a></td> {% endcomment %}
           </tr>
           </tbody>
         {% endfor %}

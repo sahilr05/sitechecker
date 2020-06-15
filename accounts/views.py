@@ -6,7 +6,8 @@ from django.shortcuts import render
 
 from checkerapp.forms import EditUserForm
 from checkerapp.forms import UserForm
-from checkerapp.models import SiteList
+
+# from checkerapp.models import SiteList
 
 
 def test(request):
@@ -22,11 +23,12 @@ def delete_user(request, pk):
 
 @login_required
 def remove_user(request, site_pk, user_pk):
-    user_to_remove = User.objects.get(id=user_pk)
-    site = SiteList.objects.get(id=site_pk)
-    site.users.remove(user_to_remove)
-    site.save()
-    return redirect("checkerapp:ping_info", pk=site_pk)
+    pass
+    # user_to_remove = User.objects.get(id=user_pk)
+    # site = SiteList.objects.get(id=site_pk)
+    # site.users.remove(user_to_remove)
+    # site.save()
+    # return redirect("checkerapp:ping_info", pk=site_pk)
 
 
 @login_required
