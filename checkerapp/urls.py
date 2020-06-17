@@ -10,6 +10,11 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("service/<int:pk>/", views.service, name="service"),
     path("service/http_info/<int:pk>/", views.http_info, name="http_info"),
+    path(
+        "edit_http_check/<int:service_pk>/<int:http_pk>/",
+        views.edit_http_check,
+        name="edit_http_check",
+    ),
     path("service/ping_info/<int:pk>/", views.ping_info, name="ping_info"),
     path("service/tcp_info/<int:pk>/", views.tcp_info, name="tcp_info"),
     path(

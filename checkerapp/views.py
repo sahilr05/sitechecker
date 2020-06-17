@@ -143,6 +143,38 @@ def add_http_check(request, service_pk):
     return render(request, "add_http_check.html", context)
 
 
+def edit_http_check(request, service_pk, http_pk):
+    http_check_obj = HttpCheck.objects.get(id=http_pk)
+    base_check_obj = http_check_obj.base_check.first()
+    http_check_form = HttpCheckForm(request.POST)
+    base_check_form = BaseCheckForm(request.POST)
+    if http_check_form.is_valid() and base_check_form.is_valid():
+        site_name = http_check_form.cleaned_data.get("site_name")
+        expected_status_code = http_check_form.cleaned_data.get("expected_status_code")
+        httpcheck = HttpCheck.objects.create(
+            site_name=site_name, expected_status_code=expected_status_code
+        )
+        interval = base_check_form.cleaned_data.get("interval")
+        backoff_count = base_check_form.cleaned_data.get("backoff_count")
+        alert_type = base_check_form.cleaned_data.get("alert_type")
+        severe_level = base_check_form.cleaned_data.get("severe_level")
+        service_obj = Service.objects.get(id=service_pk)
+        http_base_check_obj = httpcheck.base_check.create(
+            interval=interval,
+            backoff_count=backoff_count,
+            alert_type=alert_type,
+            severe_level=severe_level,
+            creator=User.objects.get(id=request.user.pk),
+        )
+        service_obj.checks.add(http_base_check_obj)
+        return redirect("checkerapp:service", pk=service_pk)
+
+    http_check_form = HttpCheckForm(request.POST or None, instance=http_check_obj)
+    base_check_form = BaseCheckForm(request.POST or None, instance=base_check_obj)
+    context = {"http_check_form": http_check_form, "base_check_form": base_check_form}
+    return render(request, "add_http_check.html", context)
+
+
 def add_ping_check(request, service_pk):
     if request.method == "POST":
         ping_check_form = PingCheckForm(request.POST)

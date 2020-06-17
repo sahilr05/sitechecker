@@ -2,23 +2,27 @@ from django import forms
 from django.contrib.auth.models import User
 
 from .models import BaseCheck
+from .models import HttpCheck
 
+# from .models import PingCheck
+# from .models import TcpCheck
 # from django.contrib.auth.forms import UserCreationForm
 
 ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
 
 
-class HttpCheckForm(forms.Form):
-    site_name = forms.CharField(
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-    )
-    expected_status_code = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "type": "number", "value": "200"}
-        ),
-    )
+class HttpCheckForm(forms.ModelForm):
+    class Meta:
+        model = HttpCheck
+        widgets = {
+            "site_name": forms.TextInput(
+                attrs={"class": "form-control", "type": "text"}
+            ),
+            "expected_status_code": forms.NumberInput(
+                attrs={"class": "form-control", "type": "number"}
+            ),
+        }
+        fields = ("site_name", "expected_status_code")
 
 
 class PingCheckForm(forms.Form):
