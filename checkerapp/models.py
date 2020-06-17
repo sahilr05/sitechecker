@@ -14,7 +14,7 @@ class BaseCheck(models.Model):
     EMAIL, WHATSAPP, SLACK = list(range(3))
     ALERT_CHOICES = ((EMAIL, "EMAIL"), (WHATSAPP, "WHATSAPP"), (SLACK, "SLACK"))
 
-    interval = models.IntegerField()
+    interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)

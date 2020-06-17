@@ -6,3 +6,4 @@ checkerapp/__pycache__/*
 celerybeat-schedule
 dump.rdb
 .env
+used_commands.txt

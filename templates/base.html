@@ -1,9 +1,9 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-    <title>{% block title %} Site Checker {% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css?family=Peralta" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha256-7stu7f6AB+1rx5IqD8I+XuIcK4gSnpeGeSjqsODU+Rk=" crossorigin="anonymous" />
@@ -43,9 +43,11 @@
         </div>
       </div>
     </nav>
-    {% block stylesheet %}{% endblock %}
   </head>
   <body>
+    {% block head %}
+    <!-- code suppressed for brevity -->
+    {% endblock head %}
     {% block body %}
     <!-- code suppressed for brevity -->
     {% endblock body %}

@@ -1,11 +1,57 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from .models import BaseCheck
+
 # from django.contrib.auth.forms import UserCreationForm
 
-# from .models import Service
-
 ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
+
+
+class HttpCheckForm(forms.Form):
+    site_name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
+    )
+    expected_status_code = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "type": "number", "value": "200"}
+        ),
+    )
+
+
+class PingCheckForm(forms.Form):
+    ip_address = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
+    )
+
+
+class TcpCheckForm(forms.Form):
+    ip_address = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
+    )
+
+
+class BaseCheckForm(forms.ModelForm):
+    interval = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "type": "number", "value": "5"}
+        ),
+    )
+    backoff_count = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "type": "number", "value": "3"}
+        ),
+    )
+
+    class Meta:
+        model = BaseCheck
+        fields = ("interval", "backoff_count", "severe_level", "alert_type")
 
 
 class UserForm(forms.ModelForm):

@@ -2,26 +2,41 @@
 # from io import BytesIO
 # import xhtml2pdf.pisa as pisa
 # from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.models import User
-# from django.core.paginator import EmptyPage
-# from django.core.paginator import PageNotAnInteger
-# from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.shortcuts import render
+from django.views import View
 
+from .forms import BaseCheckForm
+from .forms import HttpCheckForm
+from .forms import PingCheckForm
+from .models import BaseCheck
 from .models import ContentType
 from .models import HttpCheck
 from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
 
-# from django.shortcuts import redirect
+# from .forms import TcpCheckForm
+
+# from django.core.paginator import EmptyPage
+# from django.core.paginator import PageNotAnInteger
+# from django.core.paginator import Paginator
 # from django.views.generic import View
 # from .models import BaseCheck
-
 # from django.template.loader import get_template
 
-# from .forms import SiteForm
+
+class MyView(View):
+    def get(self, request):
+        text = "Hello, World!"
+        return HttpResponse(text)
+
+
+# class TestView(MyView):
+#     def get(self, request):
+#         return HttpResponse(self.text)
 
 
 def test(request):
@@ -46,6 +61,7 @@ def service(request, pk):
     tcp_type = ContentType.objects.get_for_model(TcpCheck)
     tcp_checks_info = service_obj.checks.filter(content_type=tcp_type)
 
+    # service_models = [HttpCheck, PingCheck, TcpCheck]
     context = {
         "service": service_obj,
         "http_checks": http_checks_info,
@@ -53,6 +69,138 @@ def service(request, pk):
         "tcp_checks": tcp_checks_info,
     }
     return render(request, "service_info.html", context)
+
+
+def http_info(request, pk):
+    http_check_obj = HttpCheck.objects.get(id=pk)  # fetch site name from HttpCheck
+    base_check_obj = (
+        http_check_obj.base_check.first()
+    )  # fetch interval, backoff count, etc.
+    result = http_check_obj.results.all()  # fetch status (UP/DOWN)
+
+    context = {"result": result, "site": http_check_obj, "base_check": base_check_obj}
+    return render(request, "ping_info.html", context)
+
+
+def ping_info(request, pk):
+    ping_results_obj = PingCheck.objects.get(id=pk)
+    base_check_obj = ping_results_obj.base_check.first()
+    result = ping_results_obj.results.all()
+
+    context = {
+        "result": result,
+        "ip_address": ping_results_obj,
+        "base_check": base_check_obj,
+    }
+    return render(request, "ping_info.html", context)
+
+
+def tcp_info(request, pk):
+    tcp_results_obj = TcpCheck.objects.get(id=pk)
+    base_check_obj = tcp_results_obj.base_check.first()
+    result = tcp_results_obj.results.all()
+
+    context = {
+        "result": result,
+        "ip_address": tcp_results_obj,
+        "base_check": base_check_obj,
+    }
+    return render(request, "tcp_info.html", context)
+
+
+def add_http_check(request, service_pk):
+    if request.method == "POST":
+        http_check_form = HttpCheckForm(request.POST)
+        base_check_form = BaseCheckForm(request.POST)
+        if http_check_form.is_valid() and base_check_form.is_valid():
+            site_name = http_check_form.cleaned_data.get("site_name")
+            expected_status_code = http_check_form.cleaned_data.get(
+                "expected_status_code"
+            )
+            httpcheck = HttpCheck.objects.create(
+                site_name=site_name, expected_status_code=expected_status_code
+            )
+            interval = base_check_form.cleaned_data.get("interval")
+            backoff_count = base_check_form.cleaned_data.get("backoff_count")
+            alert_type = base_check_form.cleaned_data.get("alert_type")
+            severe_level = base_check_form.cleaned_data.get("severe_level")
+            service_obj = Service.objects.get(id=service_pk)
+            http_base_check_obj = httpcheck.base_check.create(
+                interval=interval,
+                backoff_count=backoff_count,
+                alert_type=alert_type,
+                severe_level=severe_level,
+                creator=User.objects.get(id=request.user.pk),
+            )
+            service_obj.checks.add(http_base_check_obj)
+            return redirect("checkerapp:service", pk=service_pk)
+
+    if not request.user.is_superuser:
+        return redirect("checkerapp:service", pk=service_pk)
+    http_check_form = HttpCheckForm()
+    base_check_form = BaseCheckForm()
+    context = {"http_check_form": http_check_form, "base_check_form": base_check_form}
+    return render(request, "add_http_check.html", context)
+
+
+def add_ping_check(request, service_pk):
+    if request.method == "POST":
+        ping_check_form = PingCheckForm(request.POST)
+        base_check_form = BaseCheckForm(request.POST)
+        if ping_check_form.is_valid() and base_check_form.is_valid():
+            ip_address = ping_check_form.cleaned_data.get("ip_address")
+            ping_check = PingCheck.objects.create(ip_address=ip_address)
+            interval = base_check_form.cleaned_data.get("interval")
+            backoff_count = base_check_form.cleaned_data.get("backoff_count")
+            alert_type = base_check_form.cleaned_data.get("alert_type")
+            severe_level = base_check_form.cleaned_data.get("severe_level")
+            service_obj = Service.objects.get(id=service_pk)
+            ping_base_check_obj = ping_check.base_check.create(
+                interval=interval,
+                backoff_count=backoff_count,
+                alert_type=alert_type,
+                severe_level=severe_level,
+                creator=User.objects.get(id=request.user.pk),
+            )
+            service_obj.checks.add(ping_base_check_obj)
+            return redirect("checkerapp:service", pk=service_pk)
+
+    if not request.user.is_superuser:
+        return redirect("checkerapp:service", pk=service_pk)
+    ping_check_form = PingCheckForm()
+    base_check_form = BaseCheckForm()
+    context = {"ping_check_form": ping_check_form, "base_check_form": base_check_form}
+    return render(request, "add_ping_check.html", context)
+
+
+def maintenance(request, service_type_id, service_pk, pk):
+    selected_service_type = (
+        BaseCheck.objects.filter(content_type_id=service_type_id).first().content_type
+    )
+    service_obj = BaseCheck.objects.get(
+        object_id=pk, content_type=selected_service_type
+    )
+    maintenance_status = service_obj.maintenance_mode
+    if maintenance_status:
+        service_obj.maintenance_mode = False
+    else:
+        service_obj.maintenance_mode = True
+
+    service_obj.save()
+
+    return redirect("checkerapp:service", pk=service_pk)
+
+
+def delete_check(request, service_type_id, service_pk, pk):
+    selected_service_type = (
+        BaseCheck.objects.filter(content_type_id=service_type_id).first().content_type
+    )
+    service_obj = BaseCheck.objects.get(
+        object_id=pk, content_type=selected_service_type
+    )
+    service_obj.content_object.delete()
+
+    return redirect("checkerapp:service", pk=service_pk)
 
     # if request.user.is_authenticated and not request.user.is_superuser:
     #     user = User.objects.get(id=request.user.id)
@@ -73,23 +221,6 @@ def service(request, pk):
 
 
 # @login_required
-def http_info(request, pk):
-    http_results_obj = HttpCheck.objects.get(id=pk)
-    base_check_obj = http_results_obj.base_check.first()
-    result = http_results_obj.results.all()
-    context = {"result": result, "site": http_results_obj, "base_check": base_check_obj}
-
-    #     # pagination
-    #     page = request.GET.get("page", 1)
-    #     paginator = Paginator(ping_report_obj, 10)
-    #     try:
-    #         ping_report = paginator.page(page)
-    #     except PageNotAnInteger:
-    #         ping_report = paginator.page(1)
-    #     except EmptyPage:
-    #         ping_report = paginator.page(paginator.num_pages)
-
-    return render(request, "ping_info.html", context)
 
 
 # @login_required
