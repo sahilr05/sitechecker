@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 {% block head %}
 <title>TCP Info</title>
+
 {% endblock head %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:service' base_check.service_set.first.id %}">{{base_check.service_set.first.name}}</a></li>
+    <li class="breadcrumb-item active">{{ip_address.ip_address}}</li>
+{% endblock %}
 
 {% block body %}
     <div class="container">
-      <ol class="breadcrumb my-4">
-        <li class="breadcrumb-item active">{{ip_address.ip_address}}</li>
-      </ol>
       <div class="row col-12">
        <div class='col-6'>
        {% if last_down_time%}

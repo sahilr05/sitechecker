@@ -1,21 +1,22 @@
 {% extends 'base.html' %}
 {% block head %}
 <title>Services</title>
-{% endblock head %}
-
-{% block body %}
 <style>
 th, td {
     text-align: center;
 }
 </style>
+
+{% endblock head %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item active">{{service.name}}</li>
+{% endblock %}
+
+{% block body %}
   {% if user.is_authenticated %}
     <div class="container">
-      <div class="col-12">
-        <ol class="breadcrumb my-4">
-          <li class="breadcrumb-item active">{{service.name}}</li>
-        </ol>
-      </div>
 
     {% if not http_checks %}
         <h3 >No Http Checks Found</h3>

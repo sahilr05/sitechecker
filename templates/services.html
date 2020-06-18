@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}<!DOCTYPE html>
+{% block breadcrumb %}
+  <li class="breadcrumb-item active">Services</li>
+{% endblock %}
 {% block body %}
   {% if user.is_authenticated %}
     <div class="container">
-      <div class="col-12">
-        <ol class="breadcrumb my-4">
-          <li class="breadcrumb-item active">Services</li>
-        </ol>
-      </div>
+
       <div class="col-3">
 
       {% if user.is_superuser %}

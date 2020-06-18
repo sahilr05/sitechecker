@@ -48,6 +48,13 @@
     {% block head %}
     <!-- code suppressed for brevity -->
     {% endblock head %}
+
+    <div class="container">
+      <ol class="breadcrumb my-4">
+        {% block breadcrumb %}
+        {% endblock %}
+      </ol>
+    </div>
     {% block body %}
     <!-- code suppressed for brevity -->
     {% endblock body %}
