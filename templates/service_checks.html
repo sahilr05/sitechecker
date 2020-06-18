@@ -2,7 +2,7 @@
 {% block head %}
 <title>Services</title>
 <style>
-th, td {
+th, td, h3 {
     text-align: center;
 }
 </style>
@@ -135,14 +135,14 @@ th, td {
     </div>
     {% endif %}
 
-    {% if not tcp_checks %}
-        <h3 >No Tcp Checks Found</h3>
-    {% else %}
-    <div class="col-12">
-        <div class="col-12 row">
-            <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+<div class="col-12">
+    <div class="col-12 row">
+        <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% if not tcp_checks %}
+            <h3 class="text-center col-10">No TCP Checks</h3></div><br>
+        {% else %}
             <h3 class="text-center col-10">TCP Checks</h3>
-        </div>
+    </div>
     <div class="col-12">
         <table class="mt-2 table">
             <thead class="thead-inverse">

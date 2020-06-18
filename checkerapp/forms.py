@@ -28,22 +28,12 @@ class HttpCheckForm(forms.ModelForm):
 class PingCheckForm(forms.ModelForm):
     class Meta:
         model = PingCheck
-        widgets = {
-            "ip_address": forms.TextInput(
-                attrs={"class": "form-control", "type": "text"}
-            )
-        }
         fields = ("ip_address",)
 
 
 class TcpCheckForm(forms.ModelForm):
     class Meta:
         model = TcpCheck
-        widgets = {
-            "ip_address": forms.TextInput(
-                attrs={"class": "form-control", "type": "text"}
-            )
-        }
         fields = ("ip_address",)
 
 
