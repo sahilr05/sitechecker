@@ -13,24 +13,32 @@ urlpatterns = [
     path("service/ping_info/<int:pk>/", views.ping_info, name="ping_info"),
     path("service/tcp_info/<int:pk>/", views.tcp_info, name="tcp_info"),
     path(
-        "add_http_check/<int:service_pk>/", views.add_http_check, name="add_http_check"
+        "service/<int:service_pk>/add_http_check/",
+        views.add_http_check,
+        name="add_http_check",
     ),
     path(
-        "add_ping_check/<int:service_pk>/", views.add_ping_check, name="add_ping_check"
+        "service/<int:service_pk>/add_ping_check/",
+        views.add_ping_check,
+        name="add_ping_check",
     ),
-    path("add_tcp_check/<int:service_pk>/", views.add_tcp_check, name="add_tcp_check"),
     path(
-        "edit_http_check/<int:service_pk>/<int:http_pk>/",
+        "service/<int:service_pk>/add_tcp_check/",
+        views.add_tcp_check,
+        name="add_tcp_check",
+    ),
+    path(
+        "service/<int:service_pk>/edit_http_check/<int:http_pk>/",
         views.edit_http_check,
         name="edit_http_check",
     ),
     path(
-        "edit_ping_check/<int:service_pk>/<int:ping_pk>/",
+        "service/<int:service_pk>/edit_ping_check/<int:ping_pk>/",
         views.edit_ping_check,
         name="edit_ping_check",
     ),
     path(
-        "edit_tcp_check/<int:service_pk>/<int:tcp_pk>/",
+        "service/<int:service_pk>/edit_tcp_check/<int:tcp_pk>/",
         views.edit_tcp_check,
         name="edit_tcp_check",
     ),

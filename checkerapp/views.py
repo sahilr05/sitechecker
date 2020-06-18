@@ -78,7 +78,7 @@ def http_info(request, pk):
     result = http_check_obj.results.all()  # fetch status (UP/DOWN)
 
     context = {"result": result, "site": http_check_obj, "base_check": base_check_obj}
-    return render(request, "ping_info.html", context)
+    return render(request, "check_info/http_info.html", context)
 
 
 def ping_info(request, pk):
@@ -91,7 +91,7 @@ def ping_info(request, pk):
         "ip_address": ping_results_obj,
         "base_check": base_check_obj,
     }
-    return render(request, "ping_info.html", context)
+    return render(request, "check_info/ping_info.html", context)
 
 
 def tcp_info(request, pk):
@@ -104,7 +104,7 @@ def tcp_info(request, pk):
         "ip_address": tcp_results_obj,
         "base_check": base_check_obj,
     }
-    return render(request, "tcp_info.html", context)
+    return render(request, "check_info/tcp_info.html", context)
 
 
 def add_http_check(request, service_pk):
@@ -139,7 +139,7 @@ def add_http_check(request, service_pk):
     http_check_form = HttpCheckForm()
     base_check_form = BaseCheckForm()
     context = {"http_check_form": http_check_form, "base_check_form": base_check_form}
-    return render(request, "add_http_check.html", context)
+    return render(request, "add_check/add_http_check.html", context)
 
 
 def edit_http_check(request, service_pk, http_pk):
@@ -171,7 +171,7 @@ def edit_http_check(request, service_pk, http_pk):
         "http_check_form": http_check_form,
         "base_check_form": base_check_form,
     }
-    return render(request, "add_http_check.html", context)
+    return render(request, "add_check/add_http_check.html", context)
 
 
 def add_ping_check(request, service_pk):
@@ -201,7 +201,7 @@ def add_ping_check(request, service_pk):
     ping_check_form = PingCheckForm()
     base_check_form = BaseCheckForm()
     context = {"ping_check_form": ping_check_form, "base_check_form": base_check_form}
-    return render(request, "add_ping_check.html", context)
+    return render(request, "add_check/add_ping_check.html", context)
 
 
 def edit_ping_check(request, service_pk, ping_pk):
@@ -231,7 +231,7 @@ def edit_ping_check(request, service_pk, ping_pk):
         "ping_check_form": ping_check_form,
         "base_check_form": base_check_form,
     }
-    return render(request, "add_ping_check.html", context)
+    return render(request, "add_check/add_ping_check.html", context)
 
 
 def add_tcp_check(request, service_pk):
@@ -261,7 +261,7 @@ def add_tcp_check(request, service_pk):
     tcp_check_form = TcpCheckForm()
     base_check_form = BaseCheckForm()
     context = {"tcp_check_form": tcp_check_form, "base_check_form": base_check_form}
-    return render(request, "add_tcp_check.html", context)
+    return render(request, "add_check/add_tcp_check.html", context)
 
 
 def edit_tcp_check(request, service_pk, tcp_pk):
@@ -290,7 +290,7 @@ def edit_tcp_check(request, service_pk, tcp_pk):
         "tcp_check_form": tcp_check_form,
         "base_check_form": base_check_form,
     }
-    return render(request, "add_tcp_check.html", context)
+    return render(request, "add_check/add_tcp_check.html", context)
 
 
 def maintenance(request, service_type_id, service_pk, pk):
