@@ -11,10 +11,15 @@ urlpatterns = [
     ),
     path("logout", auth_views.LogoutView.as_view(), name="logout"),
     path("delete_user/<int:pk>", accounts_views.delete_user, name="delete_user"),
+    path(
+        "add_user_in_check/<int:base_check_pk>/<int:check_pk>/",
+        accounts_views.add_user_check,
+        name="add_user_in_check",
+    ),
     path("users", accounts_views.user_list, name="user_list"),
     path("adduser", accounts_views.add_user, name="add_user"),
     path(
-        "remove_user/<int:site_pk>/<int:user_pk>",
+        "remove_user/<int:base_check_pk>/<int:site_pk>/<int:user_pk>",
         accounts_views.remove_user,
         name="remove_user",
     ),

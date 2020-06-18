@@ -1,13 +1,16 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
 from checkerapp.forms import EditUserForm
 from checkerapp.forms import UserForm
-
-# from checkerapp.models import SiteList
+from checkerapp.models import BaseCheck
+from checkerapp.models import HttpCheck
+from checkerapp.models import PingCheck
+from checkerapp.models import TcpCheck
 
 
 def test(request):
@@ -22,13 +25,26 @@ def delete_user(request, pk):
 
 
 @login_required
-def remove_user(request, site_pk, user_pk):
-    pass
-    # user_to_remove = User.objects.get(id=user_pk)
-    # site = SiteList.objects.get(id=site_pk)
-    # site.users.remove(user_to_remove)
-    # site.save()
-    # return redirect("checkerapp:ping_info", pk=site_pk)
+def remove_user(request, base_check_pk, site_pk, user_pk):
+    user_to_remove = User.objects.get(id=user_pk)
+    base_check_obj = BaseCheck.objects.get(id=base_check_pk)
+    base_check_obj.users.remove(user_to_remove)
+    base_check_obj.save()
+
+    http_type = ContentType.objects.get_for_model(HttpCheck)
+    ping_type = ContentType.objects.get_for_model(PingCheck)
+    tcp_type = ContentType.objects.get_for_model(TcpCheck)
+
+    if base_check_obj.content_type == http_type:
+        check = "checkerapp:http_info"
+    elif base_check_obj.content_type == ping_type:
+        check = "checkerapp:ping_info"
+    elif base_check_obj.content_type == tcp_type:
+        check = "checkerapp:tcp_info"
+    else:
+        return HttpResponse("invalid request")
+
+    return redirect(check, pk=site_pk)
 
 
 @login_required
@@ -43,6 +59,27 @@ def edit_user(request, pk):
         user = User.objects.filter(id=pk).update(email=email, username=username)  # NOQA
         return redirect("accounts:user_list")
     return render(request, "edit_user.html", {"form": form})
+
+
+def add_user_check(request, base_check_pk, check_pk):
+    selected_users = request.POST.getlist("listxblocks")
+    base_check_obj = BaseCheck.objects.get(id=base_check_pk)
+    for user in selected_users:
+        base_check_obj.users.add(user)
+    http_type = ContentType.objects.get_for_model(HttpCheck)
+    ping_type = ContentType.objects.get_for_model(PingCheck)
+    tcp_type = ContentType.objects.get_for_model(TcpCheck)
+
+    if base_check_obj.content_type == http_type:
+        check = "checkerapp:http_info"
+    elif base_check_obj.content_type == ping_type:
+        check = "checkerapp:ping_info"
+    elif base_check_obj.content_type == tcp_type:
+        check = "checkerapp:tcp_info"
+    else:
+        return HttpResponse("invalid request")
+    return redirect(check, pk=check_pk)
+    # context={"":}
 
 
 @login_required
