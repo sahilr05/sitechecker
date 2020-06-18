@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 
 from .models import BaseCheck
 from .models import HttpCheck
+from .models import PingCheck
+from .models import TcpCheck
 
-# from .models import PingCheck
-# from .models import TcpCheck
 # from django.contrib.auth.forms import UserCreationForm
 
 ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
@@ -25,36 +25,39 @@ class HttpCheckForm(forms.ModelForm):
         fields = ("site_name", "expected_status_code")
 
 
-class PingCheckForm(forms.Form):
-    ip_address = forms.CharField(
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-    )
+class PingCheckForm(forms.ModelForm):
+    class Meta:
+        model = PingCheck
+        widgets = {
+            "ip_address": forms.TextInput(
+                attrs={"class": "form-control", "type": "text"}
+            )
+        }
+        fields = ("ip_address",)
 
 
-class TcpCheckForm(forms.Form):
-    ip_address = forms.CharField(
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-    )
+class TcpCheckForm(forms.ModelForm):
+    class Meta:
+        model = TcpCheck
+        widgets = {
+            "ip_address": forms.TextInput(
+                attrs={"class": "form-control", "type": "text"}
+            )
+        }
+        fields = ("ip_address",)
 
 
 class BaseCheckForm(forms.ModelForm):
-    interval = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "type": "number", "value": "5"}
-        ),
-    )
-    backoff_count = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "type": "number", "value": "3"}
-        ),
-    )
-
     class Meta:
         model = BaseCheck
+        widgets = {
+            "interval": forms.NumberInput(
+                attrs={"class": "form-control", "type": "number"}
+            ),
+            "backoff_count": forms.NumberInput(
+                attrs={"class": "form-control", "type": "number"}
+            ),
+        }
         fields = ("interval", "backoff_count", "severe_level", "alert_type")
 
 

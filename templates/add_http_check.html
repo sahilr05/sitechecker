@@ -7,13 +7,21 @@
     <div class="col-lg-8 col-md-10 col-sm-12">
       <div class="card">
         <div class="card-body">
-          <h3 class="card-title">Add HTTP Check</h3>
+          {% if flag %}
+            <h3 class="card-title">Update HTTP Check</h3>
+          {% else %}
+            <h3 class="card-title">Add HTTP Check</h3>
+          {% endif %}
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
             {{ http_check_form }}
             {{ base_check_form }}
-            <button type="submit" class="btn btn-primary btn-block">Add</button>
+            {% if flag %}
+              <button type="submit" class="btn btn-primary btn-block">Update</button>
+            {% else %}
+              <button type="submit" class="btn btn-primary btn-block">Add</button>
+            {% endif %}
           </form>
         </div>
       </div>

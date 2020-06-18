@@ -11,6 +11,7 @@ from django.views import View
 from .forms import BaseCheckForm
 from .forms import HttpCheckForm
 from .forms import PingCheckForm
+from .forms import TcpCheckForm
 from .models import BaseCheck
 from .models import ContentType
 from .models import HttpCheck
@@ -18,7 +19,6 @@ from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
 
-# from .forms import TcpCheckForm
 
 # from django.core.paginator import EmptyPage
 # from django.core.paginator import PageNotAnInteger
@@ -61,7 +61,6 @@ def service(request, pk):
     tcp_type = ContentType.objects.get_for_model(TcpCheck)
     tcp_checks_info = service_obj.checks.filter(content_type=tcp_type)
 
-    # service_models = [HttpCheck, PingCheck, TcpCheck]
     context = {
         "service": service_obj,
         "http_checks": http_checks_info,
@@ -117,7 +116,7 @@ def add_http_check(request, service_pk):
             expected_status_code = http_check_form.cleaned_data.get(
                 "expected_status_code"
             )
-            httpcheck = HttpCheck.objects.create(
+            http_check = HttpCheck.objects.create(
                 site_name=site_name, expected_status_code=expected_status_code
             )
             interval = base_check_form.cleaned_data.get("interval")
@@ -125,7 +124,7 @@ def add_http_check(request, service_pk):
             alert_type = base_check_form.cleaned_data.get("alert_type")
             severe_level = base_check_form.cleaned_data.get("severe_level")
             service_obj = Service.objects.get(id=service_pk)
-            http_base_check_obj = httpcheck.base_check.create(
+            http_base_check_obj = http_check.base_check.create(
                 interval=interval,
                 backoff_count=backoff_count,
                 alert_type=alert_type,
@@ -144,34 +143,34 @@ def add_http_check(request, service_pk):
 
 
 def edit_http_check(request, service_pk, http_pk):
+    flag = True
     http_check_obj = HttpCheck.objects.get(id=http_pk)
     base_check_obj = http_check_obj.base_check.first()
-    http_check_form = HttpCheckForm(request.POST)
-    base_check_form = BaseCheckForm(request.POST)
+    http_check_form = HttpCheckForm(request.POST or None, instance=http_check_obj)
+    base_check_form = BaseCheckForm(request.POST or None, instance=base_check_obj)
     if http_check_form.is_valid() and base_check_form.is_valid():
         site_name = http_check_form.cleaned_data.get("site_name")
         expected_status_code = http_check_form.cleaned_data.get("expected_status_code")
-        httpcheck = HttpCheck.objects.create(
+        HttpCheck.objects.filter(id=http_pk).update(
             site_name=site_name, expected_status_code=expected_status_code
         )
         interval = base_check_form.cleaned_data.get("interval")
         backoff_count = base_check_form.cleaned_data.get("backoff_count")
         alert_type = base_check_form.cleaned_data.get("alert_type")
         severe_level = base_check_form.cleaned_data.get("severe_level")
-        service_obj = Service.objects.get(id=service_pk)
-        http_base_check_obj = httpcheck.base_check.create(
+        BaseCheck.objects.filter(id=base_check_obj.id).update(
             interval=interval,
             backoff_count=backoff_count,
             alert_type=alert_type,
             severe_level=severe_level,
-            creator=User.objects.get(id=request.user.pk),
         )
-        service_obj.checks.add(http_base_check_obj)
         return redirect("checkerapp:service", pk=service_pk)
 
-    http_check_form = HttpCheckForm(request.POST or None, instance=http_check_obj)
-    base_check_form = BaseCheckForm(request.POST or None, instance=base_check_obj)
-    context = {"http_check_form": http_check_form, "base_check_form": base_check_form}
+    context = {
+        "flag": flag,
+        "http_check_form": http_check_form,
+        "base_check_form": base_check_form,
+    }
     return render(request, "add_http_check.html", context)
 
 
@@ -203,6 +202,95 @@ def add_ping_check(request, service_pk):
     base_check_form = BaseCheckForm()
     context = {"ping_check_form": ping_check_form, "base_check_form": base_check_form}
     return render(request, "add_ping_check.html", context)
+
+
+def edit_ping_check(request, service_pk, ping_pk):
+    flag = True
+    ping_check_obj = PingCheck.objects.get(id=ping_pk)
+    base_check_obj = ping_check_obj.base_check.first()
+    ping_check_form = PingCheckForm(request.POST or None, instance=ping_check_obj)
+    base_check_form = BaseCheckForm(request.POST or None, instance=base_check_obj)
+    if ping_check_form.is_valid() and base_check_form.is_valid():
+        ip_address = ping_check_form.cleaned_data.get("ip_address")
+        PingCheck.objects.filter(id=ping_pk).update(ip_address=ip_address)
+        interval = base_check_form.cleaned_data.get("interval")
+        backoff_count = base_check_form.cleaned_data.get("backoff_count")
+        alert_type = base_check_form.cleaned_data.get("alert_type")
+        severe_level = base_check_form.cleaned_data.get("severe_level")
+
+        BaseCheck.objects.filter(id=base_check_obj.id).update(
+            interval=interval,
+            backoff_count=backoff_count,
+            alert_type=alert_type,
+            severe_level=severe_level,
+        )
+        return redirect("checkerapp:service", pk=service_pk)
+
+    context = {
+        "flag": flag,
+        "ping_check_form": ping_check_form,
+        "base_check_form": base_check_form,
+    }
+    return render(request, "add_ping_check.html", context)
+
+
+def add_tcp_check(request, service_pk):
+    if request.method == "POST":
+        tcp_check_form = TcpCheckForm(request.POST)
+        base_check_form = BaseCheckForm(request.POST)
+        if tcp_check_form.is_valid() and base_check_form.is_valid():
+            ip_address = tcp_check_form.cleaned_data.get("ip_address")
+            tcp_check = TcpCheck.objects.create(ip_address=ip_address)
+            interval = base_check_form.cleaned_data.get("interval")
+            backoff_count = base_check_form.cleaned_data.get("backoff_count")
+            alert_type = base_check_form.cleaned_data.get("alert_type")
+            severe_level = base_check_form.cleaned_data.get("severe_level")
+            service_obj = Service.objects.get(id=service_pk)
+            tcp_base_check_obj = tcp_check.base_check.create(
+                interval=interval,
+                backoff_count=backoff_count,
+                alert_type=alert_type,
+                severe_level=severe_level,
+                creator=User.objects.get(id=request.user.pk),
+            )
+            service_obj.checks.add(tcp_base_check_obj)
+            return redirect("checkerapp:service", pk=service_pk)
+
+    if not request.user.is_superuser:
+        return redirect("checkerapp:service", pk=service_pk)
+    tcp_check_form = TcpCheckForm()
+    base_check_form = BaseCheckForm()
+    context = {"tcp_check_form": tcp_check_form, "base_check_form": base_check_form}
+    return render(request, "add_tcp_check.html", context)
+
+
+def edit_tcp_check(request, service_pk, tcp_pk):
+    flag = True
+    tcp_check_obj = TcpCheck.objects.get(id=tcp_pk)
+    base_check_obj = tcp_check_obj.base_check.first()
+    tcp_check_form = TcpCheckForm(request.POST or None, instance=tcp_check_obj)
+    base_check_form = BaseCheckForm(request.POST or None, instance=base_check_obj)
+    if tcp_check_form.is_valid() and base_check_form.is_valid():
+        ip_address = tcp_check_form.cleaned_data.get("ip_address")
+        TcpCheck.objects.filter(id=tcp_pk).update(ip_address=ip_address)
+        interval = base_check_form.cleaned_data.get("interval")
+        backoff_count = base_check_form.cleaned_data.get("backoff_count")
+        alert_type = base_check_form.cleaned_data.get("alert_type")
+        severe_level = base_check_form.cleaned_data.get("severe_level")
+        BaseCheck.objects.filter(id=base_check_obj.id).update(
+            interval=interval,
+            backoff_count=backoff_count,
+            alert_type=alert_type,
+            severe_level=severe_level,
+        )
+        return redirect("checkerapp:service", pk=service_pk)
+
+    context = {
+        "flag": flag,
+        "tcp_check_form": tcp_check_form,
+        "base_check_form": base_check_form,
+    }
+    return render(request, "add_tcp_check.html", context)
 
 
 def maintenance(request, service_type_id, service_pk, pk):

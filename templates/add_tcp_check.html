@@ -8,14 +8,14 @@
       <div class="card">
         <div class="card-body">
           {% if flag %}
-            <h3 class="card-title">Update Ping Check</h3>
+            <h3 class="card-title">Update TCP Check</h3>
           {% else %}
-            <h3 class="card-title">Add Ping Check</h3>
+            <h3 class="card-title">Add TCP Check</h3>
           {% endif %}
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
-            {{ ping_check_form }}
+            {{ tcp_check_form }}
             {{ base_check_form }}
             {% if flag %}
               <button type="submit" class="btn btn-primary btn-block">Update</button>
