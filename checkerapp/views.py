@@ -205,6 +205,7 @@ def edit_http_check(request, service_pk, http_pk):
         "flag": flag,
         "http_check_form": http_check_form,
         "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
     }
     return render(request, "add_check/add_http_check.html", context)
 
@@ -271,6 +272,7 @@ def edit_ping_check(request, service_pk, ping_pk):
         "flag": flag,
         "ping_check_form": ping_check_form,
         "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
     }
     return render(request, "add_check/add_ping_check.html", context)
 
@@ -336,6 +338,7 @@ def edit_tcp_check(request, service_pk, tcp_pk):
         "flag": flag,
         "tcp_check_form": tcp_check_form,
         "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
     }
     return render(request, "add_check/add_tcp_check.html", context)
 
