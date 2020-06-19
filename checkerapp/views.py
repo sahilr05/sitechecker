@@ -11,6 +11,7 @@ from django.views import View
 from .forms import BaseCheckForm
 from .forms import HttpCheckForm
 from .forms import PingCheckForm
+from .forms import ServiceForm
 from .forms import TcpCheckForm
 from .models import BaseCheck
 from .models import ContentType
@@ -18,7 +19,6 @@ from .models import HttpCheck
 from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
-
 
 # from django.core.paginator import EmptyPage
 # from django.core.paginator import PageNotAnInteger
@@ -68,6 +68,22 @@ def service(request, pk):
         "tcp_checks": tcp_checks_info,
     }
     return render(request, "service_checks.html", context)
+
+
+def add_service(request):
+    if request.method == "POST":
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            service_name = form.cleaned_data.get("name")
+            service_obj = Service.objects.create(name=service_name)
+            return redirect("checkerapp:service", pk=service_obj.pk)
+
+    if not request.user.is_superuser:
+        return redirect("checkerapp:home")
+
+    form = ServiceForm()
+    context = {"form": form}
+    return render(request, "add_service.html", context)
 
 
 def http_info(request, pk):

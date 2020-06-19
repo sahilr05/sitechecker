@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>Services</title>
+<style>
+th, td, h3 {
+    text-align: center;
+}
+</style>
+
+{% endblock head %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item active">{{service.name}}</li>
+{% endblock %}
+
+{% block body %}
+  {% if user.is_authenticated %}
+    <div class="container">
+    {% if not http_checks %}
+        <h3 >No Http Checks Found</h3>
+    {% else %}
+
+      <div class="col-12 row">
+        <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        <h3 class="text-center col-10">HTTP Checks</h3>
+      </div>
+
+      <div class="col-12">
+        <table class="mt-2 table">
+            <thead class="thead-inverse">
+            <tr>
+                <th >PK</th>
+                <th >Site Name</th>
+                <th >Status</th>
+                <th >Time</th>
+                <th >Interval</th>
+                <th >Back-off Count</th>
+                <th >Report</th>
+                {% if user.is_superuser %}
+                <th >Actions</th>
+                <th >Maintenance</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for site in http_checks %}
+                <tr>
+                <td>{{site.content_object.pk}}</td>
+                <td><a href="{% url 'checkerapp:http_info' site.content_object.pk %}">{{site.content_object.site_name}}</a></td>
+                <td>{{site.content_object.results.last.get_result_display}}</td>
+                <td>{{site.created_at}}</td>
+                <td>{{site.interval}}</td>
+                <td>{{site.backoff_count}}</td>
+
+                <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+
+
+                {% if user.is_superuser %}
+                <td>
+                    <a href="{% url 'checkerapp:edit_http_check' service.pk site.content_object.pk %}">Edit</a>
+                    <a href="{% url 'checkerapp:delete_check' site.content_type.id service.pk site.content_object.pk %}">Delete</a>
+                </td>
+                <td>
+                    {% if site.maintenance_mode is False %}
+                        <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn off</a>
+                    {% else %}
+                        <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn on</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="col-12">
+        <div class="col-12 row">
+            <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+            {% if not ping_checks %}
+                <h3 class="text-center col-10">No Ping Checks</h3></div><br>
+            {% else %}
+                <h3 class="text-center col-10">Ping Checks</h3>
+        </div>
+        <table class="mt-2 table">
+            <thead class="thead-inverse">
+            <tr>
+                <th >PK</th>
+                <th >Site Name</th>
+                <th >Status</th>
+                <th >Time</th>
+                <th >Interval</th>
+                <th >Back-off Count</th>
+                <th >Report</th>
+                {% if user.is_superuser %}
+                <th >Actions</th>
+                <th >Maintenance</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for ip_address in ping_checks %}
+                <tr>
+                <td>{{ip_address.content_object.pk}}</td>
+                <td>
+                    <a href="{% url 'checkerapp:ping_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
+                </td>
+                <td>{{ip_address.content_object.results.last.get_result_display}}</td>
+                <td>{{ip_address.created_at}}</td>
+                <td>{{ip_address.interval}}</td>
+                <td>{{ip_address.backoff_count}}</td>
+                <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+
+                {% if user.is_superuser %}
+                <td >
+                    <a href="{% url 'checkerapp:edit_ping_check' service.pk ip_address.content_object.pk %}">Edit</a>
+                    <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Delete</a>
+                </td>
+                <td >
+                    {% if ip_address.maintenance_mode is False %}
+                        <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a>
+                    {% else %}
+                        <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="col-12">
+        <div class="col-12 row">
+            <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+            {% if not ping_checks %}
+                <h3 class="text-center col-10">No Ping Checks</h3></div><br>
+            {% else %}
+                <h3 class="text-center col-10">Ping Checks</h3>
+        </div>
+        <table class="mt-2 table">
+            <thead class="thead-inverse">
+            <tr>
+                <th >PK</th>
+                <th >Site Name</th>
+                <th >Status</th>
+                <th >Time</th>
+                <th >Interval</th>
+                <th >Back-off Count</th>
+                <th >Report</th>
+                {% if user.is_superuser %}
+                <th >Actions</th>
+                <th >Maintenance</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for ip_address in tcp_checks %}
+                <tr>
+                <td>{{ip_address.content_object.pk}}</td>
+                <td>
+                    <a href="{% url 'checkerapp:tcp_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
+                </td>
+                <td>{{ip_address.content_object.results.last.get_result_display}}</td>
+                <td>{{ip_address.created_at}}</td>
+                <td >{{ip_address.interval}}</td>
+                <td >{{ip_address.backoff_count}}</td>
+
+                <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+
+                {% if user.is_superuser %}
+                <td >
+                    <a href="{% url 'checkerapp:edit_tcp_check' service.pk ip_address.content_object.pk %}">Edit</a>
+                    <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Delete</a>
+                </td>
+                <td >
+                    {% if ip_address.maintenance_mode is False %}
+                        <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a>
+                    {% else %}
+                        <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a>
+                    {% endif %}
+                </td>
+                {% endif %}
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% endif %}
+  </body>
+{% endblock body %}

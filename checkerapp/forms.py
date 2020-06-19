@@ -4,11 +4,21 @@ from django.contrib.auth.models import User
 from .models import BaseCheck
 from .models import HttpCheck
 from .models import PingCheck
+from .models import Service
 from .models import TcpCheck
 
 # from django.contrib.auth.forms import UserCreationForm
 
 ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
+
+
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "type": "text"})
+        }
+        fields = ("name",)
 
 
 class HttpCheckForm(forms.ModelForm):
