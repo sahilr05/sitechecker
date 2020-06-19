@@ -71,6 +71,9 @@ def service(request, pk):
 
 
 def add_service(request):
+    if not request.user.is_superuser:
+        return redirect("checkerapp:home")
+
     if request.method == "POST":
         form = ServiceForm(request.POST)
         if form.is_valid():
@@ -78,12 +81,35 @@ def add_service(request):
             service_obj = Service.objects.create(name=service_name)
             return redirect("checkerapp:service", pk=service_obj.pk)
 
-    if not request.user.is_superuser:
-        return redirect("checkerapp:home")
-
     form = ServiceForm()
     context = {"form": form}
     return render(request, "add_service.html", context)
+
+
+def edit_service(request, service_pk):
+    if not request.user.is_superuser:
+        return redirect("checkerapp:home")
+
+    flag = True
+    service_obj = Service.objects.get(id=service_pk)
+
+    form = ServiceForm(request.POST or None, instance=service_obj)
+    if form.is_valid():
+        service_name = form.cleaned_data.get("name")
+        service_obj = Service.objects.filter(id=service_pk).update(name=service_name)
+        return redirect("checkerapp:home")
+
+    context = {"form": form, "flag": flag}
+    return render(request, "add_service.html", context)
+
+
+def delete_service(request, service_pk):
+    service_obj = Service.objects.get(id=service_pk)
+    base_checks = service_obj.checks.all()
+    for checks in base_checks:
+        checks.content_object.delete()
+    service_obj.delete()
+    return redirect("checkerapp:home")
 
 
 def http_info(request, pk):

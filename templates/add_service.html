@@ -18,7 +18,11 @@
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
+            {% if flag %}
+              <button type="submit" class="btn btn-primary btn-block">Update</button>
+            {% else %}
               <button type="submit" class="btn btn-primary btn-block">Add</button>
+            {% endif %}
           </form>
         </div>
       </div>

@@ -31,19 +31,13 @@
               <td class="align-middle">{{service.pk}}</td>
               <td class="align-middle"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</td>
               <td class="align-middle">{{request.user.username}}</td>
-              {% comment %} <td class="align-middle"><a href="{% url 'checkerapp:report' site.pk %}">View</a></td> {% endcomment %}
 
-              {% comment %} {% if user.is_superuser %}
+              {% if user.is_superuser %}
               <td>
-                  <a href="{% url 'checkerapp:edit_site' site.pk %}">Edit</a>
-                  <a href="{% url 'checkerapp:delete_site' site.pk %}">Delete</a>
-                  {% if site.maintenance_mode is 0 %}
-                    <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.pk %}">Turn off</a>
-                  {% else %}
-                    <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.pk %}">Turn on</a>
-                  {% endif %}
+                  <a href="{% url 'checkerapp:edit_service' service.pk %}">Edit</a>
+                  <a href="{% url 'checkerapp:delete_service' service.pk %}">Delete</a>
               </td>
-              {% endif %} {% endcomment %}
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>

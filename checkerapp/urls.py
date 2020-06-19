@@ -9,6 +9,10 @@ app_name = "checkerapp"
 urlpatterns = [
     path("", views.home, name="home"),
     path("add_service", views.add_service, name="add_service"),
+    path("edit_service/<int:service_pk>/", views.edit_service, name="edit_service"),
+    path(
+        "delete_service/<int:service_pk>/", views.delete_service, name="delete_service"
+    ),
     path("service/<int:pk>/", views.service, name="service"),
     path("service/http_info/<int:pk>/", views.http_info, name="http_info"),
     path("service/ping_info/<int:pk>/", views.ping_info, name="ping_info"),
