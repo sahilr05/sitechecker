@@ -1,11 +1,16 @@
-{% extends 'base_accounts.html' %}
+{% extends 'base.html' %}
+{% block head %}
+<title>Add Http Check</title>
 
-{% block title %}Add user to notify{% endblock %}
+{% endblock head %}
+
 {% block breadcrumb %}
-  <li>HTTP Check</li>
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</a></li>
+    <li class="breadcrumb-item active">Add HTTP Check</li>
 {% endblock %}
 
-{% block content %}
+{% block body %}
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10 col-sm-12">
       <div class="card">

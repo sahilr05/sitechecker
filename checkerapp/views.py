@@ -169,7 +169,11 @@ def add_http_check(request, service_pk):
         return redirect("checkerapp:service", pk=service_pk)
     http_check_form = HttpCheckForm()
     base_check_form = BaseCheckForm()
-    context = {"http_check_form": http_check_form, "base_check_form": base_check_form}
+    context = {
+        "http_check_form": http_check_form,
+        "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
+    }
     return render(request, "add_check/add_http_check.html", context)
 
 
@@ -233,7 +237,11 @@ def add_ping_check(request, service_pk):
         return redirect("checkerapp:service", pk=service_pk)
     ping_check_form = PingCheckForm()
     base_check_form = BaseCheckForm()
-    context = {"ping_check_form": ping_check_form, "base_check_form": base_check_form}
+    context = {
+        "ping_check_form": ping_check_form,
+        "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
+    }
     return render(request, "add_check/add_ping_check.html", context)
 
 
@@ -295,7 +303,11 @@ def add_tcp_check(request, service_pk):
         return redirect("checkerapp:service", pk=service_pk)
     tcp_check_form = TcpCheckForm()
     base_check_form = BaseCheckForm()
-    context = {"tcp_check_form": tcp_check_form, "base_check_form": base_check_form}
+    context = {
+        "tcp_check_form": tcp_check_form,
+        "base_check_form": base_check_form,
+        "service": Service.objects.get(id=service_pk),
+    }
     return render(request, "add_check/add_tcp_check.html", context)
 
 

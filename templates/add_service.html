@@ -1,8 +1,12 @@
 {% extends 'base_accounts.html' %}
 
-{% block title %}Add service{% endblock %}
+{% block head %}
+<title>Add service</title>
+{% endblock head %}
+
 {% block breadcrumb %}
-  <li>Add Service</li>
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item active">Add Service</li>
 {% endblock %}
 
 {% block content %}

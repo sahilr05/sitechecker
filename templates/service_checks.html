@@ -72,8 +72,8 @@ th, td, h3 {
     </table>
 
     <div class="col-12 row">
-        <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
-        {% if not http_checks %}
+        <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% if not ping_checks %}
             <h3 class="text-center col-10">No Ping Checks Found</h3></div><br>
         {% else %}
             <h3 class="text-center col-10">Ping Checks</h3>
@@ -127,7 +127,7 @@ th, td, h3 {
     </table>
 
     <div class="col-12 row">
-        <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
         {% if not tcp_checks %}
             <h3 class="text-center col-10">No TCP Checks Found</h3></div><br>
         {% else %}
