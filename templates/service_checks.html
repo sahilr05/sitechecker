@@ -150,7 +150,7 @@ th, td, h3 {
         </tr>
         </thead>
         <tbody>
-        {% for ip_address in ping_checks %}
+        {% for ip_address in tcp_checks %}
             <tr>
             <td>{{ip_address.content_object.pk}}</td>
             <td>
