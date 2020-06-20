@@ -44,6 +44,18 @@ def test(request):
 
 
 def home(request):
+    if request.user.is_authenticated and not request.user.is_superuser:
+        user = User.objects.get(id=request.user.id)
+        base_checks = BaseCheck.objects.filter(users=user).order_by("id")
+        services = []
+        for user_base_check in base_checks:
+            if user_base_check.service_set.first() in services:
+                continue
+            services.append(user_base_check.service_set.first())
+
+        context = {"services": services}
+        return render(request, "services.html", context)
+
     services = Service.objects.all().order_by("id")
     context = {"services": services}
     return render(request, "services.html", context)
@@ -51,15 +63,20 @@ def home(request):
 
 def service(request, pk):
     service_obj = Service.objects.get(id=pk)
-    # service_checks = service_obj.checks.all()
     http_type = ContentType.objects.get_for_model(HttpCheck)
-    http_checks_info = service_obj.checks.filter(content_type=http_type)
+    http_checks_info = service_obj.checks.filter(
+        content_type=http_type, users=request.user
+    )
 
     ping_type = ContentType.objects.get_for_model(PingCheck)
-    ping_checks_info = service_obj.checks.filter(content_type=ping_type)
+    ping_checks_info = service_obj.checks.filter(
+        content_type=ping_type, users=request.user
+    )
 
     tcp_type = ContentType.objects.get_for_model(TcpCheck)
-    tcp_checks_info = service_obj.checks.filter(content_type=tcp_type)
+    tcp_checks_info = service_obj.checks.filter(
+        content_type=tcp_type, users=request.user
+    )
 
     context = {
         "service": service_obj,

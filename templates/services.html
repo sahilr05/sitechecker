@@ -13,13 +13,14 @@
         {% comment %} <a href="{% url 'checkerapp:add_service' %}" class="btn btn-primary">Add Service</a> {% endcomment %}
       {% endif %}
       </div>
+      {% if request.user.is_superuser  %}
       <a class="text-center" href="{% url 'checkerapp:add_service' %}"><h2>Add Service</h2></a>
+      {% endif %}
       <table class="mt-2 table">
         <thead class="thead-inverse">
           <tr>
             <th>PK</th>
             <th>Service</th>
-            <th>Admin</th>
             {% if user.is_superuser %}
             <th>Actions</th>
             {% endif %}
@@ -30,7 +31,6 @@
             <tr>
               <td class="align-middle">{{service.pk}}</td>
               <td class="align-middle"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</td>
-              <td class="align-middle">{{request.user.username}}</td>
 
               {% if user.is_superuser %}
               <td>

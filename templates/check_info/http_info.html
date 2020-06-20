@@ -75,20 +75,27 @@
       <table class="table jumbotron col-5">
       <tr class="danger">
       <th>Users</th>
+
+      {% if request.user.is_superuser %}
       <th>Action</th>
+      {% endif %}
       </tr>
+
       {% if user_list %}
         {% for user in user_list %}
           <tbody>
           <tr class="info">
             <td>{{user.username}}</td>
-            <td><a href="{% url 'accounts:remove_user' base_check.pk site.pk user.pk %}">Remove</a></td>
+            {% if request.user.is_superuser %}
+              <td><a href="{% url 'accounts:remove_user' base_check.pk site.pk user.pk %}">Remove</a></td>
+            {% endif %}
           </tr>
           </tbody>
         {% endfor %}
       {% else %}
         <tr><td>No users added</td></tr>
       {% endif %}
+
       </table>
       </div>
     {% comment %} </div> {% endcomment %}

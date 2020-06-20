@@ -154,7 +154,7 @@ th, td, h3 {
             <tr>
             <td>{{ip_address.content_object.pk}}</td>
             <td>
-                <a href="{% url 'checkerapp:ping_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
+                <a href="{% url 'checkerapp:tcp_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
             </td>
             <td>{{ip_address.content_object.results.last.get_result_display}}</td>
             <td>{{ip_address.created_at}}</td>
@@ -164,7 +164,7 @@ th, td, h3 {
 
             {% if user.is_superuser %}
             <td >
-                <a href="{% url 'checkerapp:edit_ping_check' service.pk ip_address.content_object.pk %}">Edit</a>
+                <a href="{% url 'checkerapp:edit_tcp_check' service.pk ip_address.content_object.pk %}">Edit</a>
                 <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Delete</a>
             </td>
             <td >
