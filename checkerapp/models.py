@@ -42,7 +42,7 @@ class CheckResult(models.Model):
 
     result = models.SmallIntegerField(choices=RESULT_CHOICES)
     # metadata = JSONField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class AbstractCheck(models.Model):

@@ -9,44 +9,45 @@
     <li class="breadcrumb-item"><a href="{% url 'checkerapp:service' base_check.service_set.first.id %}">{{base_check.service_set.first.name}}</a></li>
     <li class="breadcrumb-item active">{{ip_address.ip_address}}</li>
 {% endblock %}
-
 {% block body %}
     <div class="container">
       <div class="row col-12">
        <div class='col-6'>
        {% if last_down_time%}
-        {% comment %} <p>Last Down Time : {{last_down_time.date_time}}</p> {% endcomment %}
-        <p>Alert Type : {{base_check.alert_type}}</p>
+        <p>Last Down Time : {{last_down_time.created_at}}</p>
         {% else %}
         <p>Last Down Time : No down time</p>
-      {% endif %}
+        {% endif %}
+        <p>Alert Type : {{base_check.get_alert_type_display}}</p>
        </div>
 
       {% comment %} {% if user.is_superuser %} {% endcomment %}
       <div class="ml-auto dropdown">
-        <form method='POST' action="{% url 'accounts:add_user_in_check' base_check.pk ip_address.pk%}">
-          {% csrf_token %}
-          <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
-          {% if not user.is_superuser %}
-            <option>Only admin can add</option>
-          {% else %}
-            {% for add_user in all_users %}
-              {% if add_user not in user_list %}
-                <option value="{{add_user.id}}">{{add_user.username}}</option>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-          </select>
 
-          {% if user.is_superuser %}
-            <button type="submit" class="btn btn-primary ">Add users</button>
-          {% endif %}
+        <form method='POST' action="{% url 'accounts:add_user_in_check' base_check.pk ip_address.pk%}">
+        {% csrf_token %}
+        <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
+        {% if not request.user.is_superuser %}
+          <option>Only admin can add</option>
+        {% else %}
+
+          {% for add_user in all_users %}
+            {% if add_user not in user_list %}
+              <option value="{{add_user.id}}">{{add_user.username}}</option>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        </select>
+
+        {% if request.user.is_superuser %}
+          <button type="submit" class="btn btn-primary ">Add users</button>
+        {% endif %}
         </form>
+
       </div>
       </div>
       {% comment %} {% endif %} {% endcomment %}
 
-      {% comment %} <a href="{% url 'add_user' %}"><button type="submit" class="btn btn-primary mb-2">Add user</button></a> {% endcomment %}
       <div class="row">
       <table class="table jumbotron col-6">
         <thead class="thead-inverse">
@@ -74,22 +75,30 @@
       <table class="table jumbotron col-5">
       <tr class="danger">
       <th>Users</th>
+
+      {% if request.user.is_superuser %}
       <th>Action</th>
+      {% endif %}
       </tr>
+
       {% if user_list %}
         {% for user in user_list %}
           <tbody>
           <tr class="info">
             <td>{{user.username}}</td>
-            <td><a href="{% url 'accounts:remove_user' base_check.pk ip_address.pk user.pk %}">Remove</a></td>
+            {% if request.user.is_superuser %}
+              <td><a href="{% url 'accounts:remove_user' base_check.pk ip_address.pk user.pk %}">Remove</a></td>
+            {% endif %}
           </tr>
           </tbody>
         {% endfor %}
       {% else %}
         <tr><td>No users added</td></tr>
       {% endif %}
+
       </table>
       </div>
+
     {% comment %} </div> {% endcomment %}
 
 {% if result.has_other_pages %}

@@ -14,6 +14,7 @@ from .forms import PingCheckForm
 from .forms import ServiceForm
 from .forms import TcpCheckForm
 from .models import BaseCheck
+from .models import CheckResult
 from .models import ContentType
 from .models import HttpCheck
 from .models import PingCheck
@@ -137,8 +138,10 @@ def http_info(request, pk):
     result = http_check_obj.results.all()  # fetch status (UP/DOWN)
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
+    last_down_time = http_check_obj.results.filter(result=CheckResult.FAILURE).last()
     context = {
         "result": result,
+        "last_down_time": last_down_time,
         "site": http_check_obj,
         "base_check": base_check_obj,
         "user_list": user_list,
