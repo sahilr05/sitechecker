@@ -7,6 +7,13 @@ th, td, h3 {
     text-align: center;
 }
 </style>
+<script>
+function blinker(){
+    $('.blinking').fadeOut(500);
+    $('.blinking').fadeIn(500);
+}
+setInterval(blinker, 1000);
+</script>
 {% endblock head %}
 
 {% block breadcrumb %}
@@ -46,7 +53,11 @@ th, td, h3 {
             <tr>
             <td>{{site.content_object.pk}}</td>
             <td><a href="{% url 'checkerapp:http_info' site.content_object.pk %}">{{site.content_object.site_name}}</a></td>
-            <td>{{site.content_object.results.last.get_result_display}}</td>
+            {% if site.content_object.results.last.result %}
+                <td class="text-success">{{site.content_object.results.last.get_result_display}}</td>
+            {% else %}
+                <td class="blinking text-danger">{{site.content_object.results.last.get_result_display}}</td>
+            {% endif %}
             <td>{{site.created_at}}</td>
             <td>{{site.interval}}</td>
             <td>{{site.backoff_count}}</td>
@@ -101,7 +112,11 @@ th, td, h3 {
             <td>
                 <a href="{% url 'checkerapp:ping_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
             </td>
-            <td>{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% if ip_address.content_object.results.last.result %}
+                <td class="text-success">{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% else %}
+                <td class="blinking text-danger">{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% endif %}
             <td>{{ip_address.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
@@ -156,7 +171,11 @@ th, td, h3 {
             <td>
                 <a href="{% url 'checkerapp:tcp_info' ip_address.content_object.pk %}">{{ip_address.content_object.ip_address}}</a>
             </td>
-            <td>{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% if ip_address.content_object.results.last.result %}
+                <td class="text-success">{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% else %}
+                <td class="blinking text-danger">{{ip_address.content_object.results.last.get_result_display}}</td>
+            {% endif %}
             <td>{{ip_address.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
