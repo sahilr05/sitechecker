@@ -57,50 +57,52 @@ def check_interval():
         else:
             difference = 999
 
-        retrieved_http_check = base_check_obj.content_object
-        site_name = retrieved_http_check.site_name
         if difference > interval:
-            http_check_task.apply_async(args=(site_name,))
+            task_obj = {"base_check_obj": base_check_obj}
+            http_check_task.apply_async(args=(task_obj,))
 
 
 @shared_task
-def http_check_task(site_name):
-    result = check_site(site_name)
+def http_check_task(task_obj):
+    result = check_site(task_obj["base_check_obj"].content_object.site_name)
     if result == 0:
         status = 1
     else:
         status = 0
 
-    http_check_obj = HttpCheck.objects.get(site_name=site_name)
+    # http_check_obj = HttpCheck.objects.get(site_name=site_name)
     result = CheckResult.objects.create(result=status)
-    http_check_obj.results.add(result)
-    check_failure.apply_async(args=(site_name,))
+    task_obj["base_check_obj"].content_object.results.add(result)
+    check_failure.apply_async(args=(task_obj,))
 
 
 @shared_task
-def check_failure(site_name):
-    http_obj = HttpCheck.objects.get(site_name=site_name)
-    backoff_count = http_obj.base_check.first().backoff_count
+def check_failure(task_obj):
+    # http_obj = HttpCheck.objects.get(site_name=site_name)
+    backoff_count = task_obj["base_check_obj"].backoff_count
     last_n_failures = list(
-        http_obj.results.filter(result=CheckResult.FAILURE)[:backoff_count]
+        task_obj["base_check_obj"].content_object.results.filter(
+            result=CheckResult.FAILURE
+        )[:backoff_count]
     )
 
     if len(last_n_failures) == backoff_count:
-        alert_user.apply_async(args=(site_name,))
+        pass
+    #     alert_user.apply_async(args=(task_obj,))
 
 
-@shared_task
-def alert_user(site_name):
-    http_obj = HttpCheck.objects.get(site_name=site_name)
-    base_check_users = http_obj.base_check.first().users.all()
-    return base_check_users
-    # # user_list = list(site_info.users.all()) #many-to-many relationship
-    # if site_info.alert_type == "email":
-    #     send_email_task.apply_async(args=(site_name,))
-    # elif site_info.alert_type == "phone":
-    #     pass
-    # else:
-    #     return "failed"
+# @shared_task
+# def alert_user(site_name):
+#     http_obj = HttpCheck.objects.get(site_name=site_name)
+#     base_check_users = http_obj.base_check.first().users.all()
+#     return base_check_users
+# # user_list = list(site_info.users.all()) #many-to-many relationship
+# if site_info.alert_type == "email":
+#     send_email_task.apply_async(args=(site_name,))
+# elif site_info.alert_type == "phone":
+#     pass
+# else:
+#     return "failed"
 
 
 @shared_task

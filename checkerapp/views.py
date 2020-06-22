@@ -3,6 +3,9 @@
 # import xhtml2pdf.pisa as pisa
 # from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -22,9 +25,6 @@ from .models import Service
 from .models import TcpCheck
 from .tasks import http_check_task
 
-# from django.core.paginator import EmptyPage
-# from django.core.paginator import PageNotAnInteger
-# from django.core.paginator import Paginator
 # from django.views.generic import View
 # from .models import BaseCheck
 # from django.template.loader import get_template
@@ -140,6 +140,17 @@ def http_info(request, pk):
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
     last_down_time = http_check_obj.results.filter(result=CheckResult.FAILURE).last()
+
+    page = request.GET.get("page", 1)
+    paginator = Paginator(result, 5)
+
+    try:
+        result = paginator.page(page)
+    except PageNotAnInteger:
+        result = paginator.page(1)
+    except EmptyPage:
+        result = paginator.page(paginator.num_pages)
+
     context = {
         "result": result,
         "last_down_time": last_down_time,
@@ -157,6 +168,17 @@ def ping_info(request, pk):
     result = ping_results_obj.results.all()
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
+
+    page = request.GET.get("page", 1)
+    paginator = Paginator(result, 5)
+
+    try:
+        result = paginator.page(page)
+    except PageNotAnInteger:
+        result = paginator.page(1)
+    except EmptyPage:
+        result = paginator.page(paginator.num_pages)
+
     context = {
         "result": result,
         "ip_address": ping_results_obj,
@@ -173,6 +195,17 @@ def tcp_info(request, pk):
     result = tcp_results_obj.results.all()
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
+
+    page = request.GET.get("page", 1)
+    paginator = Paginator(result, 5)
+
+    try:
+        result = paginator.page(page)
+    except PageNotAnInteger:
+        result = paginator.page(1)
+    except EmptyPage:
+        result = paginator.page(paginator.num_pages)
+
     context = {
         "result": result,
         "ip_address": tcp_results_obj,
