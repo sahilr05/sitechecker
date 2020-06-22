@@ -14,7 +14,7 @@
       {% endif %}
       </div>
       {% if request.user.is_superuser  %}
-      <a class="text-center" href="{% url 'checkerapp:add_service' %}"><h2>Add Service</h2></a>
+        <a class="text-center" href="{% url 'checkerapp:add_service' %}"><h2>Add Service</h2></a>
       {% endif %}
       <table class="mt-2 table">
         <thead class="thead-inverse">

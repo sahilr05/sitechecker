@@ -20,6 +20,7 @@ from .models import HttpCheck
 from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
+from .tasks import http_check_task
 
 # from django.core.paginator import EmptyPage
 # from django.core.paginator import PageNotAnInteger
@@ -209,6 +210,7 @@ def add_http_check(request, service_pk):
             )
             http_base_check_obj.users.add(creator)
             service_obj.checks.add(http_base_check_obj)
+            http_check_task(site_name)
             return redirect("checkerapp:service", pk=service_pk)
 
     if not request.user.is_superuser:

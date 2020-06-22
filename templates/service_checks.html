@@ -58,7 +58,7 @@ setInterval(blinker, 1000);
             {% else %}
                 <td class="blinking text-danger">{{site.content_object.results.last.get_result_display}}</td>
             {% endif %}
-            <td>{{site.created_at}}</td>
+            <td>{{site.content_object.results.last.created_at}}</td>
             <td>{{site.interval}}</td>
             <td>{{site.backoff_count}}</td>
             <td><a href="{% url 'checkerapp:test' %}">View</a></td>

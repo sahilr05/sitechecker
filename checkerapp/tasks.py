@@ -5,11 +5,17 @@ from subprocess import PIPE
 
 from celery import shared_task
 from celery.task.schedules import crontab
-from django.core.mail import send_mail
+from django.contrib.contenttypes.models import ContentType
 
-from .models import PingInfo
-from .models import SiteList
+from .models import BaseCheck
+from .models import CheckResult
+from .models import HttpCheck
 from sitechecker.celery import app
+
+# from django.core.mail import send_mail
+
+# from .models import PingCheck
+# from .models import TcpCheck
 
 # from subprocess import Popen
 
@@ -17,7 +23,7 @@ from sitechecker.celery import app
 app.conf.enable_utc = False
 
 
-def pingsite(hostname):
+def check_site(hostname):
     # response = os.system("ping -c 1 " + hostname)
     # return response
     process = subprocess.Popen(
@@ -36,88 +42,76 @@ def pingsite(hostname):
 
 @shared_task
 def check_interval():
-    # for site_id in SiteList.objects.values_list('id', flat=True):
-    for site_id in (
-        SiteList.objects.exclude(maintenance_mode=1)
-        .values_list("id", flat=True)
-        .order_by("id")
-    ):
-        last_run_query = PingInfo.objects.filter(site=site_id).values("date_time")
-        interval_query = SiteList.objects.filter(id=site_id).values("interval")
-        interval_dict = interval_query.first()
-        interval = int(interval_dict["interval"])
-        if last_run_query:
-            last_run_dict = last_run_query.last()
-            last_run = last_run_dict["date_time"]
-            last_run = last_run.replace(tzinfo=None)
+    http_type = ContentType.objects.get_for_model(HttpCheck)
+    base_checks_http = BaseCheck.objects.filter(
+        content_type=http_type, maintenance_mode=False
+    )
+
+    for base_check_obj in list(base_checks_http):
+        last_run_time = base_check_obj.content_object.results.last().created_at
+        interval = base_check_obj.interval
+        if last_run_time:
             difference = abs(
-                int(datetime.now().strftime("%M")) - int(last_run.strftime("%M"))
+                int(datetime.now().strftime("%M")) - int(last_run_time.strftime("%M"))
             )
         else:
             difference = 999
 
-        retrieved_site_name = SiteList.objects.get(id=site_id)
-        site_to_ping = retrieved_site_name.site_name
+        retrieved_http_check = base_check_obj.content_object
+        site_name = retrieved_http_check.site_name
         if difference > interval:
-            checksite.apply_async(args=(site_to_ping,))
+            http_check_task.apply_async(args=(site_name,))
 
 
 @shared_task
-def checksite(site_name):
-    result = pingsite(site_name)
+def http_check_task(site_name):
+    result = check_site(site_name)
     if result == 0:
         status = 1
     else:
         status = 0
 
-    select_id = SiteList.objects.filter(site_name=site_name).values("id")
-    new_info = PingInfo.objects.create(status=status, site_id=select_id)
-    new_info.save()
+    http_check_obj = HttpCheck.objects.get(site_name=site_name)
+    result = CheckResult.objects.create(result=status)
+    http_check_obj.results.add(result)
     check_failure.apply_async(args=(site_name,))
 
 
 @shared_task
 def check_failure(site_name):
-    calculated_failure_count = 0
-    site_id = SiteList.objects.filter(site_name=site_name).values("id")
-    failure_count_query = SiteList.objects.filter(site_name=site_name).values(
-        "failure_count"
-    )
-    failure_count_dict = failure_count_query.first()
-    failure_count = failure_count_dict["failure_count"]
+    http_obj = HttpCheck.objects.get(site_name=site_name)
+    backoff_count = http_obj.base_check.first().backoff_count
     last_n_failures = list(
-        PingInfo.objects.filter(site_id__in=site_id).values_list("status")[
-            :failure_count
-        ]
+        http_obj.results.filter(result=CheckResult.FAILURE)[:backoff_count]
     )
 
-    for last_status in last_n_failures:
-        if last_status[0] == "DOWN":
-            calculated_failure_count += 1
-        if calculated_failure_count == failure_count:
-            alert_user.apply_async(args=(site_name,))
+    if len(last_n_failures) == backoff_count:
+        alert_user.apply_async(args=(site_name,))
 
 
 @shared_task
 def alert_user(site_name):
-    site_info = SiteList.objects.get(site_name=site_name)
-    # user_list = list(site_info.users.all()) #many-to-many relationship
-    if site_info.alert_type == "email":
-        send_email_task.apply_async(args=(site_name,))
-    elif site_info.alert_type == "phone":
-        pass
-    else:
-        return "failed"
+    http_obj = HttpCheck.objects.get(site_name=site_name)
+    base_check_users = http_obj.base_check.first().users.all()
+    return base_check_users
+    # # user_list = list(site_info.users.all()) #many-to-many relationship
+    # if site_info.alert_type == "email":
+    #     send_email_task.apply_async(args=(site_name,))
+    # elif site_info.alert_type == "phone":
+    #     pass
+    # else:
+    #     return "failed"
 
 
 @shared_task
 def send_email_task(site_name):
-    site_info = SiteList.objects.get(site_name=site_name)
-    user_list = list(site_info.users.values_list("email"))
-    send_mail(
-        "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
-    )
-    return "Sent"
+    pass
+    # site_info = SiteList.objects.get(site_name=site_name)
+    # user_list = list(site_info.users.values_list("email"))
+    # send_mail(
+    #     "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
+    # )
+    # return "Sent"
 
 
 app.conf.beat_schedule = {
