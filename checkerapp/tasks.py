@@ -1,8 +1,7 @@
 # import os
-import subprocess
 from datetime import datetime
-from subprocess import PIPE
 
+import requests
 from celery import shared_task
 from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
@@ -23,21 +22,27 @@ from sitechecker.celery import app
 app.conf.enable_utc = False
 
 
+# def check_site(hostname):
+#     # response = os.system("ping -c 1 " + hostname)
+#     # return response
+#     process = subprocess.Popen(
+#         ["ping", "-T", "tsandaddr", "-c", "5", hostname], stdout=PIPE, stderr=PIPE
+#     )
+#     stdout, stderr = process.communicate()
+#     packetloss = float(
+#         [x for x in stdout.decode("utf-8").split("\n") if x.find("packet loss") != -1][
+#             0
+#         ]
+#         .split("%")[0]
+#         .split(" ")[-1]
+#     )
+#     return packetloss
+
+
 def check_site(hostname):
-    # response = os.system("ping -c 1 " + hostname)
-    # return response
-    process = subprocess.Popen(
-        ["ping", "-T", "tsandaddr", "-c", "5", hostname], stdout=PIPE, stderr=PIPE
-    )
-    stdout, stderr = process.communicate()
-    packetloss = float(
-        [x for x in stdout.decode("utf-8").split("\n") if x.find("packet loss") != -1][
-            0
-        ]
-        .split("%")[0]
-        .split(" ")[-1]
-    )
-    return packetloss
+    response = requests.get(hostname).status_code
+    return response
+    # return os.system("curl --write-out %{http_code} --silent --output /dev/null " + hostname)
 
 
 @shared_task
@@ -65,14 +70,14 @@ def check_interval():
 @shared_task
 def http_check_task(task_obj):
     result = check_site(task_obj["base_check_obj"].content_object.site_name)
-    if result == 0:
+    if result == task_obj["base_check_obj"].content_object.expected_status_code:
         status = 1
     else:
         status = 0
 
     # http_check_obj = HttpCheck.objects.get(site_name=site_name)
-    result = CheckResult.objects.create(result=status)
-    task_obj["base_check_obj"].content_object.results.add(result)
+    final_result = CheckResult.objects.create(result=status)
+    task_obj["base_check_obj"].content_object.results.add(final_result)
     check_failure.apply_async(args=(task_obj,))
 
 
@@ -87,7 +92,7 @@ def check_failure(task_obj):
     )
 
     if len(last_n_failures) == backoff_count:
-        pass
+        return "Working"
     #     alert_user.apply_async(args=(task_obj,))
 
 
