@@ -2,6 +2,11 @@
 
 {% block title %}Add user to notify{% endblock %}
 
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Add User</li>
+{% endblock %}
+
+
 {% block content %}
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10 col-sm-12">
@@ -11,6 +16,7 @@
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
+            {{ profile_form }}
             <button type="submit" class="btn btn-primary btn-block">Add user</button>
           </form>
         </div>

@@ -3,8 +3,27 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from phonenumber_field.modelfields import PhoneNumberField
 
 # from jsonfield import JSONField
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = PhoneNumberField(blank=False, unique=True)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 
 class BaseCheck(models.Model):
@@ -82,6 +101,7 @@ class PingCheck(AbstractCheck):
 
 class TcpCheck(AbstractCheck):
     ip_address = models.GenericIPAddressField()
+    port = models.IntegerField(default=443)
 
     def __str__(self):
         return f"{self.ip_address}"

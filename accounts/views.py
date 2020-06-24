@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 
 from checkerapp.forms import EditUserForm
+from checkerapp.forms import ProfileForm
 from checkerapp.forms import UserForm
 from checkerapp.models import BaseCheck
 from checkerapp.models import HttpCheck
@@ -52,13 +53,21 @@ def edit_user(request, pk):
     if not request.user.is_superuser:
         return redirect("checkerapp:home")
     user_info = User.objects.get(id=pk)
+
+    if user_info.profile:
+        profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
+    else:
+        profile_form = ProfileForm()
+
     form = EditUserForm(request.POST or None, instance=user_info)
-    if form.is_valid():
-        email = form.cleaned_data.get("email")
-        username = form.cleaned_data.get("username")
-        user = User.objects.filter(id=pk).update(email=email, username=username)  # NOQA
+    # profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
+    if form.is_valid() and profile_form.is_valid():
+        form.save()
+        profile_form.save()
         return redirect("accounts:user_list")
-    return render(request, "edit_user.html", {"form": form})
+
+    context = {"form": form, "profile_form": profile_form}
+    return render(request, "edit_user.html", context)
 
 
 def add_user_check(request, base_check_pk, check_pk):
@@ -93,16 +102,19 @@ def user_list(request):
 @login_required
 def add_user(request):
     if request.method == "POST":
-        form = UserForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get("email")
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
+        user_form = UserForm(request.POST)
+        profile_form = ProfileForm(request.POST)
+        if user_form.is_valid() and profile_form.is_valid():
+            phone = profile_form.cleaned_data.get("phone")
+            email = user_form.cleaned_data.get("email")
+            username = user_form.cleaned_data.get("username")
+            password = user_form.cleaned_data.get("password")
             user = User.objects.create_user(
                 email=email, username=username, password=password
             )
+            user.profile.phone = phone
             user.save()
             return redirect("accounts:user_list")
 
-    form = UserForm()
-    return render(request, "add_user.html", context={"form": form})
+    context = {"form": UserForm(), "profile_form": ProfileForm()}
+    return render(request, "add_user.html", context)

@@ -136,13 +136,13 @@ def http_info(request, pk):
     base_check_obj = (
         http_check_obj.base_check.first()
     )  # fetch interval, backoff count, etc.
-    result = http_check_obj.results.all()  # fetch status (UP/DOWN)
+    result = http_check_obj.results.all().order_by("id")  # fetch status (UP/DOWN)
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
     last_down_time = http_check_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
-    paginator = Paginator(result, 5)
+    paginator = Paginator(result, 10)
 
     try:
         result = paginator.page(page)
@@ -165,7 +165,7 @@ def http_info(request, pk):
 def ping_info(request, pk):
     ping_results_obj = PingCheck.objects.get(id=pk)
     base_check_obj = ping_results_obj.base_check.first()
-    result = ping_results_obj.results.all()
+    result = ping_results_obj.results.all().order_by("id")
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
 
@@ -192,7 +192,7 @@ def ping_info(request, pk):
 def tcp_info(request, pk):
     tcp_results_obj = TcpCheck.objects.get(id=pk)
     base_check_obj = tcp_results_obj.base_check.first()
-    result = tcp_results_obj.results.all()
+    result = tcp_results_obj.results.all().order_by("id")
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
 

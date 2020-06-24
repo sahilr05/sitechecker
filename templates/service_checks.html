@@ -117,7 +117,7 @@ setInterval(blinker, 1000);
             {% else %}
                 <td class="blinking text-danger">{{ip_address.content_object.results.last.get_result_display}}</td>
             {% endif %}
-            <td>{{ip_address.created_at}}</td>
+            <td>{{ip_address.content_object.results.last.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
             <td><a href="{% url 'checkerapp:test' %}">View</a></td>
@@ -176,7 +176,7 @@ setInterval(blinker, 1000);
             {% else %}
                 <td class="blinking text-danger">{{ip_address.content_object.results.last.get_result_display}}</td>
             {% endif %}
-            <td>{{ip_address.created_at}}</td>
+            <td>{{ip_address.content_object.results.last.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
             <td><a href="{% url 'checkerapp:test' %}">View</a></td>

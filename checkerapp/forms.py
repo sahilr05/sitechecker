@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import BaseCheck
 from .models import HttpCheck
 from .models import PingCheck
+from .models import Profile
 from .models import Service
 from .models import TcpCheck
 
@@ -79,12 +80,10 @@ class EditUserForm(forms.ModelForm):
         fields = ("username", "email")
 
 
-# class SiteForm(forms.ModelForm):
-#     alert_type = forms.ChoiceField(choices=ALERT_CHOICES, required=True)
-
-#     class Meta:
-#         model = SiteList
-#         fields = ("site_name", "interval", "failure_count", "alert_type")
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ("phone",)
 
 
 class LoginForm(forms.Form):

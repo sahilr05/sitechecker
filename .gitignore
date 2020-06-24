@@ -7,5 +7,5 @@ celerybeat-schedule
 dump.rdb
 .env
 used_commands.txt
-checkerapp/new_tasks.py
+checkerapp/backup_tasks.py
 test_http.sh
