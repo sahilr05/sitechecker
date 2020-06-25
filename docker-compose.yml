@@ -3,7 +3,10 @@ version: '3'
 services:
   web:
     build: .
-    command: bash -c "python manage.py migrate --noinput && gunicorn --bind 127.0.0.1:8000 sitechecker.wsgi"
+    # command: bash -c "python manage.py migrate --noinput && gunicorn --bind 127.0.0.1:8000 sitechecker.wsgi"
+    command: >
+      sh -c "python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
     ports:
       - '8000:8000'
     env_file:
@@ -15,6 +18,8 @@ services:
   celery:
     build: .
     command: celery -A sitechecker worker -l info
+    environment:
+      - C_FORCE_ROOT=true
     restart: always
     env_file:
       - ./.env

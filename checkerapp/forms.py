@@ -45,7 +45,7 @@ class PingCheckForm(forms.ModelForm):
 class TcpCheckForm(forms.ModelForm):
     class Meta:
         model = TcpCheck
-        fields = ("ip_address",)
+        fields = ("ip_address", "port")
 
 
 class BaseCheckForm(forms.ModelForm):
