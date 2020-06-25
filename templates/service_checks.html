@@ -24,7 +24,7 @@ setInterval(blinker, 1000);
 {% block body %}
 <div class="container">
   {% comment %} {% if user.is_authenticated %} {% endcomment %}
-
+    <div class='card pt-4 shadow'>
     <div class="col-12 row">
         <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
         {% if not http_checks %}
@@ -32,6 +32,7 @@ setInterval(blinker, 1000);
         {% else %}
             <h3 class="text-center col-10">HTTP Checks</h3>
     </div>
+
     <table class="mt-2 table">
         <thead class="thead-inverse">
         <tr>
@@ -81,7 +82,9 @@ setInterval(blinker, 1000);
         </tbody>
         {% endif %}
     </table>
+    </div>
 
+    <div class='card pt-4 mt-3 shadow'>
     <div class="col-12 row">
         <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
         {% if not ping_checks %}
@@ -140,7 +143,9 @@ setInterval(blinker, 1000);
         {% endif %}
         </tbody>
     </table>
+    </div>
 
+    <div class='card pt-4 mt-3 shadow'>
     <div class="col-12 row">
         <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
         {% if not tcp_checks %}
@@ -198,6 +203,7 @@ setInterval(blinker, 1000);
         {% endfor %}
         </tbody>
     </table>
+    </div>
     {% endif %}
 </div>
 {% endblock body %}

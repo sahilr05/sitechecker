@@ -23,5 +23,6 @@ urlpatterns = [
         accounts_views.remove_user,
         name="remove_user",
     ),
-    path("edit_user/<int:pk>", accounts_views.edit_user, name="edit_user"),
+    path("edit_user/<int:pk>/", accounts_views.edit_user, name="edit_user"),
+    path("my_account", accounts_views.my_account, name="my_account"),
 ]

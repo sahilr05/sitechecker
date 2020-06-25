@@ -70,17 +70,17 @@ def service(request, pk):
     http_type = ContentType.objects.get_for_model(HttpCheck)
     http_checks_info = service_obj.checks.filter(
         content_type=http_type, users=request.user
-    )
+    ).order_by("id")
 
     ping_type = ContentType.objects.get_for_model(PingCheck)
     ping_checks_info = service_obj.checks.filter(
         content_type=ping_type, users=request.user
-    )
+    ).order_by("id")
 
     tcp_type = ContentType.objects.get_for_model(TcpCheck)
     tcp_checks_info = service_obj.checks.filter(
         content_type=tcp_type, users=request.user
-    )
+    ).order_by("id")
 
     context = {
         "service": service_obj,

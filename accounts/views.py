@@ -118,3 +118,23 @@ def add_user(request):
 
     context = {"form": UserForm(), "profile_form": ProfileForm()}
     return render(request, "add_user.html", context)
+
+
+def my_account(request):
+    if not request.user.is_superuser:
+        return redirect("checkerapp:home")
+    user_info = User.objects.get(id=request.user.pk)
+
+    if user_info.profile:
+        profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
+    else:
+        profile_form = ProfileForm()
+
+    form = EditUserForm(request.POST or None, instance=user_info)
+    if form.is_valid() and profile_form.is_valid():
+        form.save()
+        profile_form.save()
+        return redirect("checkerapp:home")
+
+    context = {"form": form, "profile_form": profile_form}
+    return render(request, "edit_user.html", context)

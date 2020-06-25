@@ -95,26 +95,3 @@ class LoginForm(forms.Form):
         widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
         required=True,
     )
-
-
-class PersonalDetailsForm(forms.Form):
-    firstname = forms.CharField(
-        label="First Name",
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-    )
-    lastname = forms.CharField(
-        label="Last Name",
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "text"}),
-    )
-    email = forms.CharField(
-        label="Email Address",
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "email"}),
-    )
-    contact = forms.CharField(
-        label="Contact Number",
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "number"}),
-    )
