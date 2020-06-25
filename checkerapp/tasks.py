@@ -22,7 +22,10 @@ app.conf.enable_utc = False
 
 
 def check_site(hostname):
-    response = requests.get(hostname).status_code
+    try:
+        response = requests.get(hostname).status_code
+    except:  # noqa
+        response = 0
     return response
 
 
