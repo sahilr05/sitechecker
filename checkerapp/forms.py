@@ -83,6 +83,9 @@ class EditUserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
+        widgets = {
+            "phone": forms.TextInput(attrs={"class": "form-control", "type": "text"})
+        }
         fields = ("phone",)
 
 
