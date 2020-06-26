@@ -2,6 +2,7 @@
 # from io import BytesIO
 # import xhtml2pdf.pisa as pisa
 # from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
@@ -26,6 +27,7 @@ from .models import TcpCheck
 from .tasks import http_check_task
 from .tasks import ping_check_task
 from .tasks import tcp_check_task
+
 
 # from django.views.generic import View
 # from .models import BaseCheck
@@ -100,6 +102,7 @@ def add_service(request):
         if form.is_valid():
             service_name = form.cleaned_data.get("name")
             service_obj = Service.objects.create(name=service_name)
+            messages.success(request, f" {service_name} created !!")
             return redirect("checkerapp:service", pk=service_obj.pk)
 
     form = ServiceForm()
@@ -118,6 +121,7 @@ def edit_service(request, service_pk):
     if form.is_valid():
         service_name = form.cleaned_data.get("name")
         service_obj = Service.objects.filter(id=service_pk).update(name=service_name)
+        messages.success(request, f" {service_name} updated !!")
         return redirect("checkerapp:home")
 
     context = {"form": form, "flag": flag}
@@ -130,6 +134,7 @@ def delete_service(request, service_pk):
     for checks in base_checks:
         checks.content_object.delete()
     service_obj.delete()
+    messages.success(request, f" {service_obj.name} deleted !!")
     return redirect("checkerapp:home")
 
 
@@ -247,6 +252,7 @@ def add_http_check(request, service_pk):
             service_obj.checks.add(http_base_check_obj)
             task_obj = {"base_check_obj": http_base_check_obj}
             http_check_task.apply_async(args=(task_obj,))
+            messages.success(request, f" {site_name} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 
     if not request.user.is_superuser:
@@ -283,6 +289,7 @@ def edit_http_check(request, service_pk, http_pk):
             alert_type=alert_type,
             severe_level=severe_level,
         )
+        messages.success(request, f" {site_name} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
 
     context = {
@@ -318,6 +325,7 @@ def add_ping_check(request, service_pk):
             service_obj.checks.add(ping_base_check_obj)
             task_obj = {"base_check_obj": ping_base_check_obj}
             ping_check_task.apply_async(args=(task_obj,))
+            messages.success(request, f" {ip_address} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 
     if not request.user.is_superuser:
@@ -352,6 +360,7 @@ def edit_ping_check(request, service_pk, ping_pk):
             alert_type=alert_type,
             severe_level=severe_level,
         )
+        messages.success(request, f" {ip_address} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
 
     context = {
@@ -387,6 +396,7 @@ def add_tcp_check(request, service_pk):
             service_obj.checks.add(tcp_base_check_obj)
             task_obj = {"base_check_obj": tcp_base_check_obj}
             tcp_check_task.apply_async(args=(task_obj,))
+            messages.success(request, f" {ip_address} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 
     if not request.user.is_superuser:
@@ -420,6 +430,7 @@ def edit_tcp_check(request, service_pk, tcp_pk):
             alert_type=alert_type,
             severe_level=severe_level,
         )
+        messages.success(request, f" {ip_address} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
 
     context = {

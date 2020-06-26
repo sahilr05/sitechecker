@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% block head %}
 <title>Http Info</title>
-
+<style>
+.table>tbody>tr>td,
+.table>tbody>tr>th {
+  border-top: none;
+}
+</style>
 {% endblock head %}
 
 {% block breadcrumb %}
@@ -72,6 +77,7 @@
         {% endif %}
       </table>
       <div class="col-1 "></div>
+
       <table class="table jumbotron col-5 shadow-sm">
       <tr class="danger">
       <th>Users</th>

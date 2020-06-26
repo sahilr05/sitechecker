@@ -1,4 +1,7 @@
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse
@@ -22,6 +25,7 @@ def test(request):
 def delete_user(request, pk):
     user_to_delete = User.objects.get(id=pk)
     user_to_delete.delete()
+    messages.success(request, f" {user_to_delete.username} deleted from user list !!")
     return redirect("accounts:user_list")
 
 
@@ -60,10 +64,10 @@ def edit_user(request, pk):
         profile_form = ProfileForm()
 
     form = EditUserForm(request.POST or None, instance=user_info)
-    # profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
     if form.is_valid() and profile_form.is_valid():
         form.save()
         profile_form.save()
+        messages.success(request, f"Account info updated ! !")
         return redirect("accounts:user_list")
 
     context = {"form": form, "profile_form": profile_form}
@@ -114,6 +118,7 @@ def add_user(request):
             )
             user.profile.phone = phone
             user.save()
+            messages.success(request, f"{user.username} added to users list !")
             return redirect("accounts:user_list")
 
     context = {"form": UserForm(), "profile_form": ProfileForm()}
@@ -121,20 +126,33 @@ def add_user(request):
 
 
 def my_account(request):
-    if not request.user.is_superuser:
-        return redirect("checkerapp:home")
     user_info = User.objects.get(id=request.user.pk)
-
     if user_info.profile:
         profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
     else:
         profile_form = ProfileForm()
-
     form = EditUserForm(request.POST or None, instance=user_info)
     if form.is_valid() and profile_form.is_valid():
         form.save()
         profile_form.save()
+        messages.success(request, f"Account info updated ! !")
         return redirect("checkerapp:home")
 
     context = {"form": form, "profile_form": profile_form}
     return render(request, "edit_user.html", context)
+
+
+def change_password(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, f"Password Changed !")
+            return redirect("checkerapp:home")
+        else:
+            for msg in form.error_messages:
+                messages.error(request, f"{msg}: {form.error_messages[msg]}")
+
+    context = {"form": PasswordChangeForm(request.user)}
+    return render(request, "change_pass.html", context)

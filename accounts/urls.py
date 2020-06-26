@@ -25,4 +25,5 @@ urlpatterns = [
     ),
     path("edit_user/<int:pk>/", accounts_views.edit_user, name="edit_user"),
     path("my_account", accounts_views.my_account, name="my_account"),
+    path("change_password", accounts_views.change_password, name="change_password"),
 ]

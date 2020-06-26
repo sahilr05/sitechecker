@@ -5,7 +5,7 @@
 {% endblock %}
 {% block body %}
   {% if user.is_authenticated %}
-    <div class="container shadow pt-2 pb-1 rounded">
+    <div class="container shadow-sm pt-2 pb-1 bg-white rounded">
 
       <div class="col-3">
 
@@ -17,7 +17,7 @@
         <a class="text-center" href="{% url 'checkerapp:add_service' %}"><h2>Add Service</h2></a>
       {% endif %}
       <table class="mt-2 table">
-        <thead class="thead-inverse">
+        <thead>
           <tr>
             <th>PK</th>
             <th>Service</th>

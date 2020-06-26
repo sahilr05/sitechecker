@@ -8,8 +8,22 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha256-7stu7f6AB+1rx5IqD8I+XuIcK4gSnpeGeSjqsODU+Rk=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.css" integrity="sha256-1hm7xPFY4HL/GPfWz595kcNLVmuMC43nPagoQhWTb58=" crossorigin="anonymous" />
-
-    <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light shadow-sm">
+    <style>
+      .table>tbody>tr>td,
+      .table>tbody>tr>th {
+        border-top: none;
+      }
+      .table{
+        background-color:white;
+      }
+      .toast {
+        left: 50%;
+        position: fixed;
+        transform: translate(-50%, 0px);
+        z-index: 9999;
+      }
+    </style>
+    <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-white shadow-sm">
       <div class="container">
         <a class="navbar-brand" href="{% url 'checkerapp:home' %}">Site Checker</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,7 +39,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
                   <a class="dropdown-item" href="{% url 'accounts:my_account' %}">My account</a>
-                  <a class="dropdown-item" href="#">Change password</a>
+                  <a class="dropdown-item" href="{% url 'accounts:change_password' %}">Change password</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
                 </div>
@@ -44,13 +58,28 @@
       </div>
     </nav>
   </head>
-  <body>
+
+  <body class="bg-light">
+
     {% block head %}
     <!-- code suppressed for brevity -->
     {% endblock head %}
 
+  {% if messages %}
+    {% for message in messages %}
+      <div class="toast justify-content-center align-items-center" data-autohide="true">
+        <div class="toast-header">
+            Alert !
+        </div>
+        <div class="toast-body">
+          {{ message }}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
     <div class="container">
-      <ol class="breadcrumb my-4">
+      <ol class="breadcrumb my-4 bg-white shadow-sm">
         {% block breadcrumb %}
         {% endblock %}
       </ol>
@@ -58,10 +87,19 @@
     {% block body %}
     <!-- code suppressed for brevity -->
     {% endblock body %}
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src=" https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.5/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha256-Xt8pc4G0CdcRvI0nZ2lRpZ4VHng0EoUDMlGcBSQ9HiQ=" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
+    <script>
+      $(document).ready(function(){
+        $('.toast').toast({delay: 3000});
+        $('.toast').toast('show');
+      });
+    </script>
+
   </body>
 </html>
