@@ -26,7 +26,14 @@ setInterval(blinker, 1000);
   {% comment %} {% if user.is_authenticated %} {% endcomment %}
     <div class='card pt-4 shadow-sm'>
     <div class="col-12 row">
-        <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% else %}
+            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&empty;</span>
+            </button>
+        {% endif %}
+
         {% if not http_checks %}
             <h3 class="text-center col-10">No HTTP Checks Found</h3></div><br>
         {% else %}
@@ -86,7 +93,14 @@ setInterval(blinker, 1000);
 
     <div class='card pt-4 mt-3 shadow-sm'>
     <div class="col-12 row">
-        <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% else %}
+            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&empty;</span>
+            </button>
+        {% endif %}
+
         {% if not ping_checks %}
             <h3 class="text-center col-10">No Ping Checks Found</h3></div><br>
         {% else %}
@@ -147,7 +161,14 @@ setInterval(blinker, 1000);
 
     <div class='card pt-4 mt-3 shadow-sm mb-3'>
     <div class="col-12 row">
-        <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+        {% else %}
+            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&empty;</span>
+            </button>
+        {% endif %}
+
         {% if not tcp_checks %}
             <h3 class="text-center col-10">No TCP Checks Found</h3></div><br>
         {% else %}
