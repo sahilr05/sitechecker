@@ -95,7 +95,7 @@ def add_user_check(request, base_check_pk, check_pk):
 def user_list(request):
     if not request.user.is_superuser:
         return redirect("checkerapp:home")
-    list_of_users = User.objects.filter(is_superuser=False)
+    list_of_users = User.objects.filter(is_superuser=False).order_by("id")
     return render(request, "user_list.html", context={"users": list_of_users})
 
 

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha256-7stu7f6AB+1rx5IqD8I+XuIcK4gSnpeGeSjqsODU+Rk=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.css" integrity="sha256-1hm7xPFY4HL/GPfWz595kcNLVmuMC43nPagoQhWTb58=" crossorigin="anonymous" />
 
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav class="navbar sticky-top navbar-expand-sm navbar-light bg-light shadow-sm">
       <div class="container">
         <a class="navbar-brand" href="{% url 'checkerapp:home' %}">Site Checker</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,6 @@
       </ol>
     </div>
     {% block body %}
-
     <!-- code suppressed for brevity -->
     {% endblock body %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

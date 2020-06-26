@@ -13,7 +13,7 @@
 {% block body %}
   <div class="row justify-content-center">
     <div class="col-lg-8 col-md-10 col-sm-12">
-      <div class="card">
+      <div class="card shadow-sm">
         <div class="card-body">
           {% if flag %}
             <h3 class="card-title">Update Ping Check</h3>
@@ -26,9 +26,9 @@
             {{ ping_check_form }}
             {{ base_check_form }}
             {% if flag %}
-              <button type="submit" class="btn btn-primary btn-block">Update</button>
+              <button type="submit" class="btn btn-primary btn-block mt-2">Update</button>
             {% else %}
-              <button type="submit" class="btn btn-primary btn-block">Add</button>
+              <button type="submit" class="btn btn-primary btn-block mt-2">Add</button>
             {% endif %}
           </form>
         </div>
