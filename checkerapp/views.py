@@ -177,7 +177,7 @@ def ping_info(request, pk):
     all_users = User.objects.all()
 
     page = request.GET.get("page", 1)
-    paginator = Paginator(result, 5)
+    paginator = Paginator(result, 10)
 
     try:
         result = paginator.page(page)
@@ -204,7 +204,7 @@ def tcp_info(request, pk):
     all_users = User.objects.all()
 
     page = request.GET.get("page", 1)
-    paginator = Paginator(result, 5)
+    paginator = Paginator(result, 10)
 
     try:
         result = paginator.page(page)
