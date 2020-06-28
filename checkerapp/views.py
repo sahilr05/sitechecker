@@ -40,10 +40,6 @@ class MyView(View):
         return HttpResponse(text)
 
 
-def test(request):
-    return HttpResponse("Testing")
-
-
 def home(request):
     if request.user.is_authenticated and not request.user.is_superuser:
         user = User.objects.get(id=request.user.id)
