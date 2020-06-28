@@ -40,11 +40,6 @@ class MyView(View):
         return HttpResponse(text)
 
 
-# class TestView(MyView):
-#     def get(self, request):
-#         return HttpResponse(self.text)
-
-
 def test(request):
     return HttpResponse("Testing")
 
