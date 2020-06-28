@@ -12,6 +12,7 @@ from .models import BaseCheck
 from .models import CheckResult
 from .models import HttpCheck
 from .models import PingCheck
+from .telegrambot import send_alert
 from .utils import check_tcp
 from sitechecker.celery import app
 
@@ -133,17 +134,18 @@ def check_failure(task_obj):
 
 @shared_task
 def alert_user(task_obj):
-    return task_obj["base_check_obj"].id
     if task_obj["base_check_obj"].alert_type == 0:  # email
         send_email_task.apply_async(args=(task_obj,))
-    elif task_obj["base_check_obj"].alert_type == 1:  # whatsapp
-        pass
+    elif task_obj["base_check_obj"].alert_type == 1:  # telegram
+        send_tg_alert.apply_async(args=(task_obj,))
+        return "Telegram"
     else:  # slack
         pass
 
 
 @shared_task
 def send_email_task(task_obj):
+    return "Email"
     # base_check_users_list = list(task_obj["base_check_obj"].users.values_list('email'))
     user_list = [("vuuxq97686@klefv6.com",)]
 
@@ -151,6 +153,13 @@ def send_email_task(task_obj):
         "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
     )
     return "Sent"
+
+
+@shared_task
+def send_tg_alert(task_obj):
+    for user in list(task_obj["base_check_obj"].users.all()):
+        message = str(task_obj["base_check_obj"].content_object) + " is down"
+        send_alert(message, user)
 
 
 app.conf.beat_schedule = {

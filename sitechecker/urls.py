@@ -19,6 +19,7 @@ from django.urls import path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # url(r'^', include('django_telegrambot.urls')),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("", include("checkerapp.urls", namespace="checker")),
     # path('checksite',checker_views.checksite, name='checksite'),

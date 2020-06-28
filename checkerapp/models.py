@@ -19,6 +19,7 @@ class Profile(models.Model):
     phone = models.CharField(
         validators=[phone_regex], max_length=15, blank=False, unique=True
     )  # validators should be a list
+    telegram_id = models.CharField(null=True, max_length=50)
 
 
 @receiver(post_save, sender=User)
@@ -36,8 +37,8 @@ class BaseCheck(models.Model):
     NORMAL, WARNING, CRITICAL = list(range(3))
     SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
-    EMAIL, WHATSAPP, SLACK = list(range(3))
-    ALERT_CHOICES = ((EMAIL, "EMAIL"), (WHATSAPP, "WHATSAPP"), (SLACK, "SLACK"))
+    EMAIL, TELEGRAM, SLACK = list(range(3))
+    ALERT_CHOICES = ((EMAIL, "EMAIL"), (TELEGRAM, "TELEGRAM"), (SLACK, "SLACK"))
 
     interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)

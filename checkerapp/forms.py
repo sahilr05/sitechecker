@@ -10,8 +10,6 @@ from .models import TcpCheck
 
 # from django.contrib.auth.forms import UserCreationForm
 
-ALERT_CHOICES = (("email", "Email"), ("phone", "Phone"), ("both", "Both"))
-
 
 class ServiceForm(forms.ModelForm):
     class Meta:

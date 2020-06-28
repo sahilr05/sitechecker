@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 
 {% block title %}User List{% endblock %}
+
 {% block breadcrumb %}
-  <li class="breadcrumb-item active">Site Checker</li>
+  <li class="breadcrumb-item active">User List</li>
 {% endblock %}
+
 {% block body %}
-  <div class="mt-3 row justify-content-center">
+<div class="container mb-3">
+  <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8 col-sm-4">
       <div class="card">
         <div class="card-body shadow-sm">
-          <h3 class="card-title" style="text-align:center">User List</h3>
+          <h3 class="card-title" style="text-align:center"><a href="{% url 'accounts:add_user' %}">Add user</a></h3>
           <table class="table" style="margin:auto">
             <thead class="thead-inverse">
                 <tr>
@@ -30,11 +33,11 @@
                     </td>
                     </tr>
                 {% endfor %}
-                <tr><td></td><td><a href="{% url 'accounts:add_user' %}">Add user</a></td></tr>
             </tbody>
         </table>
         </div>
       </div>
     </div>
   </div>
+</div>
 {% endblock %}

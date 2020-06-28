@@ -29,13 +29,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Third-party
-    "celery",
-    "widget_tweaks",
     # Custom
     "accounts",
     "checkerapp",
+    # Third-party
+    "celery",
+    "widget_tweaks",
     "phonenumber_field",
+    "django_telegrambot",
 ]
 
 MIDDLEWARE = [
@@ -138,6 +139,9 @@ CELERY_ACCEPT_CONTENT = ["pickle"]
 CELERY_RESULT_SERIALIZER = "pickle"
 CELERY_TASK_SERIALIZER = "pickle"
 
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
+# Django Telegram Bot settings
+
+DJANGO_TELEGRAMBOT = {
+    "MODE": "POLLING",
+    "BOTS": [{"TOKEN": "***REMOVED***"}],
+}

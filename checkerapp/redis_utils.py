@@ -1,5 +1,4 @@
 import redis
-from django.conf import settings
 
 
 class RedisManager:

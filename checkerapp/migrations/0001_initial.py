@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 (
                     "alert_type",
                     models.SmallIntegerField(
-                        choices=[(0, "EMAIL"), (1, "WHATSAPP"), (2, "SLACK")], default=0
+                        choices=[(0, "EMAIL"), (1, ""), (2, "SLACK")], default=0
                     ),
                 ),
                 ("maintenance_mode", models.BooleanField(default=False)),
