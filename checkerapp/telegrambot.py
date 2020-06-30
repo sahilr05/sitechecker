@@ -16,9 +16,6 @@ bot = telegram.Bot(token=bot_token)
 
 
 def send_alert(message, user):
-    # for user in list(task_obj['base_check_obj'].users.all()):
-    #     message = str(task_obj['base_check_obj'].content_object) + ' is down'
-    # context.bot.send_message(chat_id=user.profile.telegram_id, text= task_obj['base_check_obj'].content_object + ' is down'  )
     bot.send_message(chat_id=user.profile.telegram_id, text=message)
 
 

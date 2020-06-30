@@ -24,10 +24,10 @@ from .models import HttpCheck
 from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
+from .sms import send_sms
 from .tasks import http_check_task
 from .tasks import ping_check_task
 from .tasks import tcp_check_task
-
 
 # from django.views.generic import View
 # from .models import BaseCheck
@@ -38,6 +38,11 @@ class MyView(View):
     def get(self, request):
         text = "Hello, World!"
         return HttpResponse(text)
+
+
+def send_sms_test(request):
+    send_sms()
+    return HttpResponse("sent sms")
 
 
 def home(request):

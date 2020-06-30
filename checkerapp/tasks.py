@@ -12,6 +12,7 @@ from .models import BaseCheck
 from .models import CheckResult
 from .models import HttpCheck
 from .models import PingCheck
+from .sms import send_sms
 from .telegrambot import send_alert
 from .utils import check_tcp
 from sitechecker.celery import app
@@ -28,6 +29,11 @@ def check_site(hostname):
     except:  # noqa
         response = 0
     return response
+
+
+# To capture error :
+# except Exception as e:
+#     print(e)
 
 
 def ping_ip(ip_address):
@@ -132,22 +138,25 @@ def check_failure(task_obj):
         alert_user.apply_async(args=(task_obj,))
 
 
+def check_severity(task_obj):
+    pass
+
+
 @shared_task
 def alert_user(task_obj):
     if task_obj["base_check_obj"].alert_type == 0:  # email
         send_email_task.apply_async(args=(task_obj,))
     elif task_obj["base_check_obj"].alert_type == 1:  # telegram
-        send_tg_alert.apply_async(args=(task_obj,))
+        send_tg_alert_task.apply_async(args=(task_obj,))
         return "Telegram"
-    else:  # slack
-        pass
+    else:  # sms
+        send_sms_task.apply_async(args=(task_obj,))
 
 
 @shared_task
 def send_email_task(task_obj):
-    return "Email"
-    # base_check_users_list = list(task_obj["base_check_obj"].users.values_list('email'))
-    user_list = [("vuuxq97686@klefv6.com",)]
+    user_list = list(task_obj["base_check_obj"].users.values_list("email"))
+    # user_list = [("vuuxq97686@klefv6.com",)]
 
     send_mail(
         "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
@@ -156,10 +165,17 @@ def send_email_task(task_obj):
 
 
 @shared_task
-def send_tg_alert(task_obj):
+def send_tg_alert_task(task_obj):
     for user in list(task_obj["base_check_obj"].users.all()):
         message = str(task_obj["base_check_obj"].content_object) + " is down"
         send_alert(message, user)
+
+
+@shared_task
+def send_sms_task(task_obj):
+    for user in list(task_obj["base_check_obj"].users.all()):
+        message = str(task_obj["base_check_obj"].content_object) + " is down"
+        send_sms(message, user)
 
 
 app.conf.beat_schedule = {

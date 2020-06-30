@@ -37,8 +37,8 @@ class BaseCheck(models.Model):
     NORMAL, WARNING, CRITICAL = list(range(3))
     SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
-    EMAIL, TELEGRAM, SLACK = list(range(3))
-    ALERT_CHOICES = ((EMAIL, "EMAIL"), (TELEGRAM, "TELEGRAM"), (SLACK, "SLACK"))
+    EMAIL, TELEGRAM, SMS = list(range(3))
+    ALERT_CHOICES = ((EMAIL, "EMAIL"), (TELEGRAM, "TELEGRAM"), (SMS, "SMS"))
 
     interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)
