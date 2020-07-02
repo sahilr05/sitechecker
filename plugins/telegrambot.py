@@ -26,27 +26,39 @@ def remove(update, context):
 
 
 def start(update, context):
-    message = "Welcome ! I am Site Checker bot. Please enter your phone number using /register [number] to proceed"
+    message = "Welcome ! I am Site Checker bot. Please enter your phone number using /register xxxxxx to proceed or /get_id to get your chat ID"
     update.message.reply_text(message)
 
 
-def get_ids(update, context):
+def get_id(update, context):
+    chat_id = update.message.chat_id
+    message = f"Add {chat_id} in My Account > Alert Plugins > Telegram"
+    update.message.reply_text(message)
+
+
+def get_all_ids(update, context):
     chat_id = update.message.chat_id
     chat_ids.add(chat_id)
     update.message.reply_text(jsonpickle.encode(chat_ids))
 
 
 def register(update, context):
-    phone = (context.args[0],)  # converting to tuple
-    if phone in list(Profile.objects.values_list("phone")):
-        if Profile.objects.filter(phone=context.args[0]).update(
-            telegram_id=update.message.chat_id
-        ):
-            message = "Number Registered !"
+    try:
+        phone = (context.args[0],)  # converting to tuple
+        if phone in list(Profile.objects.values_list("phone")):
+            if Profile.objects.filter(phone=context.args[0]).update(
+                telegram_id=update.message.chat_id
+            ):
+                message = "Number Registered !"
+            else:
+                print("Failed")
         else:
-            print("Failed")
-    else:
-        message = "Number doesn't exist in check !"
+            message = "Number doesn't exist in check ! \nPlease ask admin to add your number for alerts"
+    except Exception as e:
+        print(e)
+        message = (
+            "Please send your number in the following syntax : /register xxxxxxxxxx"
+        )
 
     update.message.reply_text(message)
 
@@ -55,7 +67,8 @@ def start_bot():
     dp = DjangoTelegramBot.dispatcher
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("remove", remove))
-    dp.add_handler(CommandHandler("chat_ids", get_ids))
+    dp.add_handler(CommandHandler("get_id", get_id))
+    dp.add_handler(CommandHandler("chat_ids", get_all_ids))
     dp.add_handler(CommandHandler("register", register))
 
 
