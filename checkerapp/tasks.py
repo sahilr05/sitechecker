@@ -8,13 +8,14 @@ from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 
+from .models import AlertSent
 from .models import BaseCheck
 from .models import CheckResult
 from .models import HttpCheck
 from .models import PingCheck
-from .sms import send_sms
-from .telegrambot import send_alert
 from .utils import check_tcp
+from plugins.sms import send_sms
+from plugins.telegrambot import send_alert
 from sitechecker.celery import app
 
 # from .models import TcpCheck
@@ -122,7 +123,6 @@ def tcp_check_task(task_obj):
 
 @shared_task
 def check_failure(task_obj):
-    # http_obj = HttpCheck.objects.get(site_name=site_name)
     backoff_count = task_obj["base_check_obj"].backoff_count
     last_n_failures = list(
         task_obj["base_check_obj"]
@@ -135,33 +135,72 @@ def check_failure(task_obj):
             failure_count += 1
     if failure_count >= backoff_count:
         # return "Working"
-        alert_user.apply_async(args=(task_obj,))
+        check_severity.apply_async(args=(task_obj,))
 
 
-def check_severity(task_obj):
-    pass
+def last_alert_date_check(check_obj):
+    if AlertSent.objects.filter(check_obj=check_obj).exists():
+        last_alert_date = int(
+            AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%d")
+        )
+    else:
+        last_alert_date = 00
+    return last_alert_date
+
+
+def last_alert_hour_check(check_obj):
+    if AlertSent.objects.filter(check_obj=check_obj).exists():
+        last_alert_hour = int(
+            AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%H")
+        )
+    else:
+        last_alert_hour = 00
+    return last_alert_hour
 
 
 @shared_task
-def alert_user(task_obj):
-    if task_obj["base_check_obj"].alert_type == 0:  # email
+def check_severity(task_obj):
+    check_obj = task_obj["base_check_obj"]
+    if task_obj["base_check_obj"].severe_level == 0:  # normal
         send_email_task.apply_async(args=(task_obj,))
-    elif task_obj["base_check_obj"].alert_type == 1:  # telegram
-        send_tg_alert_task.apply_async(args=(task_obj,))
-        return "Telegram"
-    else:  # sms
-        send_sms_task.apply_async(args=(task_obj,))
+
+    elif task_obj["base_check_obj"].severe_level == 1:  # warning
+        send_email_task.apply_async(args=(task_obj,))
+        if int(datetime.now().strftime("%d")) > last_alert_date_check(check_obj):
+            send_sms_task.apply_async(args=(task_obj,))
+
+    else:  # critical
+        send_email_task.apply_async(args=(task_obj,))
+        if int(datetime.now().strftime("%H")) > last_alert_hour_check(check_obj):
+            send_sms_task.apply_async(args=(task_obj,))
+
+
+# @shared_task
+# def alert_user(task_obj):
+#     if task_obj["base_check_obj"].alert_type == 0:  # email
+#         send_email_task.apply_async(args=(task_obj,))
+#     elif task_obj["base_check_obj"].alert_type == 1:  # telegram
+#         send_tg_alert_task.apply_async(args=(task_obj,))
+#         return "Telegram"
+#     else:  # sms
+#         send_sms_task.apply_async(args=(task_obj,))
 
 
 @shared_task
 def send_email_task(task_obj):
-    user_list = list(task_obj["base_check_obj"].users.values_list("email"))
-    # user_list = [("vuuxq97686@klefv6.com",)]
+    check_obj = task_obj["base_check_obj"]
+    if int(datetime.now().strftime("%d")) > last_alert_date_check(check_obj):
+        user_list = list(task_obj["base_check_obj"].users.values_list("email"))
+        # user_list = [("vuuxq97686@klefv6.com",)]
 
-    send_mail(
-        "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
-    )
-    return "Sent"
+        send_mail(
+            "Report from site checker",
+            "Website down",
+            "sahilrajpal05@gmail.com",
+            user_list,
+        )
+        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+        return "Email sent !"
 
 
 @shared_task
@@ -169,6 +208,7 @@ def send_tg_alert_task(task_obj):
     for user in list(task_obj["base_check_obj"].users.all()):
         message = str(task_obj["base_check_obj"].content_object) + " is down"
         send_alert(message, user)
+        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
 
 
 @shared_task
@@ -176,6 +216,7 @@ def send_sms_task(task_obj):
     for user in list(task_obj["base_check_obj"].users.all()):
         message = str(task_obj["base_check_obj"].content_object) + " is down"
         send_sms(message, user)
+        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
 
 
 app.conf.beat_schedule = {

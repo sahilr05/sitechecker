@@ -1,12 +1,13 @@
 from django import forms
-from django.contrib.auth.models import User
 
 from .models import BaseCheck
 from .models import HttpCheck
 from .models import PingCheck
-from .models import Profile
 from .models import Service
 from .models import TcpCheck
+
+# from django.contrib.auth.models import User
+# from .models import Profile
 
 # from django.contrib.auth.forms import UserCreationForm
 
@@ -75,39 +76,39 @@ class BaseCheckForm(forms.ModelForm):
         fields = ("interval", "backoff_count", "severe_level", "alert_type")
 
 
-class UserForm(forms.ModelForm):
-    confirm_password = forms.CharField(
-        max_length=32,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
-        required=True,
-    )
+# class UserForm(forms.ModelForm):
+#     confirm_password = forms.CharField(
+#         max_length=32,
+#         widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
+#         required=True,
+#     )
 
-    class Meta:
-        model = User
-        fields = ("username", "email", "password", "confirm_password")
-
-
-class EditUserForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ("username", "email")
+#     class Meta:
+#         model = User
+#         fields = ("username", "email", "password", "confirm_password")
 
 
-class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        widgets = {
-            "phone": forms.TextInput(attrs={"class": "form-control", "type": "text"})
-        }
-        fields = ("phone",)
+# class EditUserForm(forms.ModelForm):
+#     class Meta:
+#         model = User
+#         fields = ("username", "email")
 
 
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        label="Username", widget=forms.TextInput(attrs={"class": "form-control"})
-    )
-    password = forms.CharField(
-        max_length=32,
-        widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
-        required=True,
-    )
+# class ProfileForm(forms.ModelForm):
+#     class Meta:
+#         model = Profile
+#         widgets = {
+#             "phone": forms.TextInput(attrs={"class": "form-control", "type": "text"})
+#         }
+#         fields = ("phone",)
+
+
+# class LoginForm(forms.Form):
+#     username = forms.CharField(
+#         label="Username", widget=forms.TextInput(attrs={"class": "form-control"})
+#     )
+#     password = forms.CharField(
+#         max_length=32,
+#         widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
+#         required=True,
+#     )

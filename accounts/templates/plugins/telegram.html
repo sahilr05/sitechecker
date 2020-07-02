@@ -1,0 +1,42 @@
+{% extends 'base_accounts.html' %}
+
+{% block head %}
+<title>My Account</title>
+{% endblock head %}
+
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">My Account</li>
+<li class="breadcrumb-item active">Alert Plugins</li>
+<li class="breadcrumb-item text-primary">Telegram Plugin</li>
+{% endblock %}
+
+{% block sidenav %}
+  <a href="{% url 'accounts:my_account' %}" class="list-group-item list-group-item-action bg-light">Account Settings</a>
+  <a href="{% url 'accounts:change_password' %}" class="list-group-item list-group-item-action bg-light">Change Password</a>
+{% endblock %}
+
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <div class="card">
+        <div class="card-body shadow-sm">
+          <h3 class="card-title">Telegram Plugin</h3>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            {% include 'includes/form.html' %}
+            Chat ID : <input type='text' class="form-control" name='telegram_id' placeholder='telegram' value="{{request.user.profile.telegram_id}}">
+            <div class="form-check mt-3">
+              <input name="active_status" type="checkbox" class="form-check-input" {% if request.user.profile.active_status %}checked{% endif %}>
+              <label class="form-check-label">Active Status</label>
+            </div>
+            <small class="font-italic text-secondary">*Disabling Active Status would disable all alerts related to profile table</small>
+
+            <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

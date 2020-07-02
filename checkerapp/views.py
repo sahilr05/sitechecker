@@ -24,10 +24,10 @@ from .models import HttpCheck
 from .models import PingCheck
 from .models import Service
 from .models import TcpCheck
-from .sms import send_sms
 from .tasks import http_check_task
 from .tasks import ping_check_task
 from .tasks import tcp_check_task
+from plugins.sms import send_sms
 
 # from django.views.generic import View
 # from .models import BaseCheck

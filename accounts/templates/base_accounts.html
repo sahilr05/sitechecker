@@ -1,14 +1,38 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block stylesheet %}
   <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+  <link rel="stylesheet" href="https://raw.githubusercontent.com/StartBootstrap/startbootstrap-simple-sidebar/master/css/simple-sidebar.css">
+
 {% endblock %}
 
 {% block body %}
-  <div class="container">
+<div class="container">
+  <div class="d-flex" id="wrapper">
+    <div class="bg-light border-right" id="sidebar-wrapper">
+      <div class="list-group list-group-flush">
+      {% block sidenav %}
+
+      {% endblock %}
+      <li data-toggle="collapse" data-target="#service" class="list-group-item list-group-item-action bg-light">
+        <a href="#"><i class="dropdown-toggle"></i> Alert plugins <span class="arrow"></span></a>
+      </li>
+      <ul class="list-group sub-menu" id="service">
+        <a href="{% url 'accounts:email_plugin' %}"><li class="list-group-item list-group-item-action bg-light">Email</li></a>
+        <a href="{% url 'accounts:sms_plugin' %}"><li class="list-group-item list-group-item-action bg-light">SMS</li></a>
+        <a href="{% url 'accounts:telegram_plugin' %}"><li class="list-group-item list-group-item-action bg-light">Telegram</li></a>
+      </ul>
+      </div>
+    </div>
+    <div class="container">
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </div>
+  </div>
+  {% comment %} <div class="container">
     {% block content %}
     {% endblock content %}
-  </div>
+  </div> {% endcomment %}
 {% endblock %}

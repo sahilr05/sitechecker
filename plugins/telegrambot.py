@@ -3,7 +3,7 @@ import telegram
 from django_telegrambot.apps import DjangoTelegramBot
 from telegram.ext import CommandHandler
 
-from .models import Profile
+from checkerapp.models import Profile
 
 # from telegram.ext import Dispatcher
 # from telegram.ext import Filters

@@ -1,18 +1,19 @@
 {% extends 'base_accounts.html' %}
 
 {% block head %}
-<title>Change Password</title>
+<title>My Account</title>
 {% endblock head %}
 
 
 {% block breadcrumb %}
 <li class="breadcrumb-item active">My Account</li>
-<li class="breadcrumb-item text-primary">Change Password</li>
+<li class="breadcrumb-item active">Alert Plugins</li>
+<li class="breadcrumb-item text-primary">Email Plugin</li>
 {% endblock %}
 
 {% block sidenav %}
   <a href="{% url 'accounts:my_account' %}" class="list-group-item list-group-item-action bg-light">Account Settings</a>
-  <a href="#" class=" text-dark list-group-item list-group-item-action bg-white">Change Password</a>
+  <a href="{% url 'accounts:change_password' %}" class="list-group-item list-group-item-action bg-light">Change Password</a>
 {% endblock %}
 
 
@@ -21,11 +22,13 @@
     <div class="col-lg-8 col-md-10 col-sm-12">
       <div class="card">
         <div class="card-body shadow-sm">
-          <h3 class="card-title">Change Password</h3>
+          <h3 class="card-title">Email Plugin</h3>
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
-            <button type="submit" class="btn btn-primary btn-block mt-2">Submit</button>
+            Email : <input type='text' class="form-control" name='email' placeholder='telegram' value="{{request.user.email}}">
+            <small class="font-italic text-secondary">*Email alerts cannot be disabled</small>
+            <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
           </form>
         </div>
       </div>

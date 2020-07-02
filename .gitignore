@@ -9,3 +9,4 @@ dump.rdb
 used_commands.txt
 checkerapp/backup_tasks.py
 test_http.sh
+service_temp.html

@@ -8,13 +8,16 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-from checkerapp.forms import EditUserForm
-from checkerapp.forms import ProfileForm
-from checkerapp.forms import UserForm
+from .forms import EditUserForm
+from .forms import MyAccountForm
+from .forms import ProfileForm
+from .forms import UserForm
 from checkerapp.models import BaseCheck
 from checkerapp.models import HttpCheck
 from checkerapp.models import PingCheck
 from checkerapp.models import TcpCheck
+
+# from checkerapp.models import Profile
 
 
 def test(request):
@@ -127,19 +130,17 @@ def add_user(request):
 
 def my_account(request):
     user_info = User.objects.get(id=request.user.pk)
-    if user_info.profile:
-        profile_form = ProfileForm(request.POST or None, instance=user_info.profile)
+    if user_info:
+        form = MyAccountForm(request.POST or None, instance=user_info)
     else:
-        profile_form = ProfileForm()
-    form = EditUserForm(request.POST or None, instance=user_info)
-    if form.is_valid() and profile_form.is_valid():
+        form = MyAccountForm()
+    if form.is_valid():
         form.save()
-        profile_form.save()
         messages.success(request, f"Account info updated ! !")
-        return redirect("checkerapp:home")
+        return redirect("accounts:my_account")
 
-    context = {"form": form, "profile_form": profile_form}
-    return render(request, "edit_user.html", context)
+    context = {"form": form}
+    return render(request, "my_account.html", context)
 
 
 def change_password(request):
@@ -156,3 +157,43 @@ def change_password(request):
 
     context = {"form": PasswordChangeForm(request.user)}
     return render(request, "change_pass.html", context)
+
+
+def telegram_plugin(request):
+    user_info = User.objects.get(id=request.user.pk)
+    if request.method == "POST":
+        telegram_id = request.POST["telegram_id"]
+        active_status = request.POST.get("active_status", "") == "on"
+        user_info.profile.active_status = active_status
+        user_info.profile.telegram_id = telegram_id
+        user_info.save()
+        messages.success(request, f"Telegram alert updated !")
+        return redirect("accounts:telegram_plugin")
+
+    return render(request, "plugins/telegram.html")
+
+
+def sms_plugin(request):
+    user_info = User.objects.get(id=request.user.pk)
+    if request.method == "POST":
+        phone_number = request.POST["phone_number"]
+        active_status = request.POST.get("active_status", "") == "on"
+        user_info.profile.active_status = active_status
+        user_info.profile.phone_number = phone_number
+        user_info.save()
+        messages.success(request, f"SMS alert updated !")
+        return redirect("accounts:sms_plugin")
+
+    return render(request, "plugins/sms.html")
+
+
+def email_plugin(request):
+    user_info = User.objects.get(id=request.user.pk)
+    if request.method == "POST":
+        email = request.POST["email"]
+        user_info.email = email
+        user_info.save()
+        messages.success(request, f"Email alert updated !")
+        return redirect("accounts:email_plugin")
+
+    return render(request, "plugins/email.html")

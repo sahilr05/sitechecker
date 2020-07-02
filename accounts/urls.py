@@ -26,4 +26,9 @@ urlpatterns = [
     path("edit_user/<int:pk>/", accounts_views.edit_user, name="edit_user"),
     path("my_account", accounts_views.my_account, name="my_account"),
     path("change_password", accounts_views.change_password, name="change_password"),
+    path(
+        "plugin/telegram_plugin", accounts_views.telegram_plugin, name="telegram_plugin"
+    ),
+    path("plugin/sms_plugin", accounts_views.sms_plugin, name="sms_plugin"),
+    path("plugin/email_plugin", accounts_views.email_plugin, name="email_plugin"),
 ]

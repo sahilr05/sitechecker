@@ -17,9 +17,13 @@ class Profile(models.Model):
         message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.",
     )
     phone = models.CharField(
-        validators=[phone_regex], max_length=15, blank=False, unique=True
-    )  # validators should be a list
+        validators=[phone_regex],
+        max_length=15,
+        blank=False,
+        unique=True,  # validators should be a list
+    )
     telegram_id = models.CharField(null=True, max_length=50)
+    active_status = models.BooleanField(default=True)
 
 
 @receiver(post_save, sender=User)
@@ -69,6 +73,11 @@ class CheckResult(models.Model):
     result = models.SmallIntegerField(choices=RESULT_CHOICES)
     # metadata = JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class AlertSent(models.Model):
+    check_obj = models.ForeignKey(BaseCheck, on_delete=models.CASCADE)
+    sent_at = models.DateTimeField(auto_now_add=True)
 
 
 class AbstractCheck(models.Model):
