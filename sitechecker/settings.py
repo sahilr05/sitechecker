@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "celery",
     "widget_tweaks",
     "phonenumber_field",
+    "sc_telegrambot",
     "django_telegrambot",
 ]
 

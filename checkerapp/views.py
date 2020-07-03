@@ -135,14 +135,14 @@ def delete_service(request, service_pk):
 
 
 def http_info(request, pk):
-    http_check_obj = HttpCheck.objects.get(id=pk)  # fetch site name from HttpCheck
+    http_results_obj = HttpCheck.objects.get(id=pk)  # fetch site name from HttpCheck
     base_check_obj = (
-        http_check_obj.base_check.first()
+        http_results_obj.base_check.first()
     )  # fetch interval, backoff count, etc.
-    result = http_check_obj.results.all().order_by("id")  # fetch status (UP/DOWN)
+    result = http_results_obj.results.all().order_by("id")  # fetch status (UP/DOWN)
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
-    last_down_time = http_check_obj.results.filter(result=CheckResult.FAILURE).last()
+    last_down_time = http_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
     paginator = Paginator(result, 10)
@@ -157,7 +157,7 @@ def http_info(request, pk):
     context = {
         "result": result,
         "last_down_time": last_down_time,
-        "site": http_check_obj,
+        "site": http_results_obj,
         "base_check": base_check_obj,
         "user_list": user_list,
         "all_users": all_users,
@@ -171,6 +171,7 @@ def ping_info(request, pk):
     result = ping_results_obj.results.all().order_by("id")
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
+    last_down_time = ping_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
     paginator = Paginator(result, 10)
@@ -188,6 +189,7 @@ def ping_info(request, pk):
         "base_check": base_check_obj,
         "user_list": user_list,
         "all_users": all_users,
+        "last_down_time": last_down_time,
     }
     return render(request, "check_info/ping_info.html", context)
 
@@ -198,6 +200,7 @@ def tcp_info(request, pk):
     result = tcp_results_obj.results.all().order_by("id")
     user_list = base_check_obj.users.all()
     all_users = User.objects.all()
+    last_down_time = tcp_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
     paginator = Paginator(result, 10)
@@ -215,6 +218,7 @@ def tcp_info(request, pk):
         "base_check": base_check_obj,
         "user_list": user_list,
         "all_users": all_users,
+        "last_down_time": last_down_time,
     }
     return render(request, "check_info/tcp_info.html", context)
 

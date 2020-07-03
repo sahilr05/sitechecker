@@ -7,6 +7,7 @@ from celery import shared_task
 from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
+from sc_telegrambot.telegrambot import send_alert
 
 from .models import AlertSent
 from .models import BaseCheck
@@ -15,7 +16,6 @@ from .models import HttpCheck
 from .models import PingCheck
 from .utils import check_tcp
 from plugins.sms import send_sms
-from plugins.telegrambot import send_alert
 from sitechecker.celery import app
 
 # from .models import TcpCheck
@@ -173,6 +173,7 @@ def check_severity(task_obj):
         send_email_task.apply_async(args=(task_obj,))
         if int(datetime.now().strftime("%H")) > last_alert_hour_check(check_obj):
             send_sms_task.apply_async(args=(task_obj,))
+            send_tg_alert_task.apply_async(args=(task_obj,))
 
 
 # @shared_task
