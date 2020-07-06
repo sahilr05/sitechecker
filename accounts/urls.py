@@ -38,4 +38,8 @@ urlpatterns = [
         "plugin/telegram_plugin",
         include("sc_telegram_plugin.urls", namespace="telegram_plugin"),
     ),
+    path(
+        "plugin/generic_plugin",
+        include("sc_generic_plugin.urls", namespace="generic_plugin"),
+    ),
 ]

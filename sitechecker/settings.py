@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Plugins
     # "sc_telegrambot",
     "sc_telegram_plugin",
+    "sc_generic_plugin",
 ]
 
 MIDDLEWARE = [

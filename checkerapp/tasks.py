@@ -7,9 +7,6 @@ from celery import shared_task
 from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
-from django.db.models import Q
-from sc_telegram_plugin.bot import send_alert
-from sc_telegram_plugin.models import TelegramAlertPlugin
 
 from .models import AlertPlugin
 from .models import AlertSent
@@ -20,6 +17,9 @@ from .models import PingCheck
 from .utils import check_tcp
 from plugins.sms import send_sms
 from sitechecker.celery import app
+
+# from sc_telegram_plugin.bot import send_alert
+# from sc_telegram_plugin.models import TelegramAlertPlugin
 
 # from .models import TcpCheck
 
@@ -141,7 +141,8 @@ def check_failure(task_obj):
         check_severity.apply_async(args=(task_obj,))
 
 
-def last_alert_date_check(check_obj):
+def last_alert_date_check(task_obj):
+    check_obj = task_obj["base_check_obj"]
     if AlertSent.objects.filter(check_obj=check_obj).exists():
         last_alert_date = int(
             AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%d")
@@ -151,7 +152,8 @@ def last_alert_date_check(check_obj):
     return last_alert_date
 
 
-def last_alert_hour_check(check_obj):
+def last_alert_hour_check(task_obj):
+    check_obj = task_obj["base_check_obj"]
     if AlertSent.objects.filter(check_obj=check_obj).exists():
         last_alert_hour = int(
             AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%H")
@@ -161,23 +163,105 @@ def last_alert_hour_check(check_obj):
     return last_alert_hour
 
 
+def normal_severity(task_obj):
+    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+        send_email_task.apply_async(args=(task_obj,))
+    try:
+        plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+        for plugin in plugins_obj:
+            if plugin.severe_level == 0:
+                plugin.test_task(task_obj)
+    except Exception:
+        pass
+
+
+def warning_severity(task_obj):
+    # check_obj = task_obj["base_check_obj"]
+    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+        send_email_task.apply_async(args=(task_obj,))
+        send_sms_task.apply_async(args=(task_obj,))
+        try:
+            plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+            for plugin in plugins_obj:
+                if plugin.severe_level == 1:
+                    plugin.test_task(task_obj)
+        except Exception:
+            pass
+
+
+def critical_severity(task_obj):
+    # check_obj = task_obj["base_check_obj"]
+    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+        send_email_task.apply_async(args=(task_obj,))
+
+    if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+        send_sms_task.apply_async(args=(task_obj,))
+        try:
+            plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+            for plugin in plugins_obj:
+                if plugin.severe_level == 2:
+                    plugin.test_task(task_obj)
+        except Exception:
+            pass
+        # send_tg_alert_task.apply_async(args=(task_obj,))
+
+
 @shared_task
 def check_severity(task_obj):
+    # check_custom_plugins(task_obj)
     check_obj = task_obj["base_check_obj"]
-    if task_obj["base_check_obj"].severe_level == 0:  # normal
-        send_email_task.apply_async(args=(task_obj,))
 
-    elif task_obj["base_check_obj"].severe_level == 1:  # warning
-        send_email_task.apply_async(args=(task_obj,))
-        if int(datetime.now().strftime("%d")) > last_alert_date_check(check_obj):
-            send_sms_task.apply_async(args=(task_obj,))
+    if check_obj.severe_level == 0:  # normal
+        normal_severity(task_obj)
+
+    elif check_obj.severe_level == 1:  # warning
+        warning_severity(task_obj)
 
     else:  # critical
-        send_email_task.apply_async(args=(task_obj,))
-        send_tg_alert_task.apply_async(args=(task_obj,))
-        if int(datetime.now().strftime("%H")) > last_alert_hour_check(check_obj):
-            send_sms_task.apply_async(args=(task_obj,))
-            # send_tg_alert_task.apply_async(args=(task_obj,))
+        critical_severity(task_obj)
+
+
+@shared_task
+def send_email_task(task_obj):
+    # return "email"
+    check_obj = task_obj["base_check_obj"]
+    # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+    user_list = list(check_obj.users.values_list("email"))
+    # user_list = [("vuuxq97686@klefv6.com",)]
+
+    send_mail(
+        "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
+    )
+    AlertSent.objects.create(check_obj=check_obj)
+    return "Email sent !"
+
+
+@shared_task
+def send_sms_task(task_obj):
+    # return "sms"
+    for user in list(task_obj["base_check_obj"].users.all()):
+        message = str(task_obj["base_check_obj"].content_object) + " is down"
+        send_sms(message, user)
+        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+
+    # send_tg_alert_task.apply_async(args=(task_obj,))   #for testing
+
+
+# def check_custom_plugins(task_obj):
+#     check_obj = task_obj["base_check_obj"]
+#     try:
+#         plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+#         for plugin in plugins_obj:
+#             if plugin.severe_level == 0: #normal
+#                 normal_severity(task_obj)
+#             elif plugin.severe_level == 1:
+#                 warning_severity(task_obj)
+#             else:
+#                 critical_severity(task_obj)
+
+#     except Exception:
+#         pass
+#     return 'check_custom_plugin'
 
 
 # @shared_task
@@ -191,55 +275,28 @@ def check_severity(task_obj):
 #         send_sms_task.apply_async(args=(task_obj,))
 
 
-@shared_task
-def send_email_task(task_obj):
-    return "email"
-    check_obj = task_obj["base_check_obj"]
-    if int(datetime.now().strftime("%d")) > last_alert_date_check(check_obj):
-        user_list = list(task_obj["base_check_obj"].users.values_list("email"))
-        # user_list = [("vuuxq97686@klefv6.com",)]
+# @shared_task
+# def send_tg_alert_task(task_obj):
+#     check_obj = task_obj["base_check_obj"]
+#     message = str(check_obj.content_object) + " is down"
+#     users = list(
+#         AlertPlugin.objects.filter(
+#             Q(telegramalertplugin__check_obj=check_obj)
+#         ).values_list("alert_receiver")
+#     )
+#     for user_id in users:
+#         telegram_user_obj = TelegramAlertPlugin.objects.filter(
+#             Q(alert_receiver=user_id) & Q(check_obj=check_obj)
+#         ).first()
+#         send_alert(message, telegram_user_obj)
+#         AlertSent.objects.create(check_obj=check_obj)
+#         return "Success !"
 
-        send_mail(
-            "Report from site checker",
-            "Website down",
-            "sahilrajpal05@gmail.com",
-            user_list,
-        )
-        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
-        return "Email sent !"
-
-
-@shared_task
-def send_sms_task(task_obj):
-    return "sms"
-    for user in list(task_obj["base_check_obj"].users.all()):
-        message = str(task_obj["base_check_obj"].content_object) + " is down"
-        send_sms(message, user)
-        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
-
-
-@shared_task
-def send_tg_alert_task(task_obj):
-    check_obj = task_obj["base_check_obj"]
-    message = str(task_obj["base_check_obj"].content_object) + " is down"
-    users = list(
-        AlertPlugin.objects.filter(
-            Q(telegramalertplugin__check_obj=check_obj)
-        ).values_list("alert_receiver")
-    )
-    for user_id in users:
-        telegram_user_obj = TelegramAlertPlugin.objects.filter(
-            Q(alert_receiver=user_id) & Q(check_obj=check_obj)
-        ).first()
-        send_alert(message, telegram_user_obj)
-        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
-        return "Success !"
-
-    # for user in list(task_obj["base_check_obj"].users.all()):
-    # for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
-    #     print(x.telegram_id)
-    # for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
-    #     print(x.telegram_id)
+# for user in list(task_obj["base_check_obj"].users.all()):
+# for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
+#     print(x.telegram_id)
+# for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
+#     print(x.telegram_id)
 
 
 app.conf.beat_schedule = {
