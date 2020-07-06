@@ -1,0 +1,33 @@
+{% extends 'base_accounts.html' %}
+
+{% block head %}
+<title>Plugin List</title>
+{% endblock head %}
+
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">My Account</li>
+<li class="breadcrumb-item text-primary">Plugin List</li>
+{% endblock %}
+
+{% block sidenav %}
+  <a href="{% url 'accounts:my_account' %}" class="list-group-item list-group-item-action bg-light">Account Settings</a>
+  <a href="{% url 'accounts:change_password' %}" class=" text-dark list-group-item list-group-item-action bg-white">Change Password</a>
+{% endblock %}
+
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <div class="card">
+        <div class="card-body shadow-sm">
+          <h3 class="card-title">Custom Plugin List</h3>
+          {% for plugin_name, plugin_obj in plugin_data %}
+            {% comment %} <a href="{% url 'accounts:view_plugin' plugins_obj.url %}"><p>{{plugin}}</p></a> {% endcomment %}
+            <a href="{% url plugin_obj.url %}"><p>{{plugin_name}}</p></a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

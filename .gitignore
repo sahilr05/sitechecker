@@ -11,3 +11,4 @@ checkerapp/backup_tasks.py
 test_http.sh
 service_temp.html
 checkerapp/jsonpickle
+.pre-commit-config.yaml

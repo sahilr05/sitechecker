@@ -36,8 +36,10 @@ INSTALLED_APPS = [
     "celery",
     "widget_tweaks",
     "phonenumber_field",
-    "sc_telegrambot",
     "django_telegrambot",
+    # Plugins
+    # "sc_telegrambot",
+    "sc_telegram_plugin",
 ]
 
 MIDDLEWARE = [

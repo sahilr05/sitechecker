@@ -6,6 +6,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from polymorphic.models import PolymorphicModel
 
 # from jsonfield import JSONField
 
@@ -41,8 +42,13 @@ class BaseCheck(models.Model):
     NORMAL, WARNING, CRITICAL = list(range(3))
     SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
-    EMAIL, TELEGRAM, SMS = list(range(3))
-    ALERT_CHOICES = ((EMAIL, "EMAIL"), (TELEGRAM, "TELEGRAM"), (SMS, "SMS"))
+    EMAIL, TELEGRAM, SMS, TelegramAlertUserData = list(range(4))
+    ALERT_CHOICES = (
+        (EMAIL, "EMAIL"),
+        (TELEGRAM, "TELEGRAM"),
+        (SMS, "SMS"),
+        (TelegramAlertUserData, "NEW_TELEGRAM"),
+    )
 
     interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)
@@ -59,6 +65,9 @@ class BaseCheck(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=50)
     content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f"{self.content_object}"
 
 
 class Service(models.Model):
@@ -125,3 +134,29 @@ class TcpCheck(AbstractCheck):
     @staticmethod
     def execute():
         pass
+
+
+class AlertPlugin(PolymorphicModel):
+    title = models.CharField(max_length=30, unique=True, blank=False, editable=False)
+    enabled = models.BooleanField(default=True)
+
+
+class AlertPluginUserData(PolymorphicModel):
+    check_obj = models.ManyToManyField(BaseCheck, related_name="plugin_users")
+    alert_receiver = models.ForeignKey(
+        User, related_name="alert_receiver", on_delete=models.CASCADE
+    )
+
+
+# class AlertPluginUserData(PolymorphicModel):
+#     check_obj = models.ForeignKey(BaseCheck, on_delete=models.CASCADE)
+#     sent_at = models.DateTimeField(auto_now_add=True)
+#     alert_receiver = models.ForeignKey(
+#         User, related_name="alert_receiver", on_delete=models.CASCADE
+#     )
+
+#     def __unicode__(self):
+#         return u'%s' % (self.title)
+
+#     def serialize(self):
+#         return {}

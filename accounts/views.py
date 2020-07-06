@@ -12,10 +12,13 @@ from .forms import EditUserForm
 from .forms import MyAccountForm
 from .forms import ProfileForm
 from .forms import UserForm
+from checkerapp.models import AlertPluginUserData
 from checkerapp.models import BaseCheck
 from checkerapp.models import HttpCheck
 from checkerapp.models import PingCheck
 from checkerapp.models import TcpCheck
+
+# from sc_telegram_plugin.models import TelegramAlertUserData
 
 # from checkerapp.models import Profile
 
@@ -197,3 +200,20 @@ def email_plugin(request):
         return redirect("accounts:email_plugin")
 
     return render(request, "plugins/email.html")
+
+
+def plugin_list(request):
+    plugins_name = [cls.__name__ for cls in AlertPluginUserData.__subclasses__()]
+    plugins_obj = [cls for cls in AlertPluginUserData.__subclasses__()]
+    # context = {
+    #     "plugins_name": plugins_name,
+    #     "plugins_obj": plugins_obj,
+    # }
+    context = {}
+    context["plugin_data"] = zip(plugins_name, plugins_obj)
+    return render(request, "plugins/plugin_list.html", context)
+
+
+def view_plugin(request, plugin):
+    plugin_obj = plugin()
+    return redirect(plugin_obj.url)

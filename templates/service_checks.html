@@ -24,7 +24,7 @@ setInterval(blinker, 1000);
 {% block body %}
 <div class="container">
   {% comment %} {% if user.is_authenticated %} {% endcomment %}
-    <div class='card pt-4 shadow-sm'>
+    <div class='card pt-2 pb-2 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
@@ -91,7 +91,7 @@ setInterval(blinker, 1000);
     </table>
     </div>
 
-    <div class='card pt-4 mt-3 shadow-sm'>
+    <div class='card pt-2 pb-2 mt-3 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
@@ -159,7 +159,7 @@ setInterval(blinker, 1000);
     </table>
     </div>
 
-    <div class='card pt-4 mt-3 shadow-sm mb-3'>
+    <div class='card pt-2 pb-2 mt-3 shadow-sm mb-3'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>

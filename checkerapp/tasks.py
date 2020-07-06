@@ -7,8 +7,11 @@ from celery import shared_task
 from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
-from sc_telegrambot.telegrambot import send_alert
+from django.db.models import Q
+from sc_telegram_plugin.bot import send_alert
+from sc_telegram_plugin.models import TelegramAlertUserData
 
+from .models import AlertPluginUserData
 from .models import AlertSent
 from .models import BaseCheck
 from .models import CheckResult
@@ -171,9 +174,10 @@ def check_severity(task_obj):
 
     else:  # critical
         send_email_task.apply_async(args=(task_obj,))
+        send_tg_alert_task.apply_async(args=(task_obj,))
         if int(datetime.now().strftime("%H")) > last_alert_hour_check(check_obj):
             send_sms_task.apply_async(args=(task_obj,))
-            send_tg_alert_task.apply_async(args=(task_obj,))
+            # send_tg_alert_task.apply_async(args=(task_obj,))
 
 
 # @shared_task
@@ -189,6 +193,7 @@ def check_severity(task_obj):
 
 @shared_task
 def send_email_task(task_obj):
+    return "email"
     check_obj = task_obj["base_check_obj"]
     if int(datetime.now().strftime("%d")) > last_alert_date_check(check_obj):
         user_list = list(task_obj["base_check_obj"].users.values_list("email"))
@@ -205,19 +210,36 @@ def send_email_task(task_obj):
 
 
 @shared_task
-def send_tg_alert_task(task_obj):
-    for user in list(task_obj["base_check_obj"].users.all()):
-        message = str(task_obj["base_check_obj"].content_object) + " is down"
-        send_alert(message, user)
-        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
-
-
-@shared_task
 def send_sms_task(task_obj):
+    return "sms"
     for user in list(task_obj["base_check_obj"].users.all()):
         message = str(task_obj["base_check_obj"].content_object) + " is down"
         send_sms(message, user)
         AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+
+
+@shared_task
+def send_tg_alert_task(task_obj):
+    check_obj = task_obj["base_check_obj"]
+    message = str(task_obj["base_check_obj"].content_object) + " is down"
+    users = list(
+        AlertPluginUserData.objects.filter(
+            Q(telegramalertuserdata__check_obj=check_obj)
+        ).values_list("alert_receiver")
+    )
+    for user_id in users:
+        telegram_user_obj = TelegramAlertUserData.objects.filter(
+            Q(alert_receiver=user_id) & Q(check_obj=check_obj)
+        ).first()
+        send_alert(message, telegram_user_obj)
+        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+        return "Success !"
+
+    # for user in list(task_obj["base_check_obj"].users.all()):
+    # for x in AlertPluginUserData.objects.filter( Q(telegramalertuserdata__alert_receiver=user)):
+    #     print(x.telegram_id)
+    # for x in AlertPluginUserData.objects.filter( Q(telegramalertuserdata__alert_receiver=user)):
+    #     print(x.telegram_id)
 
 
 app.conf.beat_schedule = {

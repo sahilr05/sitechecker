@@ -15,13 +15,14 @@
       {% block sidenav %}
 
       {% endblock %}
+      <a href="{% url 'accounts:plugin_list' %}" class="list-group-item list-group-item-action bg-light">Custom Alerts</a>
       <li data-toggle="collapse" data-target="#service" class="list-group-item list-group-item-action bg-light">
-        <a href="#"><i class="dropdown-toggle"></i> Alert plugins <span class="arrow"></span></a>
+        <a href="#"><i class="dropdown-toggle"></i> Default Alert plugins <span class="arrow"></span></a>
       </li>
-      <ul class="list-group sub-menu" id="service">
+      <ul class="collapse list-group sub-menu" id="service">
         <a href="{% url 'accounts:email_plugin' %}"><li class="list-group-item list-group-item-action bg-light">Email</li></a>
         <a href="{% url 'accounts:sms_plugin' %}"><li class="list-group-item list-group-item-action bg-light">SMS</li></a>
-        <a href="{% url 'accounts:telegram_plugin' %}"><li class="list-group-item list-group-item-action bg-light">Telegram</li></a>
+        {% comment %} <a href="{% url 'accounts:telegram_plugin:telegram_pluginview' %}"><li class="list-group-item list-group-item-action bg-light">Telegram</li></a> {% endcomment %}
       </ul>
       </div>
     </div>
