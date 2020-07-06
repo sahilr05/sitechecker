@@ -9,9 +9,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.mail import send_mail
 from django.db.models import Q
 from sc_telegram_plugin.bot import send_alert
-from sc_telegram_plugin.models import TelegramAlertUserData
+from sc_telegram_plugin.models import TelegramAlertPlugin
 
-from .models import AlertPluginUserData
+from .models import AlertPlugin
 from .models import AlertSent
 from .models import BaseCheck
 from .models import CheckResult
@@ -223,12 +223,12 @@ def send_tg_alert_task(task_obj):
     check_obj = task_obj["base_check_obj"]
     message = str(task_obj["base_check_obj"].content_object) + " is down"
     users = list(
-        AlertPluginUserData.objects.filter(
-            Q(telegramalertuserdata__check_obj=check_obj)
+        AlertPlugin.objects.filter(
+            Q(telegramalertplugin__check_obj=check_obj)
         ).values_list("alert_receiver")
     )
     for user_id in users:
-        telegram_user_obj = TelegramAlertUserData.objects.filter(
+        telegram_user_obj = TelegramAlertPlugin.objects.filter(
             Q(alert_receiver=user_id) & Q(check_obj=check_obj)
         ).first()
         send_alert(message, telegram_user_obj)
@@ -236,9 +236,9 @@ def send_tg_alert_task(task_obj):
         return "Success !"
 
     # for user in list(task_obj["base_check_obj"].users.all()):
-    # for x in AlertPluginUserData.objects.filter( Q(telegramalertuserdata__alert_receiver=user)):
+    # for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
     #     print(x.telegram_id)
-    # for x in AlertPluginUserData.objects.filter( Q(telegramalertuserdata__alert_receiver=user)):
+    # for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
     #     print(x.telegram_id)
 
 

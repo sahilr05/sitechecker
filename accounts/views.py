@@ -12,13 +12,13 @@ from .forms import EditUserForm
 from .forms import MyAccountForm
 from .forms import ProfileForm
 from .forms import UserForm
-from checkerapp.models import AlertPluginUserData
+from checkerapp.models import AlertPlugin
 from checkerapp.models import BaseCheck
 from checkerapp.models import HttpCheck
 from checkerapp.models import PingCheck
 from checkerapp.models import TcpCheck
 
-# from sc_telegram_plugin.models import TelegramAlertUserData
+# from sc_telegram_plugin.models import TelegramAlertPlugin
 
 # from checkerapp.models import Profile
 
@@ -203,8 +203,8 @@ def email_plugin(request):
 
 
 def plugin_list(request):
-    plugins_name = [cls.__name__ for cls in AlertPluginUserData.__subclasses__()]
-    plugins_obj = [cls for cls in AlertPluginUserData.__subclasses__()]
+    plugins_name = [cls.__name__ for cls in AlertPlugin.__subclasses__()]
+    plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
     # context = {
     #     "plugins_name": plugins_name,
     #     "plugins_obj": plugins_obj,

@@ -42,12 +42,12 @@ class BaseCheck(models.Model):
     NORMAL, WARNING, CRITICAL = list(range(3))
     SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
-    EMAIL, TELEGRAM, SMS, TelegramAlertUserData = list(range(4))
+    EMAIL, TELEGRAM, SMS, TelegramAlertPlugin = list(range(4))
     ALERT_CHOICES = (
         (EMAIL, "EMAIL"),
         (TELEGRAM, "TELEGRAM"),
         (SMS, "SMS"),
-        (TelegramAlertUserData, "NEW_TELEGRAM"),
+        (TelegramAlertPlugin, "NEW_TELEGRAM"),
     )
 
     interval = models.IntegerField(default=1)
@@ -137,18 +137,13 @@ class TcpCheck(AbstractCheck):
 
 
 class AlertPlugin(PolymorphicModel):
-    title = models.CharField(max_length=30, unique=True, blank=False, editable=False)
-    enabled = models.BooleanField(default=True)
-
-
-class AlertPluginUserData(PolymorphicModel):
     check_obj = models.ManyToManyField(BaseCheck, related_name="plugin_users")
     alert_receiver = models.ForeignKey(
         User, related_name="alert_receiver", on_delete=models.CASCADE
     )
 
 
-# class AlertPluginUserData(PolymorphicModel):
+# class AlertPlugin(PolymorphicModel):
 #     check_obj = models.ForeignKey(BaseCheck, on_delete=models.CASCADE)
 #     sent_at = models.DateTimeField(auto_now_add=True)
 #     alert_receiver = models.ForeignKey(
