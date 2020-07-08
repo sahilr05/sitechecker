@@ -168,7 +168,7 @@ def normal_severity(task_obj):
         plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
         for plugin in plugins_obj:
             if plugin.severe_level == 0:
-                plugin.test_task(task_obj)
+                plugin.send_alert_task(task_obj)
     except Exception:
         pass
 
@@ -182,7 +182,7 @@ def warning_severity(task_obj):
             plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
             for plugin in plugins_obj:
                 if plugin.severe_level == 1:
-                    plugin.test_task(task_obj)
+                    plugin.send_alert_task(task_obj)
         except Exception:
             pass
 
@@ -198,7 +198,7 @@ def critical_severity(task_obj):
             plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
             for plugin in plugins_obj:
                 if plugin.severe_level == 2:
-                    plugin.test_task(task_obj)
+                    plugin.send_alert_task(task_obj)
         except Exception:
             pass
         # send_tg_alert_task.apply_async(args=(task_obj,))
