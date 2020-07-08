@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "phonenumber_field",
     # Plugins
     "sc_generic_plugin",
+    "django_telegrambot",
+    "bot",
 ]
 
 MIDDLEWARE = [
@@ -92,23 +94,6 @@ DATABASES = {
 
 WSGI_APPLICATION = "sitechecker.wsgi.application"
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(message)s"},
-        "simple": {"format": "%(levelname)s %(message)s"},
-    },
-    "handlers": {
-        "console": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        }
-    },
-    "loggers": {"": {"handlers": ["console"], "level": "INFO", "propagate": True}},
-}
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -156,3 +141,26 @@ CELERY_REDIS_DB = 0
 CELERY_ACCEPT_CONTENT = ["pickle"]
 CELERY_RESULT_SERIALIZER = "pickle"
 CELERY_TASK_SERIALIZER = "pickle"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        }
+    },
+    "loggers": {"": {"handlers": ["console"], "level": "INFO", "propagate": True}},
+}
+
+
+DJANGO_TELEGRAMBOT = {
+    "MODE": "POLLING",
+    "BOTS": [{"TOKEN": "***REMOVED***"}],
+}
