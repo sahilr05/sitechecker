@@ -26,7 +26,7 @@
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
-            Email : <input type='text' class="form-control" name='email' placeholder='telegram' value="{{request.user.email}}">
+            Email : <input type='text' class="form-control" name='email' placeholder='email' value="{{request.user.email}}">
             <small class="font-italic text-secondary">*Email alerts cannot be disabled</small>
             <button type="submit" class="btn btn-primary btn-block mt-3">Submit</button>
           </form>

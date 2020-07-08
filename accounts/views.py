@@ -18,7 +18,6 @@ from checkerapp.models import HttpCheck
 from checkerapp.models import PingCheck
 from checkerapp.models import TcpCheck
 
-# from sc_telegram_plugin.models import TelegramAlertPlugin
 
 # from checkerapp.models import Profile
 
@@ -160,20 +159,6 @@ def change_password(request):
 
     context = {"form": PasswordChangeForm(request.user)}
     return render(request, "change_pass.html", context)
-
-
-def telegram_plugin(request):
-    user_info = User.objects.get(id=request.user.pk)
-    if request.method == "POST":
-        telegram_id = request.POST["telegram_id"]
-        active_status = request.POST.get("active_status", "") == "on"
-        user_info.profile.active_status = active_status
-        user_info.profile.telegram_id = telegram_id
-        user_info.save()
-        messages.success(request, f"Telegram alert updated !")
-        return redirect("accounts:telegram_plugin")
-
-    return render(request, "plugins/telegram.html")
 
 
 def sms_plugin(request):

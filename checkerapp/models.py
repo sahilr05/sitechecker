@@ -137,7 +137,8 @@ class TcpCheck(AbstractCheck):
 
 
 class AlertPlugin(PolymorphicModel):
-    check_obj = models.ManyToManyField(BaseCheck, related_name="plugin_users")
+    # check_obj = models.ManyToManyField(BaseCheck, related_name="plugin_users")
+    active_status = models.BooleanField(default=True)
     alert_receiver = models.ForeignKey(
         User, related_name="alert_receiver", on_delete=models.CASCADE
     )

@@ -18,8 +18,6 @@ from .utils import check_tcp
 from plugins.sms import send_sms
 from sitechecker.celery import app
 
-# from sc_telegram_plugin.bot import send_alert
-# from sc_telegram_plugin.models import TelegramAlertPlugin
 
 # from .models import TcpCheck
 

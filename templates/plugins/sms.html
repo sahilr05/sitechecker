@@ -26,7 +26,7 @@
           <form method="post" novalidate>
             {% csrf_token %}
             {% include 'includes/form.html' %}
-            Phone number : <input type='text' class="form-control" name='phone_number' placeholder='telegram' value="{{request.user.profile.phone}}">
+            Phone number : <input type='text' class="form-control" name='phone_number' placeholder='phone number' value="{{request.user.profile.phone}}">
             <div class="form-check mt-3">
               <input name="active_status" type="checkbox" class="form-check-input" {% if request.user.profile.active_status %}checked{% endif %}>
               <label class="form-check-label">Active Status</label>
