@@ -70,10 +70,9 @@ class BaseCheckForm(forms.ModelForm):
             "backoff_count": forms.NumberInput(
                 attrs={"class": "form-control", "type": "number", "min": 2}
             ),
-            "alert_type": forms.Select(attrs={"class": "form-control"}),
             "severe_level": forms.Select(attrs={"class": "form-control"}),
         }
-        fields = ("interval", "backoff_count", "severe_level", "alert_type")
+        fields = ("interval", "backoff_count", "severe_level")
 
 
 # class UserForm(forms.ModelForm):

@@ -23,7 +23,7 @@
             <th>Site</th>
             <th>Interval</th>
             <th>Admin</th>
-            <th>Alert</th>
+            <th>Severe level</th>
             {% comment %} <th>Report</th> {% endcomment %}
             {% if user.is_superuser %}
             <th>Actions</th>
@@ -38,7 +38,7 @@
               {% comment %} <td class="align-middle">{{site.site_name}}</td> {% endcomment %}
               <td class="align-middle">{{base_check.interval}} minutes</td>
               <td class="align-middle">{{base_check.creator.username}}</td>
-              <td class="align-middle">{{base_check.get_alert_type_display}}</td>
+              <td class="align-middle">{{base_check.get_severe_level_display}}</td>
               {% comment %} <td class="align-middle"><a href="{% url 'checkerapp:report' site.pk %}">View</a></td> {% endcomment %}
 
               {% comment %} {% if user.is_superuser %}

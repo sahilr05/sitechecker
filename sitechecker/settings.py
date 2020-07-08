@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     # Plugins
     "sc_generic_plugin",
-    "django_telegrambot",
+    "django_telegrambot",  # required for telegram_bot
     "bot",
 ]
 

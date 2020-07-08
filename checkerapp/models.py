@@ -42,20 +42,11 @@ class BaseCheck(models.Model):
     NORMAL, WARNING, CRITICAL = list(range(3))
     SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
-    EMAIL, TELEGRAM, SMS, TelegramAlertPlugin = list(range(4))
-    ALERT_CHOICES = (
-        (EMAIL, "EMAIL"),
-        (TELEGRAM, "TELEGRAM"),
-        (SMS, "SMS"),
-        (TelegramAlertPlugin, "NEW_TELEGRAM"),
-    )
-
     interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     severe_level = models.SmallIntegerField(choices=SEVERE_CHOICES, default=0)
-    alert_type = models.SmallIntegerField(choices=ALERT_CHOICES, default=0)
     creator = models.ForeignKey(
         User, related_name="commoninfo_creator", on_delete=models.CASCADE
     )

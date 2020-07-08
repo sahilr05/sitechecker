@@ -237,14 +237,12 @@ def add_http_check(request, service_pk):
             )
             interval = base_check_form.cleaned_data.get("interval")
             backoff_count = base_check_form.cleaned_data.get("backoff_count")
-            alert_type = base_check_form.cleaned_data.get("alert_type")
             severe_level = base_check_form.cleaned_data.get("severe_level")
             service_obj = Service.objects.get(id=service_pk)
             creator = User.objects.get(id=request.user.pk)
             http_base_check_obj = http_check.base_check.create(
                 interval=interval,
                 backoff_count=backoff_count,
-                alert_type=alert_type,
                 severe_level=severe_level,
                 creator=creator,
             )
@@ -281,13 +279,9 @@ def edit_http_check(request, service_pk, http_pk):
         )
         interval = base_check_form.cleaned_data.get("interval")
         backoff_count = base_check_form.cleaned_data.get("backoff_count")
-        alert_type = base_check_form.cleaned_data.get("alert_type")
         severe_level = base_check_form.cleaned_data.get("severe_level")
         BaseCheck.objects.filter(id=base_check_obj.id).update(
-            interval=interval,
-            backoff_count=backoff_count,
-            alert_type=alert_type,
-            severe_level=severe_level,
+            interval=interval, backoff_count=backoff_count, severe_level=severe_level
         )
         messages.success(request, f" {site_name} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
@@ -310,14 +304,12 @@ def add_ping_check(request, service_pk):
             ping_check = PingCheck.objects.create(ip_address=ip_address)
             interval = base_check_form.cleaned_data.get("interval")
             backoff_count = base_check_form.cleaned_data.get("backoff_count")
-            alert_type = base_check_form.cleaned_data.get("alert_type")
             severe_level = base_check_form.cleaned_data.get("severe_level")
             service_obj = Service.objects.get(id=service_pk)
             creator = User.objects.get(id=request.user.pk)
             ping_base_check_obj = ping_check.base_check.create(
                 interval=interval,
                 backoff_count=backoff_count,
-                alert_type=alert_type,
                 severe_level=severe_level,
                 creator=creator,
             )
@@ -351,14 +343,10 @@ def edit_ping_check(request, service_pk, ping_pk):
         PingCheck.objects.filter(id=ping_pk).update(ip_address=ip_address)
         interval = base_check_form.cleaned_data.get("interval")
         backoff_count = base_check_form.cleaned_data.get("backoff_count")
-        alert_type = base_check_form.cleaned_data.get("alert_type")
         severe_level = base_check_form.cleaned_data.get("severe_level")
 
         BaseCheck.objects.filter(id=base_check_obj.id).update(
-            interval=interval,
-            backoff_count=backoff_count,
-            alert_type=alert_type,
-            severe_level=severe_level,
+            interval=interval, backoff_count=backoff_count, severe_level=severe_level
         )
         messages.success(request, f" {ip_address} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
@@ -381,14 +369,12 @@ def add_tcp_check(request, service_pk):
             tcp_check = TcpCheck.objects.create(ip_address=ip_address)
             interval = base_check_form.cleaned_data.get("interval")
             backoff_count = base_check_form.cleaned_data.get("backoff_count")
-            alert_type = base_check_form.cleaned_data.get("alert_type")
             severe_level = base_check_form.cleaned_data.get("severe_level")
             service_obj = Service.objects.get(id=service_pk)
             creator = User.objects.get(id=request.user.pk)
             tcp_base_check_obj = tcp_check.base_check.create(
                 interval=interval,
                 backoff_count=backoff_count,
-                alert_type=alert_type,
                 severe_level=severe_level,
                 creator=creator,
             )
@@ -422,13 +408,9 @@ def edit_tcp_check(request, service_pk, tcp_pk):
         TcpCheck.objects.filter(id=tcp_pk).update(ip_address=ip_address)
         interval = base_check_form.cleaned_data.get("interval")
         backoff_count = base_check_form.cleaned_data.get("backoff_count")
-        alert_type = base_check_form.cleaned_data.get("alert_type")
         severe_level = base_check_form.cleaned_data.get("severe_level")
         BaseCheck.objects.filter(id=base_check_obj.id).update(
-            interval=interval,
-            backoff_count=backoff_count,
-            alert_type=alert_type,
-            severe_level=severe_level,
+            interval=interval, backoff_count=backoff_count, severe_level=severe_level
         )
         messages.success(request, f" {ip_address} updated !!")
         return redirect("checkerapp:service", pk=service_pk)
