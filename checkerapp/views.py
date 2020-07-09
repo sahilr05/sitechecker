@@ -58,7 +58,7 @@ def home(request):
         context = {"services": services}
         return render(request, "services.html", context)
 
-    services = Service.objects.all().order_by("id")
+    services = Service.objects.filter(users=request.user).order_by("id")
     context = {"services": services}
     return render(request, "services.html", context)
 
@@ -66,19 +66,13 @@ def home(request):
 def service(request, pk):
     service_obj = Service.objects.get(id=pk)
     http_type = ContentType.objects.get_for_model(HttpCheck)
-    http_checks_info = service_obj.checks.filter(
-        content_type=http_type, users=request.user
-    ).order_by("id")
+    http_checks_info = service_obj.checks.filter(content_type=http_type).order_by("id")
 
     ping_type = ContentType.objects.get_for_model(PingCheck)
-    ping_checks_info = service_obj.checks.filter(
-        content_type=ping_type, users=request.user
-    ).order_by("id")
+    ping_checks_info = service_obj.checks.filter(content_type=ping_type).order_by("id")
 
     tcp_type = ContentType.objects.get_for_model(TcpCheck)
-    tcp_checks_info = service_obj.checks.filter(
-        content_type=tcp_type, users=request.user
-    ).order_by("id")
+    tcp_checks_info = service_obj.checks.filter(content_type=tcp_type).order_by("id")
 
     context = {
         "service": service_obj,
@@ -98,6 +92,7 @@ def add_service(request):
         if form.is_valid():
             service_name = form.cleaned_data.get("name")
             service_obj = Service.objects.create(name=service_name)
+            service_obj.users.add(request.user)
             messages.success(request, f" {service_name} created !!")
             return redirect("checkerapp:service", pk=service_obj.pk)
 
@@ -140,8 +135,6 @@ def http_info(request, pk):
         http_results_obj.base_check.first()
     )  # fetch interval, backoff count, etc.
     result = http_results_obj.results.all().order_by("id")  # fetch status (UP/DOWN)
-    user_list = base_check_obj.users.all()
-    all_users = User.objects.all()
     last_down_time = http_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
@@ -159,8 +152,6 @@ def http_info(request, pk):
         "last_down_time": last_down_time,
         "site": http_results_obj,
         "base_check": base_check_obj,
-        "user_list": user_list,
-        "all_users": all_users,
     }
     return render(request, "check_info/http_info.html", context)
 
@@ -169,8 +160,6 @@ def ping_info(request, pk):
     ping_results_obj = PingCheck.objects.get(id=pk)
     base_check_obj = ping_results_obj.base_check.first()
     result = ping_results_obj.results.all().order_by("id")
-    user_list = base_check_obj.users.all()
-    all_users = User.objects.all()
     last_down_time = ping_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
@@ -187,8 +176,6 @@ def ping_info(request, pk):
         "result": result,
         "ip_address": ping_results_obj,
         "base_check": base_check_obj,
-        "user_list": user_list,
-        "all_users": all_users,
         "last_down_time": last_down_time,
     }
     return render(request, "check_info/ping_info.html", context)
@@ -198,8 +185,6 @@ def tcp_info(request, pk):
     tcp_results_obj = TcpCheck.objects.get(id=pk)
     base_check_obj = tcp_results_obj.base_check.first()
     result = tcp_results_obj.results.all().order_by("id")
-    user_list = base_check_obj.users.all()
-    all_users = User.objects.all()
     last_down_time = tcp_results_obj.results.filter(result=CheckResult.FAILURE).last()
 
     page = request.GET.get("page", 1)
@@ -216,8 +201,6 @@ def tcp_info(request, pk):
         "result": result,
         "ip_address": tcp_results_obj,
         "base_check": base_check_obj,
-        "user_list": user_list,
-        "all_users": all_users,
         "last_down_time": last_down_time,
     }
     return render(request, "check_info/tcp_info.html", context)
@@ -246,7 +229,6 @@ def add_http_check(request, service_pk):
                 severe_level=severe_level,
                 creator=creator,
             )
-            http_base_check_obj.users.add(creator)
             service_obj.checks.add(http_base_check_obj)
             task_obj = {"base_check_obj": http_base_check_obj}
             http_check_task.apply_async(args=(task_obj,))
@@ -313,7 +295,6 @@ def add_ping_check(request, service_pk):
                 severe_level=severe_level,
                 creator=creator,
             )
-            ping_base_check_obj.users.add(creator)
             service_obj.checks.add(ping_base_check_obj)
             task_obj = {"base_check_obj": ping_base_check_obj}
             ping_check_task.apply_async(args=(task_obj,))
@@ -378,7 +359,6 @@ def add_tcp_check(request, service_pk):
                 severe_level=severe_level,
                 creator=creator,
             )
-            tcp_base_check_obj.users.add(creator)
             service_obj.checks.add(tcp_base_check_obj)
             task_obj = {"base_check_obj": tcp_base_check_obj}
             tcp_check_task.apply_async(args=(task_obj,))

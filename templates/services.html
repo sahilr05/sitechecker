@@ -21,6 +21,8 @@
           <tr>
             <th>PK</th>
             <th>Service</th>
+            <th>Users</th>
+
             {% if user.is_superuser %}
             <th>Actions</th>
             {% endif %}
@@ -32,6 +34,7 @@
               <td class="align-middle">{{service.pk}}</td>
               {% comment %} <td class="align-middle">{{forloop.counter}}</td> {% endcomment %}
               <td class="align-middle"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</td>
+              <td class="align-middle"><a href="{% url 'accounts:service_users' service.pk %}">Users</td>
 
               {% if user.is_superuser %}
               <td>

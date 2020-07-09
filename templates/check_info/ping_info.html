@@ -27,7 +27,7 @@
        </div>
 
       {% comment %} {% if user.is_superuser %} {% endcomment %}
-      <div class="ml-auto dropdown">
+      {% comment %} <div class="ml-auto dropdown">
 
         <form method='POST' action="{% url 'accounts:add_user_in_check' base_check.pk ip_address.pk%}">
         {% csrf_token %}
@@ -49,7 +49,7 @@
         {% endif %}
         </form>
 
-      </div>
+      </div> {% endcomment %}
       </div>
       {% comment %} {% endif %} {% endcomment %}
 
@@ -86,7 +86,7 @@
       {% endif %}
       </tr>
 
-      {% if user_list %}
+      {% comment %} {% if user_list %}
         {% for user in user_list %}
           <tbody>
           <tr class="info">
@@ -99,7 +99,7 @@
         {% endfor %}
       {% else %}
         <tr><td>No users added</td></tr>
-      {% endif %}
+      {% endif %} {% endcomment %}
 
       </table>
       </div>

@@ -25,7 +25,7 @@ setInterval(blinker, 1000);
 {% block body %}
 <div class="container">
   {% comment %} {% if user.is_authenticated %} {% endcomment %}
-    <div class='card pt-2 pb-2 shadow-sm'>
+    <div class='card pt-3 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn">
@@ -38,7 +38,7 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not http_checks %}
-            <h3 class="text-center col-10">No HTTP Checks Found</h3><br>
+            <h3 class="text-center col-10">No HTTP Checks Found</h3></div><br>
         {% else %}
             <h3 class="text-center col-10 mt-1 ">HTTP Checks</h3>
     </div>
@@ -100,7 +100,7 @@ setInterval(blinker, 1000);
     </table>
     </div>
 
-    <div class='card pt-2 pb-2 mt-3 shadow-sm'>
+    <div class='card pt-3 mt-3 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn">
@@ -113,7 +113,7 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not ping_checks %}
-            <h3 class="text-center col-10">No Ping Checks Found</h3><br>
+            <h3 class="text-center col-10">No Ping Checks Found</h3></div><br>
         {% else %}
             <h3 class="text-center col-10 mt-1">Ping Checks</h3>
     </div>
@@ -176,7 +176,7 @@ setInterval(blinker, 1000);
     </table>
     </div>
 
-    <div class='card pt-2 pb-2 mt-3 shadow-sm mb-3'>
+    <div class='card pt-3 mt-3 shadow-sm mb-3'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
             <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn">
@@ -189,7 +189,7 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not tcp_checks %}
-            <h3 class="text-center col-10">No TCP Checks Found</h3><br>
+            <h3 class="text-center col-10">No TCP Checks Found</h3></div><br>
         {% else %}
             <h3 class="text-center col-10 mt-1">TCP Checks</h3>
     </div>

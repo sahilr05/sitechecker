@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<title>Service users</title>
+<style>
+th, td, h3 {
+    text-align: center;
+}
+</style>
+{% endblock head %}
+
+{% block breadcrumb %}
+  <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+  <li class="breadcrumb-item active">{{ service.name }} Users</li>
+{% endblock %}
+
+{% block body %}
+<div class="container mb-3">
+  <div class="row justify-content-center">
+    <div class="col-lg-5 col-md-8 col-sm-4">
+      <div class="card">
+        <div class="card-body shadow-sm">
+          {% comment %} <h3 class="card-title text-center"><a href="{% url 'accounts:add_user' %}">Add user</a></h3> {% endcomment %}
+
+            <form method='POST' action="{% url 'accounts:add_user_in_service' service.pk %}">
+              {% csrf_token %}
+
+              <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
+              {% if not request.user.is_superuser %}
+                <option>Only admin can add</option>
+              {% else %}
+                {% for add_user in all_users %}
+                  {% if add_user not in users %}
+                    <option value="{{add_user.id}}">{{add_user.username}}</option>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              </select>
+
+              {% if request.user.is_superuser %}
+                <button type="submit" class="btn btn-primary m-2 float-right">Add users</button>
+              {% endif %}
+            </form>
+
+          <table class="table" style="margin:auto">
+            <thead class="thead-inverse">
+                <tr>
+                    <th class="justify-content-center">PK</th>
+                    <th class="justify-content-center">Username</th>
+
+                    <th class="justify-content-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user in users %}
+                    <tr>
+                    <td class="align-middle">{{user.pk}}</td>
+                    <td class="align-middle">{{user.username}}</td>
+                    <td>
+                        <a href="{% url 'accounts:edit_user' user.pk %}">
+                        <img src='{% static "images/edit.png" %}' width=20 height=20/>
+                        </a>
+                        <a href="{% url 'accounts:remove_user_service' service.pk user.pk %}">
+                        <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                        </a>
+                    </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

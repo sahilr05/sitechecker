@@ -18,6 +18,8 @@ from .utils import check_tcp
 from plugins.sms import send_sms
 from sitechecker.celery import app
 
+# from django.http import HttpResponse
+
 
 # from .models import TcpCheck
 
@@ -224,9 +226,9 @@ def send_email_task(task_obj):
     # return "email"
     check_obj = task_obj["base_check_obj"]
     # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-    user_list = list(check_obj.users.values_list("email"))
+    user_list = list(check_obj.service_set.first().users.values_list("email"))
     # user_list = [("vuuxq97686@klefv6.com",)]
-
+    # return HttpResponse(user_list)
     send_mail(
         "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
     )
@@ -237,7 +239,7 @@ def send_email_task(task_obj):
 @shared_task
 def send_sms_task(task_obj):
     # return "sms"
-    for user in list(task_obj["base_check_obj"].users.all()):
+    for user in list(task_obj["base_check_obj"].service_set.first().users.all()):
         message = str(task_obj["base_check_obj"].content_object) + " is down"
         send_sms(message, user)
         AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
