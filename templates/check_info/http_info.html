@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block head %}
 <title>Http Info</title>
 <style>
@@ -18,13 +19,17 @@
 {% block body %}
     <div class="container">
       <div class="row col-12">
-       <div class='col-6'>
-       {% if last_down_time%}
-        <p>Last Down Time : {{last_down_time.created_at}}</p>
-        {% else %}
-        <p>Last Down Time : No down time</p>
-        {% endif %}
-        <p>Severe Level : {{base_check.get_severe_level_display}}</p>
+       <div class='row col-5'>
+          <img src='{% static "images/down_time.png" %}' class='mr-2' width=30 height=30/>
+          {% if last_down_time%}
+            <p>Last Down Time : {{last_down_time.created_at}}</p>
+            {% else %}
+            <p>Last Down Time : No down time</p>
+            {% endif %}
+        <div class='row ml-1'>
+          <img src='{% static "images/severe_level.png" %}' class='mr-2' width=30 height=30/>
+          <p>Severe Level : {{base_check.get_severe_level_display}}</p>
+        </div>
        </div>
 
       {% comment %} {% if user.is_superuser %} {% endcomment %}

@@ -5,14 +5,14 @@
 {% endblock %}
 {% block body %}
   {% if user.is_authenticated %}
-    <div class="container shadow-sm pt-2 pb-1 bg-white rounded">
+    <div class="container col-6 shadow-sm pt-2 pb-1 bg-white rounded">
 
       <div class="col-3">
-
       {% if user.is_superuser %}
         {% comment %} <a href="{% url 'checkerapp:add_service' %}" class="btn btn-primary">Add Service</a> {% endcomment %}
       {% endif %}
       </div>
+
       {% if request.user.is_superuser  %}
         <a class="text-center" href="{% url 'checkerapp:add_service' %}"><h2>Add Service</h2></a>
       {% endif %}
@@ -30,12 +30,13 @@
           {% for service in services %}
             <tr>
               <td class="align-middle">{{service.pk}}</td>
+              {% comment %} <td class="align-middle">{{forloop.counter}}</td> {% endcomment %}
               <td class="align-middle"><a href="{% url 'checkerapp:service' service.pk %}">{{service.name}}</td>
 
               {% if user.is_superuser %}
               <td>
-                  <a href="{% url 'checkerapp:edit_service' service.pk %}">Edit</a>
-                  <a href="{% url 'checkerapp:delete_service' service.pk %}">Delete</a>
+                  <a href="{% url 'checkerapp:edit_service' service.pk %}"> <img src='{% static "images/edit.png" %}' width=20 height=20/> </a>
+                  <a href="{% url 'checkerapp:delete_service' service.pk %}"><img src='{% static "images/delete.png" %}' width=20 height=20/> </a>
               </td>
               {% endif %}
             </tr>

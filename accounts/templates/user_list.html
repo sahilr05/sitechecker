@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}User List{% endblock %}
 
@@ -12,12 +13,12 @@
     <div class="col-lg-6 col-md-8 col-sm-4">
       <div class="card">
         <div class="card-body shadow-sm">
-          <h3 class="card-title" style="text-align:center"><a href="{% url 'accounts:add_user' %}">Add user</a></h3>
+          <h3 class="card-title text-center"><a href="{% url 'accounts:add_user' %}">Add user</a></h3>
           <table class="table" style="margin:auto">
             <thead class="thead-inverse">
                 <tr>
                     <th class="justify-content-center">PK</th>
-                    <th class="justify-content-center">Users</th>
+                    <th class="justify-content-center">Username</th>
 
                     <th class="justify-content-center">Actions</th>
                 </tr>
@@ -28,8 +29,12 @@
                     <td class="align-middle">{{user.pk}}</td>
                     <td class="align-middle">{{user.username}}</td>
                     <td>
-                        <a href="{% url 'accounts:edit_user' user.pk %}"><span class="glyphicon glyphicon-pencil">Edit</span></a>
-                        <a href="{% url 'accounts:delete_user' user.pk %}">Delete</a>
+                        <a href="{% url 'accounts:edit_user' user.pk %}">
+                        <img src='{% static "images/edit.png" %}' width=20 height=20/>
+                        </a>
+                        <a href="{% url 'accounts:delete_user' user.pk %}">
+                        <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                        </a>
                     </td>
                     </tr>
                 {% endfor %}

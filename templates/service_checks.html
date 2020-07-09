@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block head %}
 <title>Services</title>
@@ -27,7 +28,9 @@ setInterval(blinker, 1000);
     <div class='card pt-2 pb-2 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
-            <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+            <a href="{% url 'checkerapp:add_http_check' service.pk %}" class="btn">
+            <img src='{% static "images/add.png" %}' width=40 height=40/>
+            </a>
         {% else %}
             <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
             <span aria-hidden="true">&empty;</span>
@@ -35,9 +38,9 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not http_checks %}
-            <h3 class="text-center col-10">No HTTP Checks Found</h3></div><br>
+            <h3 class="text-center col-10">No HTTP Checks Found</h3><br>
         {% else %}
-            <h3 class="text-center col-10">HTTP Checks</h3>
+            <h3 class="text-center col-10 mt-1 ">HTTP Checks</h3>
     </div>
 
     <table class="mt-2 table">
@@ -73,14 +76,20 @@ setInterval(blinker, 1000);
 
             {% if user.is_superuser %}
             <td>
-                <a href="{% url 'checkerapp:edit_http_check' service.pk site.content_object.pk %}">Edit</a>
-                <a href="{% url 'checkerapp:delete_check' site.content_type.id service.pk site.content_object.pk %}">Delete</a>
+                <a href="{% url 'checkerapp:edit_http_check' service.pk site.content_object.pk %}"><img src='{% static "images/edit.png" %}' width=20 height=20/> </a>
+                <a href="{% url 'checkerapp:delete_check' site.content_type.id service.pk site.content_object.pk %}"><img src='{% static "images/delete.png" %}' width=20 height=20/> </a>
             </td>
             <td>
-                {% if site.maintenance_mode is False %}
-                    <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn off</a>
+                {% if site.maintenance_mode %}
+                    <a href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    <a>
+                    {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn on</a> {% endcomment %}
                 {% else %}
-                    <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn on</a>
+                    <a href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    </a>
+                    {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn off</a> {% endcomment %}
                 {% endif %}
             </td>
             </tr>
@@ -94,7 +103,9 @@ setInterval(blinker, 1000);
     <div class='card pt-2 pb-2 mt-3 shadow-sm'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
-            <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+            <a href="{% url 'checkerapp:add_ping_check' service.pk %}" class="btn">
+            <img src='{% static "images/add.png" %}' width=40 height=40/>
+            </a>
         {% else %}
             <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
             <span aria-hidden="true">&empty;</span>
@@ -102,9 +113,9 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not ping_checks %}
-            <h3 class="text-center col-10">No Ping Checks Found</h3></div><br>
+            <h3 class="text-center col-10">No Ping Checks Found</h3><br>
         {% else %}
-            <h3 class="text-center col-10">Ping Checks</h3>
+            <h3 class="text-center col-10 mt-1">Ping Checks</h3>
     </div>
     <table class="mt-2 table">
         <thead class="thead-inverse">
@@ -141,14 +152,20 @@ setInterval(blinker, 1000);
 
             {% if user.is_superuser %}
             <td >
-                <a href="{% url 'checkerapp:edit_ping_check' service.pk ip_address.content_object.pk %}">Edit</a>
-                <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Delete</a>
+                <a href="{% url 'checkerapp:edit_ping_check' service.pk ip_address.content_object.pk %}"><img src='{% static "images/edit.png" %}' width=20 height=20/> </a>
+                <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}"><img src='{% static "images/delete.png" %}' width=20 height=20/> </a>
             </td>
             <td >
-                {% if ip_address.maintenance_mode is False %}
-                    <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a>
+                {% if ip_address.maintenance_mode %}
+                    <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a> {% endcomment %}
                 {% else %}
-                    <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a>
+                    </a>
+                    <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    </a>
+                    {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a> {% endcomment %}
                 {% endif %}
             </td>
             {% endif %}
@@ -162,7 +179,9 @@ setInterval(blinker, 1000);
     <div class='card pt-2 pb-2 mt-3 shadow-sm mb-3'>
     <div class="col-12 row">
         {% if request.user.is_superuser %}
-            <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn btn-primary text-left ml-3">Add</a>
+            <a href="{% url 'checkerapp:add_tcp_check' service.pk %}" class="btn">
+            <img src='{% static "images/add.png" %}' width=40 height=40/>
+            </a>
         {% else %}
             <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
             <span aria-hidden="true">&empty;</span>
@@ -170,9 +189,9 @@ setInterval(blinker, 1000);
         {% endif %}
 
         {% if not tcp_checks %}
-            <h3 class="text-center col-10">No TCP Checks Found</h3></div><br>
+            <h3 class="text-center col-10">No TCP Checks Found</h3><br>
         {% else %}
-            <h3 class="text-center col-10">TCP Checks</h3>
+            <h3 class="text-center col-10 mt-1">TCP Checks</h3>
     </div>
     <table class="mt-2 table">
         <thead class="thead-inverse">
@@ -209,14 +228,20 @@ setInterval(blinker, 1000);
 
             {% if user.is_superuser %}
             <td >
-                <a href="{% url 'checkerapp:edit_tcp_check' service.pk ip_address.content_object.pk %}">Edit</a>
-                <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Delete</a>
+                <a href="{% url 'checkerapp:edit_tcp_check' service.pk ip_address.content_object.pk %}"><img src='{% static "images/edit.png" %}' width=20 height=20/> </a>
+                <a href="{% url 'checkerapp:delete_check' ip_address.content_type.id service.pk ip_address.content_object.pk %}"><img src='{% static "images/delete.png" %}' width=20 height=20/> </a>
             </td>
             <td >
-                {% if ip_address.maintenance_mode is False %}
-                    <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a>
+                {% if ip_address.maintenance_mode %}
+                    <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a> {% endcomment %}
                 {% else %}
-                    <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a>
+                    </a>
+                    <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    </a>
+                    {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a> {% endcomment %}
                 {% endif %}
             </td>
             {% endif %}
