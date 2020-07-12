@@ -35,11 +35,13 @@ INSTALLED_APPS = [
     # Third-party
     "celery",
     "widget_tweaks",
-    "phonenumber_field",
+    "django_extensions",
     # Plugins
     "sc_generic_plugin",
     "django_telegrambot",  # required for telegram_bot
     "bot",
+    # test plugins
+    "sc_sms_plugin",
 ]
 
 MIDDLEWARE = [

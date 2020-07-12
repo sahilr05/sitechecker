@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block head %}
-<title>Services</title>
+<title>Service checks</title>
 <style>
 th, td, h3 {
     text-align: center;
@@ -18,7 +18,7 @@ setInterval(blinker, 1000);
 {% endblock head %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Service</a></li>
     <li class="breadcrumb-item active">{{service.name}}</li>
 {% endblock breadcrumb %}
 

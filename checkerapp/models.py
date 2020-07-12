@@ -1,46 +1,22 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.core.validators import RegexValidator
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from polymorphic.models import PolymorphicModel
+
+logger = logging.getLogger(__name__)
 
 # from jsonfield import JSONField
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_regex = RegexValidator(
-        regex=r"^\+?1?\d{9,15}$",
-        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.",
-    )
-    phone = models.CharField(
-        validators=[phone_regex],
-        max_length=15,
-        blank=False,
-        unique=True,  # validators should be a list
-    )
-    telegram_id = models.CharField(null=True, max_length=50)
-    active_status = models.BooleanField(default=True)
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-
 class BaseCheck(models.Model):
-    NORMAL, WARNING, CRITICAL = list(range(3))
-    SEVERE_CHOICES = ((NORMAL, "NORMAL"), (WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
+    WARNING, CRITICAL = list(
+        range(2)
+    )  # Replace normal with warning...warning with critical
+    SEVERE_CHOICES = ((WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
     interval = models.IntegerField(default=1)
     backoff_count = models.IntegerField(default=3)
@@ -60,10 +36,31 @@ class BaseCheck(models.Model):
         return f"{self.content_object}"
 
 
+class AlertPlugin(PolymorphicModel):
+    active_status = models.BooleanField(default=True)
+    alert_receiver = models.ForeignKey(
+        User, related_name="alert_receiver", on_delete=models.CASCADE
+    )
+
+
+class PluginList(models.Model):
+    name = models.CharField(max_length=50)
+    active_status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
 class Service(models.Model):
+    warning_severity = models.ManyToManyField(
+        PluginList, related_name="warnign_plugin_list"
+    )
+    critical_severity = models.ManyToManyField(
+        PluginList, related_name="critical_plugin_list"
+    )
+
     name = models.CharField(max_length=50, unique=True)
     users = models.ManyToManyField(User, related_name="service_users")
-
     checks = models.ManyToManyField(BaseCheck)
 
 
@@ -126,14 +123,6 @@ class TcpCheck(AbstractCheck):
     @staticmethod
     def execute():
         pass
-
-
-class AlertPlugin(PolymorphicModel):
-    # check_obj = models.ManyToManyField(BaseCheck, related_name="plugin_users")
-    active_status = models.BooleanField(default=True)
-    alert_receiver = models.ForeignKey(
-        User, related_name="alert_receiver", on_delete=models.CASCADE
-    )
 
 
 # class AlertPlugin(PolymorphicModel):

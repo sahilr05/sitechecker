@@ -21,6 +21,11 @@ def check_tcp(ip, port):
         return False
     return True
 
+    # plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+    # for plugin in plugins_obj:
+    #     if plugin.severe_level == 2:
+    #         plugin.send_alert_task(task_obj)
+
 
 # def socket_to_me():
 #     try:

@@ -8,7 +8,6 @@ app_name = "checkerapp"
 
 urlpatterns = [
     path("", views.home, name="home"),
-    path("sms_test", views.send_sms_test, name="send_sms"),
     path("add_service", views.add_service, name="add_service"),
     path("edit_service/<int:service_pk>/", views.edit_service, name="edit_service"),
     path(
@@ -57,6 +56,16 @@ urlpatterns = [
         "delete_check/<int:service_type_id>/<int:service_pk>/<int:pk>/",
         views.delete_check,
         name="delete_check",
+    ),
+    path(
+        "delete_critical_plugin/<int:service_pk>/<int:plugin_pk>/",
+        views.delete_critical_plugin,
+        name="delete_critical_plugin",
+    ),
+    path(
+        "delete_warning_plugin/<int:service_pk>/<int:plugin_pk>/",
+        views.delete_warning_plugin,
+        name="delete_warning_plugin",
     ),
     # path("report/<int:pk>", Pdf.as_view(), name="report"),
     # path("maintenance/<int:pk>", views.maintenance, name="maintenance"),

@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}<!DOCTYPE html>
+
+{% block head %}
+  <title>Services</title>
+{% endblock %}
+
 {% block breadcrumb %}
   <li class="breadcrumb-item active">Services</li>
 {% endblock %}
+
 {% block body %}
   {% if user.is_authenticated %}
     <div class="container col-6 shadow-sm pt-2 pb-1 bg-white rounded">

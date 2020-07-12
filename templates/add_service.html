@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block head %}
 <title>Add service</title>
+<style>
+.field-checks
+{
+  width:700px;
+}
+.field-checks ul li{
+  display :block;
+  width:200px;
+  float:left;
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+</style>
 {% endblock head %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{% url 'checkerapp:home' %}">Services</a></li>
-    <li class="breadcrumb-item active">Add Service</li>
+    {% if flag %}
+      <li class="breadcrumb-item active">Edit Service</li>
+    {% else %}
+      <li class="breadcrumb-item active">Add Service</li>
+    {% endif %}
 {% endblock %}
 
 {% block body %}
@@ -17,7 +38,99 @@
             <h3 class="card-title">Service</h3>
           <form method="post" novalidate>
             {% csrf_token %}
-            {% include 'includes/form.html' %}
+            {{ form.as_p }}
+                {% csrf_token %}
+                  <div class='jumbotron p-1'>
+                Warning severity:
+                  <select class="selectpicker" name="warning_listxblocks" multiple data-live-search="true">
+                  {% if not request.user.is_superuser %}
+                    <option>Only admin can add</option>
+                  {% else %}
+                    {% for plugin in plugin_list %}
+                      {% if plugin not in warning_plugins %}
+                        <option value="{{plugin.id}}">{{plugin.name}}</option>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  </select><br>
+                  <small class="font-italic text-secondary">*Choose plugins when Warning severity is set for any check</small>
+
+                  {% if flag %}
+                  {% if not warning_plugins %}
+                    <br>No plugin selected
+                  {% else %}
+                  <table class="table col-4 ml-2">
+                      <thead class="thead-inverse">
+                          <tr>
+                              <th class="justify-content-center">PK</th>
+                              <th class="justify-content-center">Plugin</th>
+                              <th class="justify-content-center">Actions</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            {% for plugin in warning_plugins %}
+                                <tr>
+                                <td class="align-middle">{{plugin.pk}}</td>
+                                <td class="align-middle">{{plugin.name}}</td>
+                                <td>
+                                    <a href="{% url "checkerapp:delete_warning_plugin" service.pk plugin.pk %}">
+                                    <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                                    </a>
+                                </td>
+                                </tr>
+                            {% endfor %}
+                      </tbody>
+                  </table>
+                  {% endif %}
+                  {% endif %}
+                  </div>
+              <br>
+              <div class='jumbotron p-1'>
+              <div class='mb-2'>
+                Critical severity:
+                    <select class="ml-2 selectpicker" name="critical_listxblocks" multiple data-live-search="true">
+                    {% if not request.user.is_superuser %}
+                      <option>Only admin can add</option>
+                    {% else %}
+                      {% for plugin in plugin_list %}
+                        {% if plugin not in critical_plugins %}
+                          <option value="{{plugin.id}}">{{plugin.name}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    </select><br>
+                    <small class="font-italic text-secondary">*Choose plugins when Critical severity is set for any check</small>
+                    {% if flag %}
+                      {% if not critical_plugins %}
+                      <br>No plugin selected
+                  {% else %}
+                  <table class="table col-4 ml-2">
+                      <thead class="thead-inverse">
+                          <tr>
+                              <th class="justify-content-center">PK</th>
+                              <th class="justify-content-center">Plugin</th>
+                              <th class="justify-content-center">Actions</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            {% for plugin in critical_plugins %}
+                                <tr>
+                                <td class="align-middle">{{plugin.pk}}</td>
+                                <td class="align-middle">{{plugin.name}}</td>
+                                <td>
+                                    <a href="{% url "checkerapp:delete_critical_plugin" service.pk plugin.pk %}">
+                                    <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                                    </a>
+                                </td>
+                                </tr>
+                            {% endfor %}
+                      </tbody>
+                  </table>
+                  {% endif %}
+                  {% endif %}
+                  </div>
+
+              </div>
             {% if flag %}
               <button type="submit" class="btn btn-primary btn-block">Update</button>
             {% else %}
@@ -29,3 +142,4 @@
     </div>
   </div>
 {% endblock %}
+x

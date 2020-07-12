@@ -22,12 +22,12 @@ from .models import CheckResult
 from .models import ContentType
 from .models import HttpCheck
 from .models import PingCheck
+from .models import PluginList
 from .models import Service
 from .models import TcpCheck
 from .tasks import http_check_task
 from .tasks import ping_check_task
 from .tasks import tcp_check_task
-from plugins.sms import send_sms
 
 # from django.views.generic import View
 # from .models import BaseCheck
@@ -38,11 +38,6 @@ class MyView(View):
     def get(self, request):
         text = "Hello, World!"
         return HttpResponse(text)
-
-
-def send_sms_test(request):
-    send_sms()
-    return HttpResponse("sent sms")
 
 
 def home(request):
@@ -91,13 +86,27 @@ def add_service(request):
         form = ServiceForm(request.POST)
         if form.is_valid():
             service_name = form.cleaned_data.get("name")
+            selected_warning_plugins = request.POST.getlist("warning_listxblocks")
+            selected_critical_plugins = request.POST.getlist("critical_listxblocks")
             service_obj = Service.objects.create(name=service_name)
+            for plugin in selected_warning_plugins:
+                service_obj.warning_severity.add(plugin)
+            for plugin in selected_critical_plugins:
+                service_obj.critical_severity.add(plugin)
             service_obj.users.add(request.user)
             messages.success(request, f" {service_name} created !!")
             return redirect("checkerapp:service", pk=service_obj.pk)
 
     form = ServiceForm()
-    context = {"form": form}
+    plugin_list = PluginList.objects.all()
+    warning_plugins = []
+    critical_plugins = []
+    context = {
+        "form": form,
+        "plugin_list": plugin_list,
+        "warning_plugins": warning_plugins,
+        "critical_plugins": critical_plugins,
+    }
     return render(request, "add_service.html", context)
 
 
@@ -111,12 +120,45 @@ def edit_service(request, service_pk):
     form = ServiceForm(request.POST or None, instance=service_obj)
     if form.is_valid():
         service_name = form.cleaned_data.get("name")
+        selected_warning_plugins = request.POST.getlist("warning_listxblocks")
+        selected_critical_plugins = request.POST.getlist("critical_listxblocks")
+        for plugin in selected_warning_plugins:
+            service_obj.warning_severity.add(plugin)
+        for plugin in selected_critical_plugins:
+            service_obj.critical_severity.add(plugin)
+
         service_obj = Service.objects.filter(id=service_pk).update(name=service_name)
         messages.success(request, f" {service_name} updated !!")
-        return redirect("checkerapp:home")
+        return redirect("checkerapp:edit_service", service_pk=service_pk)
 
-    context = {"form": form, "flag": flag}
+    plugin_list = PluginList.objects.all()
+    warning_plugins = service_obj.warning_severity.all()
+    critical_plugins = service_obj.critical_severity.all()
+    context = {
+        "form": form,
+        "service": service_obj,
+        "plugin_list": plugin_list,
+        "warning_plugins": warning_plugins,
+        "critical_plugins": critical_plugins,
+        "flag": flag,
+    }
     return render(request, "add_service.html", context)
+
+
+def delete_warning_plugin(request, service_pk, plugin_pk):
+    service_obj = Service.objects.get(id=service_pk)
+    plugin_obj = PluginList.objects.get(id=plugin_pk)
+    service_obj.warning_severity.remove(plugin_obj)
+    messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
+    return redirect("checkerapp:edit_service", service_pk=service_pk)
+
+
+def delete_critical_plugin(request, service_pk, plugin_pk):
+    service_obj = Service.objects.get(id=service_pk)
+    plugin_obj = PluginList.objects.get(id=plugin_pk)
+    service_obj.critical_severity.remove(plugin_obj)
+    messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
+    return redirect("checkerapp:edit_service", service_pk=service_pk)
 
 
 def delete_service(request, service_pk):

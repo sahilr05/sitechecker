@@ -6,7 +6,6 @@ import requests
 from celery import shared_task
 from celery.task.schedules import crontab
 from django.contrib.contenttypes.models import ContentType
-from django.core.mail import send_mail
 
 from .models import AlertPlugin
 from .models import AlertSent
@@ -15,8 +14,9 @@ from .models import CheckResult
 from .models import HttpCheck
 from .models import PingCheck
 from .utils import check_tcp
-from plugins.sms import send_sms
 from sitechecker.celery import app
+
+# from plugins.sms import send_sms
 
 # from django.http import HttpResponse
 
@@ -143,108 +143,140 @@ def check_failure(task_obj):
 
 def last_alert_date_check(task_obj):
     check_obj = task_obj["base_check_obj"]
-    if AlertSent.objects.filter(check_obj=check_obj).exists():
+    try:
         last_alert_date = int(
             AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%d")
         )
-    else:
+    except Exception:
         last_alert_date = 00
     return last_alert_date
 
 
 def last_alert_hour_check(task_obj):
     check_obj = task_obj["base_check_obj"]
-    if AlertSent.objects.filter(check_obj=check_obj).exists():
+    try:
         last_alert_hour = int(
             AlertSent.objects.filter(check_obj=check_obj).last().sent_at.strftime("%H")
         )
-    else:
+    except Exception:
         last_alert_hour = 00
     return last_alert_hour
 
 
-def normal_severity(task_obj):
-    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-        send_email_task.apply_async(args=(task_obj,))
-    try:
-        plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
-        for plugin in plugins_obj:
-            if plugin.severe_level == 0:
+def critical_severity(task_obj):
+    if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+        check_obj = task_obj["base_check_obj"]
+        service_obj = check_obj.service_set.first()
+        service_plugins = list(
+            service_obj.critical_severity.values_list("name", flat=True)
+        )
+        installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
+
+        for plugin in installed_plugins:
+            if plugin.__name__ in service_plugins:
                 plugin.send_alert_task(task_obj)
-    except Exception:
-        pass
 
 
 def warning_severity(task_obj):
-    # check_obj = task_obj["base_check_obj"]
     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-        send_email_task.apply_async(args=(task_obj,))
-        send_sms_task.apply_async(args=(task_obj,))
-        try:
-            plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
-            for plugin in plugins_obj:
-                if plugin.severe_level == 1:
-                    plugin.send_alert_task(task_obj)
-        except Exception:
-            pass
+        check_obj = task_obj["base_check_obj"]
+        service_obj = check_obj.service_set.first()
+        service_plugins = list(
+            service_obj.warning_severity.values_list("name", flat=True)
+        )
+        installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
 
-
-def critical_severity(task_obj):
-    # check_obj = task_obj["base_check_obj"]
-    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-        send_email_task.apply_async(args=(task_obj,))
-
-    if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
-        send_sms_task.apply_async(args=(task_obj,))
-        try:
-            plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
-            for plugin in plugins_obj:
-                if plugin.severe_level == 2:
-                    plugin.send_alert_task(task_obj)
-        except Exception:
-            pass
-        # send_tg_alert_task.apply_async(args=(task_obj,))
+        for plugin in installed_plugins:
+            if plugin.__name__ in service_plugins:
+                plugin.send_alert_task(task_obj)
 
 
 @shared_task
 def check_severity(task_obj):
-    # check_custom_plugins(task_obj)
     check_obj = task_obj["base_check_obj"]
-
-    if check_obj.severe_level == 0:  # normal
-        normal_severity(task_obj)
-
-    elif check_obj.severe_level == 1:  # warning
+    if check_obj.severe_level == 0:  # warning
         warning_severity(task_obj)
 
-    else:  # critical
+    elif check_obj.severe_level == 1:  # critical
         critical_severity(task_obj)
 
-
-@shared_task
-def send_email_task(task_obj):
-    # return "email"
-    check_obj = task_obj["base_check_obj"]
-    # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-    user_list = list(check_obj.service_set.first().users.values_list("email"))
-    # user_list = [("vuuxq97686@klefv6.com",)]
-    # return HttpResponse(user_list)
-    send_mail(
-        "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
-    )
-    AlertSent.objects.create(check_obj=check_obj)
-    return "Email sent !"
+    else:  # nothing
+        pass
 
 
-@shared_task
-def send_sms_task(task_obj):
-    # return "sms"
-    for user in list(task_obj["base_check_obj"].service_set.first().users.all()):
-        message = str(task_obj["base_check_obj"].content_object) + " is down"
-        send_sms(message, user)
-        AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+app.conf.beat_schedule = {
+    "ping-task": {
+        "task": "checkerapp.tasks.check_interval",
+        "schedule": crontab(minute="*", hour="*"),
+    }
+}
 
-    # send_tg_alert_task.apply_async(args=(task_obj,))   #for testing
+# @shared_task
+# def send_email_task(task_obj):
+#     # return "email"
+#     check_obj = task_obj["base_check_obj"]
+#     # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+#     user_list = list(check_obj.service_set.first().users.values_list("email"))
+#     # user_list = [("vuuxq97686@klefv6.com",)]
+#     # return HttpResponse(user_list)
+#     send_mail(
+#         "Report from site checker", "Website down", "sahilrajpal05@gmail.com", user_list
+#     )
+#     AlertSent.objects.create(check_obj=check_obj)
+#     return "Email sent !"
+
+
+# def normal_severity(task_obj):
+#     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+#         send_email_task.apply_async(args=(task_obj,))
+#     try:
+#         plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+#         for plugin in plugins_obj:
+#             if plugin.severe_level == 0:
+#                 plugin.send_alert_task(task_obj)
+#     except Exception:
+#         pass
+
+
+# def warning_severity(task_obj):
+#     # check_obj = task_obj["base_check_obj"]
+#     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+#         send_email_task.apply_async(args=(task_obj,))
+#         # send_sms_task.apply_async(args=(task_obj,))
+#         try:
+#             plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+#             for plugin in plugins_obj:
+#                 if plugin.severe_level == 1:
+#                     plugin.send_alert_task(task_obj)
+#         except Exception:
+#             pass
+
+
+# def critical_severity(task_obj):
+#     # check_obj = task_obj["base_check_obj"]
+#     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+#         send_email_task.apply_async(args=(task_obj,))
+
+#     if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+#         # send_sms_task.apply_async(args=(task_obj,))
+#         try:
+#             plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
+#             for plugin in plugins_obj:
+#                 if plugin.severe_level == 2:
+#                     plugin.send_alert_task(task_obj)
+#         except Exception:
+#             pass
+
+
+# @shared_task
+# def send_sms_task(task_obj):
+#     # return "sms"
+#     for user in list(task_obj["base_check_obj"].service_set.first().users.all()):
+#         message = str(task_obj["base_check_obj"].content_object) + " is down"
+#         send_sms(message, user)
+#         AlertSent.objects.create(check_obj=task_obj["base_check_obj"])
+
+# send_tg_alert_task.apply_async(args=(task_obj,))   #for testing
 
 
 # def check_custom_plugins(task_obj):
@@ -297,11 +329,3 @@ def send_sms_task(task_obj):
 #     print(x.telegram_id)
 # for x in AlertPlugin.objects.filter( Q(TelegramAlertPlugin__alert_receiver=user)):
 #     print(x.telegram_id)
-
-
-app.conf.beat_schedule = {
-    "ping-task": {
-        "task": "checkerapp.tasks.check_interval",
-        "schedule": crontab(minute="*", hour="*"),
-    }
-}
