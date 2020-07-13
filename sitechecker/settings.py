@@ -10,14 +10,42 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import os
+from distutils import strtobool
+
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (os.getenv("DJANGO_SECRET_KEY"),)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def get_bool_from_env(name, default_value):
+    if name in os.environ:
+        value = os.getenv(name)
+        try:
+            return bool(strtobool(value))
+        except ValueError as e:
+            error_msg = "{} is an invalid value for {}".format(value, name)
+            raise ImproperlyConfigured(error_msg) from e
+    return default_value
+
+
+def get_env_variable_or_default(name, default_value):
+    if name not in os.environ:
+        return default_value
+    return (os.getenv(name),)
+
+
+def get_env_variable(var_name):
+    try:
+        return (os.getenv(var_name),)
+    except KeyError:
+        error_msg = "Set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
+
+
+# SECRET_KEY = (os.getenv("DJANGO_SECRET_KEY"),)
+SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
+
+DEBUG = get_bool_from_env("DEBUG", True)
 
 ALLOWED_HOSTS = []
 
@@ -74,23 +102,25 @@ TEMPLATES = [
 
 # DATABASES = {
 #     "default": {
-#         "ENGINE": os.environ.get("SQL_ENGINE"),
-#         "NAME": os.environ.get("SQL_DATABASE"),
-#         "USER": os.environ.get("SQL_USER"),
-#         "PASSWORD": os.environ.get("SQL_PASSWORD"),
-#         "HOST": os.environ.get("SQL_HOST", "localhost"),
-#         "PORT": os.environ.get("SQL_PORT"),
+#         "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.postgresql"),
+#         "NAME": os.getenv("SQL_DATABASE", "sitechecker"),
+#         "USER": os.getenv("SQL_USER", "postgres"),
+#         "PASSWORD": os.getenv("SQL_PASSWORD"),
+#         "HOST": os.getenv("SQL_HOST", "localhost"),
+#         "PORT": os.getenv("SQL_PORT"),
 #     }
 # }
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("SQL_DATABASE", "sitechecker"),
-        "USER": os.getenv("SQL_USER", "postgres"),
-        "PASSWORD": os.getenv("SQL_PASSWORD"),
-        "HOST": os.getenv("SQL_HOST", "localhost"),
-        "PORT": os.getenv("SQL_PORT"),
+        "ENGINE": get_env_variable_or_default(
+            "SQL_ENGINE", "django.db.backends.postgresql"
+        ),
+        "NAME": get_env_variable_or_default("SQL_DATABASE", "sitechecker"),
+        "USER": get_env_variable_or_default("SQL_USER", "postgres"),
+        "PASSWORD": get_env_variable("SQL_PASSWORD"),
+        "HOST": get_env_variable_or_default("SQL_HOST", "localhost"),
+        "PORT": get_env_variable_or_default("SQL_PORT", "5432"),
     }
 }
 
@@ -134,7 +164,7 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
 # Celery
-BROKER_URL = (os.environ.get("REDIS_HOST", "redis://127.0.0.1:6379/0"),)  # docker
+BROKER_URL = get_env_variable_or_default("REDIS_HOST", "redis://127.0.0.1:6379/0")
 CELERY_REDIS_PORT = 6379
 CELERY_REDIS_DB = 0
 
@@ -164,5 +194,11 @@ LOGGING = {
 
 DJANGO_TELEGRAMBOT = {
     "MODE": "POLLING",
-    "BOTS": [{"TOKEN": "***REMOVED***"}],
+    "BOTS": [
+        {
+            "TOKEN": get_env_variable_or_default(
+                "TG_BOT_TOKEN", "***REMOVED***"
+            )
+        }
+    ],
 }

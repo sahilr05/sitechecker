@@ -56,32 +56,32 @@ ul {
                   <small class="font-italic text-secondary">*Choose plugins when Warning severity is set for any check</small>
 
                   {% if flag %}
-                  {% if not warning_plugins %}
-                    <br>No plugin selected
-                  {% else %}
-                  <table class="table col-4 ml-2">
-                      <thead class="thead-inverse">
-                          <tr>
-                              <th class="justify-content-center">PK</th>
-                              <th class="justify-content-center">Plugin</th>
-                              <th class="justify-content-center">Actions</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            {% for plugin in warning_plugins %}
-                                <tr>
-                                <td class="align-middle">{{plugin.pk}}</td>
-                                <td class="align-middle">{{plugin.name}}</td>
-                                <td>
-                                    <a href="{% url "checkerapp:delete_warning_plugin" service.pk plugin.pk %}">
-                                    <img src='{% static "images/delete.png" %}' width=20 height=20/>
-                                    </a>
-                                </td>
-                                </tr>
-                            {% endfor %}
-                      </tbody>
-                  </table>
-                  {% endif %}
+                    {% if not warning_plugins %}
+                      <br>No plugin selected
+                    {% else %}
+                    <table class="table col-4 ml-2">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th class="justify-content-center">PK</th>
+                                <th class="justify-content-center">Plugin</th>
+                                <th class="justify-content-center">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              {% for plugin in warning_plugins %}
+                                  <tr>
+                                  <td class="align-middle">{{plugin.pk}}</td>
+                                  <td class="align-middle">{{plugin.name}}</td>
+                                  <td>
+                                      <a href="{% url "checkerapp:delete_warning_plugin" service.pk plugin.pk %}">
+                                      <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                                      </a>
+                                  </td>
+                                  </tr>
+                              {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
                   {% endif %}
                   </div>
               <br>
@@ -103,30 +103,30 @@ ul {
                     {% if flag %}
                       {% if not critical_plugins %}
                       <br>No plugin selected
-                  {% else %}
-                  <table class="table col-4 ml-2">
-                      <thead class="thead-inverse">
-                          <tr>
-                              <th class="justify-content-center">PK</th>
-                              <th class="justify-content-center">Plugin</th>
-                              <th class="justify-content-center">Actions</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                            {% for plugin in critical_plugins %}
-                                <tr>
-                                <td class="align-middle">{{plugin.pk}}</td>
-                                <td class="align-middle">{{plugin.name}}</td>
-                                <td>
-                                    <a href="{% url "checkerapp:delete_critical_plugin" service.pk plugin.pk %}">
-                                    <img src='{% static "images/delete.png" %}' width=20 height=20/>
-                                    </a>
-                                </td>
-                                </tr>
-                            {% endfor %}
-                      </tbody>
-                  </table>
-                  {% endif %}
+                    {% else %}
+                    <table class="table col-4 ml-2">
+                        <thead class="thead-inverse">
+                            <tr>
+                                <th class="justify-content-center">PK</th>
+                                <th class="justify-content-center">Plugin</th>
+                                <th class="justify-content-center">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              {% for plugin in critical_plugins %}
+                                  <tr>
+                                  <td class="align-middle">{{plugin.pk}}</td>
+                                  <td class="align-middle">{{plugin.name}}</td>
+                                  <td>
+                                      <a href="{% url "checkerapp:delete_critical_plugin" service.pk plugin.pk %}">
+                                      <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                                      </a>
+                                  </td>
+                                  </tr>
+                              {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
                   {% endif %}
                   </div>
 
@@ -142,4 +142,3 @@ ul {
     </div>
   </div>
 {% endblock %}
-x

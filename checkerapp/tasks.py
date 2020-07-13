@@ -60,15 +60,15 @@ def check_interval():
     base_checks = BaseCheck.objects.filter(maintenance_mode=False)
 
     for base_check_obj in list(base_checks):
-        last_run_time = base_check_obj.content_object.results.last().created_at
-        interval = base_check_obj.interval - 1
-        if last_run_time:
+        try:
+            last_run_time = base_check_obj.content_object.results.last().created_at
             difference = abs(
                 int(datetime.now().strftime("%M")) - int(last_run_time.strftime("%M"))
             )
-        else:
+        except Exception:
             difference = 999
 
+        interval = base_check_obj.interval - 1
         if difference > interval:
             task_obj = {"base_check_obj": base_check_obj}
             http_type = ContentType.objects.get_for_model(HttpCheck)
@@ -163,44 +163,42 @@ def last_alert_hour_check(task_obj):
     return last_alert_hour
 
 
+@shared_task
 def critical_severity(task_obj):
-    if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
-        check_obj = task_obj["base_check_obj"]
-        service_obj = check_obj.service_set.first()
-        service_plugins = list(
-            service_obj.critical_severity.values_list("name", flat=True)
-        )
-        installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
+    # if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+    check_obj = task_obj["base_check_obj"]
+    service_obj = check_obj.service_set.first()
+    service_plugins = list(service_obj.critical_severity.values_list("name", flat=True))
+    installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
 
-        for plugin in installed_plugins:
-            if plugin.__name__ in service_plugins:
-                plugin.send_alert_task(task_obj)
+    for plugin in installed_plugins:
+        if plugin.__name__ in service_plugins:
+            plugin.send_alert_task.apply_async(args=(task_obj,))
 
 
+@shared_task
 def warning_severity(task_obj):
-    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-        check_obj = task_obj["base_check_obj"]
-        service_obj = check_obj.service_set.first()
-        service_plugins = list(
-            service_obj.warning_severity.values_list("name", flat=True)
-        )
-        installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
+    # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+    check_obj = task_obj["base_check_obj"]
+    service_obj = check_obj.service_set.first()
+    service_plugins = list(service_obj.warning_severity.values_list("name", flat=True))
+    installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
 
-        for plugin in installed_plugins:
-            if plugin.__name__ in service_plugins:
-                plugin.send_alert_task(task_obj)
+    for plugin in installed_plugins:
+        if plugin.__name__ in service_plugins:
+            plugin.send_alert_task.apply_async(args=(task_obj,))
 
 
 @shared_task
 def check_severity(task_obj):
     check_obj = task_obj["base_check_obj"]
     if check_obj.severe_level == 0:  # warning
-        warning_severity(task_obj)
+        warning_severity.apply_async(args=(task_obj,))
 
     elif check_obj.severe_level == 1:  # critical
-        critical_severity(task_obj)
+        critical_severity.apply_async(args=(task_obj,))
 
-    else:  # nothing
+    else:  # nothing.. remove later
         pass
 
 
