@@ -1,8 +1,9 @@
-# from datetime import datetime
-# from io import BytesIO
-# import xhtml2pdf.pisa as pisa
-# from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from io import BytesIO
+
+import xhtml2pdf.pisa as pisa
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
@@ -10,6 +11,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.template.loader import get_template
 from django.views import View
 
 from .forms import BaseCheckForm
@@ -31,7 +33,6 @@ from .tasks import tcp_check_task
 
 # from django.views.generic import View
 # from .models import BaseCheck
-# from django.template.loader import get_template
 
 
 class MyView(View):
@@ -40,19 +41,8 @@ class MyView(View):
         return HttpResponse(text)
 
 
+@login_required
 def home(request):
-    if request.user.is_authenticated and not request.user.is_superuser:
-        user = User.objects.get(id=request.user.id)
-        base_checks = BaseCheck.objects.filter(users=user).order_by("id")
-        services = []
-        for user_base_check in base_checks:
-            if user_base_check.service_set.first() in services:
-                continue
-            services.append(user_base_check.service_set.first())
-
-        context = {"services": services}
-        return render(request, "services.html", context)
-
     services = Service.objects.filter(users=request.user).order_by("id")
     context = {"services": services}
     return render(request, "services.html", context)
@@ -570,33 +560,33 @@ def delete_check(request, service_type_id, service_pk, pk):
 #     return redirect("checkerapp:home")
 
 
-# class RenderPDF:
-#     @staticmethod
-#     def render(path: str, params: dict):
-#         template = get_template(path)
-#         html = template.render(params)
-#         response = BytesIO()
-#         pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
-#         if not pdf.err:
-#             return HttpResponse(response.getvalue(), content_type="application/pdf")
+class RenderPDF:
+    @staticmethod
+    def render(path: str, params: dict):
+        template = get_template(path)
+        html = template.render(params)
+        response = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), response)
+        if not pdf.err:
+            return HttpResponse(response.getvalue(), content_type="application/pdf")
 
 
-# class Pdf(View):
-#     def get(self, request, pk):
+class Pdf(View):
+    def get(self, request, pk):
 
-#         ping_report_obj = PingInfo.objects.filter(site_id=pk).order_by("-date_time")
-#         site_list_obj = SiteList.objects.get(id=pk)
+        base_check_obj = BaseCheck.objects.get(id=pk)
+        last_down_time = (
+            base_check_obj.content_object.results.filter(result=0)
+            .order_by("-created_at")
+            .first()
+        )
+        today = datetime.now()
 
-#         last_down_time = (
-#             ping_report_obj.filter(status="DOWN").order_by("-date_time").first()
-#         )
-#         today = datetime.now()
-
-#         params = {
-#             "today": today,
-#             "site_name": site_list_obj,
-#             "last_down_time": last_down_time,
-#             "result": ping_report_obj,
-#             "request": request,
-#         }
-#         return RenderPDF.render("pdf.html", params)
+        params = {
+            "today": today,
+            "base_check_obj": base_check_obj,
+            "last_down_time": last_down_time,
+            "result": base_check_obj.content_object.results.all(),
+            "request": request,
+        }
+        return RenderPDF.render("pdf.html", params)

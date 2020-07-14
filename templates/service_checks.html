@@ -32,9 +32,7 @@ setInterval(blinker, 1000);
             <img src='{% static "images/add.png" %}' width=40 height=40/>
             </a>
         {% else %}
-            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&empty;</span>
-            </button>
+            <img class="ml-3 mt-2 disabled" src='{% static "images/not_allowed.png" %}' width=20 height=20/>
         {% endif %}
 
         {% if not http_checks %}
@@ -72,7 +70,7 @@ setInterval(blinker, 1000);
             <td>{{site.content_object.results.last.created_at}}</td>
             <td>{{site.interval}}</td>
             <td>{{site.backoff_count}}</td>
-            <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+            <td><a href="{% url 'checkerapp:report' site.pk %}">View</a></td>
 
             {% if user.is_superuser %}
             <td>
@@ -107,9 +105,7 @@ setInterval(blinker, 1000);
             <img src='{% static "images/add.png" %}' width=40 height=40/>
             </a>
         {% else %}
-            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&empty;</span>
-            </button>
+            <img class="ml-3 mt-2 disabled" src='{% static "images/not_allowed.png" %}' width=20 height=20/>
         {% endif %}
 
         {% if not ping_checks %}
@@ -148,7 +144,7 @@ setInterval(blinker, 1000);
             <td>{{ip_address.content_object.results.last.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
-            <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+            <td><a href="{% url 'checkerapp:report' ip_address.pk %}">View</a></td>
 
             {% if user.is_superuser %}
             <td >
@@ -183,9 +179,7 @@ setInterval(blinker, 1000);
             <img src='{% static "images/add.png" %}' width=40 height=40/>
             </a>
         {% else %}
-            <button type="button" class="btn btn-light ml-3" data-dismiss="toast" aria-label="Close">
-            <span aria-hidden="true">&empty;</span>
-            </button>
+            <img class="ml-3 mt-2 disabled" src='{% static "images/not_allowed.png" %}' width=20 height=20/>
         {% endif %}
 
         {% if not tcp_checks %}
@@ -224,7 +218,7 @@ setInterval(blinker, 1000);
             <td>{{ip_address.content_object.results.last.created_at}}</td>
             <td>{{ip_address.interval}}</td>
             <td>{{ip_address.backoff_count}}</td>
-            <td><a href="{% url 'checkerapp:test' %}">View</a></td>
+            <td><a href="{% url 'checkerapp:report' ip_address.pk %}">View</a></td>
 
             {% if user.is_superuser %}
             <td >

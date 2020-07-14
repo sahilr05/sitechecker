@@ -1,8 +1,8 @@
-<!doctype html>
+{% load static %}
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Ping Report</title>
+    <title>Report</title>
     <style type="text/css">
         @page {
             size: A4;
@@ -64,8 +64,8 @@
         </div>
 
         <div class="list-group">
-            <p>Site name: {{ site_name }}</p>
-            <p>Last down time : {{last_down_time.date_time}}</p>
+            <p>Check name: {{ base_check_obj.content_object }}</p>
+            <p>Last down time : {{last_down_time.created_at}}</p>
         </div>
 
         <table class="table">
@@ -78,8 +78,8 @@
             <tbody>
                 {% for status in result %}
                     <tr>
-                    <td class="align-middle">{{status.status}}</td>
-                    <td class="align-middle">{{status.date_time}}</td>
+                    <td class="align-middle">{{status.get_result_display}}</td>
+                    <td class="align-middle">{{status.created_at}}</td>
                     </tr>
                 {% endfor %}
             </tbody>

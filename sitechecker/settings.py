@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import os
-from distutils import strtobool
+from distutils.util import strtobool
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -148,8 +148,8 @@ USE_L10N = True
 USE_TZ = True
 
 LOGOUT_REDIRECT_URL = "checkerapp:home"
-LOGIN_REDIRECT_URL = "checkerapp:home"
-LOGIN_URL = "/login"
+LOGIN_REDIRECT_URL = "accounts:login"
+LOGIN_URL = "/accounts/login"
 
 STATIC_URL = "/static/"
 

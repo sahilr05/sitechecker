@@ -1,8 +1,7 @@
 from django.urls import path
 
 from checkerapp import views
-
-# from checkerapp.views import Pdf
+from checkerapp.views import Pdf
 
 app_name = "checkerapp"
 
@@ -67,7 +66,7 @@ urlpatterns = [
         views.delete_warning_plugin,
         name="delete_warning_plugin",
     ),
-    # path("report/<int:pk>", Pdf.as_view(), name="report"),
+    path("report/<int:pk>", Pdf.as_view(), name="report"),
     # path("maintenance/<int:pk>", views.maintenance, name="maintenance"),
     # path("edit_site/<int:pk>", views.edit_site, name="edit_site"),
     path("test", views.MyView.as_view(), name="test"),

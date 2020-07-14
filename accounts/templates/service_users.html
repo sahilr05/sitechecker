@@ -57,14 +57,18 @@ th, td, h3 {
                     <tr>
                     <td class="align-middle">{{user.pk}}</td>
                     <td class="align-middle">{{user.username}}</td>
-                    <td>
-                        <a href="{% url 'accounts:edit_user' user.pk %}">
-                        <img src='{% static "images/edit.png" %}' width=20 height=20/>
-                        </a>
-                        <a href="{% url 'accounts:remove_user_service' service.pk user.pk %}">
-                        <img src='{% static "images/delete.png" %}' width=20 height=20/>
-                        </a>
-                    </td>
+                    {% if request.user.is_superuser %}
+                      <td>
+                          <a href="{% url 'accounts:edit_user' user.pk %}">
+                          <img src='{% static "images/edit.png" %}' width=20 height=20/>
+                          </a>
+                          <a href="{% url 'accounts:remove_user_service' service.pk user.pk %}">
+                          <img src='{% static "images/delete.png" %}' width=20 height=20/>
+                          </a>
+                      </td>
+                    {% else %}
+                      <td><img class="disabled" src='{% static "images/not_allowed.png" %}' width=20 height=20/></td>
+                    {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
