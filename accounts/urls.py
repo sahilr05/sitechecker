@@ -12,11 +12,6 @@ urlpatterns = [
     ),
     path("logout", auth_views.LogoutView.as_view(), name="logout"),
     path("delete_user/<int:pk>", accounts_views.delete_user, name="delete_user"),
-    # path(
-    #     "add_user_in_check/<int:base_check_pk>/<int:check_pk>/",
-    #     accounts_views.add_user_check,
-    #     name="add_user_in_check",
-    # ),
     path("users", accounts_views.user_list, name="user_list"),
     path("adduser", accounts_views.add_user, name="add_user"),
     path(
@@ -34,18 +29,11 @@ urlpatterns = [
         accounts_views.add_user_in_service,
         name="add_user_in_service",
     ),
-    # path(
-    #     "remove_user/<int:base_check_pk>/<int:site_pk>/<int:user_pk>",
-    #     accounts_views.remove_user,
-    #     name="remove_user",
-    # ),
     path("edit_user/<int:pk>/", accounts_views.edit_user, name="edit_user"),
     path("my_account", accounts_views.my_account, name="my_account"),
     path("change_password", accounts_views.change_password, name="change_password"),
     path("view_plugin/<str:plugin>", accounts_views.view_plugin, name="view_plugin"),
     path("plugin_list", accounts_views.plugin_list, name="plugin_list"),
-    # path("plugin/sms_plugin", accounts_views.sms_plugin, name="sms_plugin"),
-    path("plugin/email_plugin", accounts_views.email_plugin, name="email_plugin"),
     path(
         "plugin/generic_plugin",
         include("sc_generic_plugin.urls", namespace="generic_plugin"),

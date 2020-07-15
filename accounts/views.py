@@ -124,39 +124,10 @@ def change_password(request):
     return render(request, "change_pass.html", context)
 
 
-# def sms_plugin(request):
-#     user_info = User.objects.get(id=request.user.pk)
-#     if request.method == "POST":
-#         phone_number = request.POST["phone_number"]
-#         active_status = request.POST.get("active_status", "") == "on"
-#         user_info.profile.active_status = active_status
-#         user_info.profile.phone_number = phone_number
-#         user_info.save()
-#         messages.success(request, f"SMS alert updated !")
-#         return redirect("accounts:sms_plugin")
-
-# return render(request, "plugins/sms.html")
-
-
-def email_plugin(request):
-    user_info = User.objects.get(id=request.user.pk)
-    if request.method == "POST":
-        email = request.POST["email"]
-        user_info.email = email
-        user_info.save()
-        messages.success(request, f"Email alert updated !")
-        return redirect("accounts:email_plugin")
-
-    return render(request, "plugins/email.html")
-
-
 def plugin_list(request):
     plugins_name = [cls.__name__ for cls in AlertPlugin.__subclasses__()]
     plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
-    # context = {
-    #     "plugins_name": plugins_name,
-    #     "plugins_obj": plugins_obj,
-    # }
+
     context = {}
     context["plugin_data"] = zip(plugins_name, plugins_obj)
     return render(request, "plugins/plugin_list.html", context)
@@ -165,47 +136,3 @@ def plugin_list(request):
 def view_plugin(request, plugin):
     plugin_obj = plugin()
     return redirect(plugin_obj.url)
-
-
-# @login_required
-# def remove_user(request, base_check_pk, site_pk, user_pk):
-#     user_to_remove = User.objects.get(id=user_pk)
-#     base_check_obj = BaseCheck.objects.get(id=base_check_pk)
-#     base_check_obj.users.remove(user_to_remove)
-#     base_check_obj.save()
-
-#     http_type = ContentType.objects.get_for_model(HttpCheck)
-#     ping_type = ContentType.objects.get_for_model(PingCheck)
-#     tcp_type = ContentType.objects.get_for_model(TcpCheck)
-
-#     if base_check_obj.content_type == http_type:
-#         check = "checkerapp:http_info"
-#     elif base_check_obj.content_type == ping_type:
-#         check = "checkerapp:ping_info"
-#     elif base_check_obj.content_type == tcp_type:
-#         check = "checkerapp:tcp_info"
-#     else:
-#         return HttpResponse("invalid request")
-
-#     return redirect(check, pk=site_pk)
-
-
-# def add_user_check(request, base_check_pk, check_pk):
-#     selected_users = request.POST.getlist("listxblocks")
-#     base_check_obj = BaseCheck.objects.get(id=base_check_pk)
-#     for user in selected_users:
-#         base_check_obj.users.add(user)
-#     http_type = ContentType.objects.get_for_model(HttpCheck)
-#     ping_type = ContentType.objects.get_for_model(PingCheck)
-#     tcp_type = ContentType.objects.get_for_model(TcpCheck)
-
-#     if base_check_obj.content_type == http_type:
-#         check = "checkerapp:http_info"
-#     elif base_check_obj.content_type == ping_type:
-#         check = "checkerapp:ping_info"
-#     elif base_check_obj.content_type == tcp_type:
-#         check = "checkerapp:tcp_info"
-#     else:
-#         return HttpResponse("invalid request")
-#     return redirect(check, pk=check_pk)
-#     # context={"":}

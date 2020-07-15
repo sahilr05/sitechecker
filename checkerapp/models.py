@@ -123,17 +123,3 @@ class TcpCheck(AbstractCheck):
     @staticmethod
     def execute():
         pass
-
-
-# class AlertPlugin(PolymorphicModel):
-#     check_obj = models.ForeignKey(BaseCheck, on_delete=models.CASCADE)
-#     sent_at = models.DateTimeField(auto_now_add=True)
-#     alert_receiver = models.ForeignKey(
-#         User, related_name="alert_receiver", on_delete=models.CASCADE
-#     )
-
-#     def __unicode__(self):
-#         return u'%s' % (self.title)
-
-#     def serialize(self):
-#         return {}
