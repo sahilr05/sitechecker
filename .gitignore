@@ -13,3 +13,4 @@ service_temp.html
 checkerapp/jsonpickle
 .pre-commit-config.yaml
 /.backup_plugins/*
+checkerapp/socket

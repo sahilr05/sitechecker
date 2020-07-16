@@ -2,12 +2,7 @@
 {% load static %}
 {% block head %}
 <title>Http Info</title>
-<style>
-.table>tbody>tr>td,
-.table>tbody>tr>th {
-  border-top: none;
-}
-</style>
+
 {% endblock head %}
 
 {% block breadcrumb %}
@@ -32,8 +27,7 @@
         </div>
        </div>
       </div>
-
-      <div class="row">
+  <div class="row">
       <table class="table jumbotron col-6 shadow-sm">
         <thead class="thead-inverse">
           <tr>
@@ -41,35 +35,23 @@
             <th>Time</th>
           </tr>
         </thead>
-          {% for status in result %}
+        {% if result %}
         <tbody>
+          {% for status in result %}
             <tr>
               <td class="align-middle">{{status.get_result_display}}</td>
               <td class="align-middle">{{status.created_at}}</td>
             </tr>
-        </tbody>
           {% endfor %}
+        </tbody>
+        {% else %}
+        <tbody>
+          <tr><td>No checks</td></tr>
+        </tbody>
+        {% endif %}
       </table>
       <div class="col-1 "></div>
-
-
-      {% comment %} {% if user_list %}
-        {% for user in user_list %}
-          <tbody>
-          <tr class="info">
-            <td>{{user.username}}</td>
-            {% if request.user.is_superuser %}
-              <td><a href="{% url 'accounts:remove_user' base_check.pk site.pk user.pk %}">Remove</a></td>
-            {% endif %}
-          </tr>
-          </tbody>
-        {% endfor %}
-      {% else %}
-        <tr><td>No users added</td></tr>
-      {% endif %} {% endcomment %}
-
       </div>
-    {% comment %} </div> {% endcomment %}
 
   {% if result.has_other_pages %}
     <ul class="pagination">
