@@ -31,32 +31,7 @@
           <p>Severe Level : {{base_check.get_severe_level_display}}</p>
         </div>
        </div>
-
-      {% comment %} {% if user.is_superuser %} {% endcomment %}
-      {% comment %} <div class="ml-auto dropdown">
-
-        <form method='POST' action="{% url 'accounts:add_user_in_check' base_check.pk site.pk%}">
-        {% csrf_token %}
-        <select class="selectpicker" name="listxblocks" multiple data-live-search="true">
-        {% if not request.user.is_superuser %}
-          <option>Only admin can add</option>
-        {% else %}
-          {% for add_user in all_users %}
-            {% if add_user not in user_list %}
-              <option value="{{add_user.id}}">{{add_user.username}}</option>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-        </select>
-
-        {% if request.user.is_superuser %}
-          <button type="submit" class="btn btn-primary ">Add users</button>
-        {% endif %}
-        </form>
-
-      </div> {% endcomment %}
       </div>
-      {% comment %} {% endif %} {% endcomment %}
 
       <div class="row">
       <table class="table jumbotron col-6 shadow-sm">
@@ -66,31 +41,17 @@
             <th>Time</th>
           </tr>
         </thead>
-        {% if result %}
-        <tbody>
           {% for status in result %}
+        <tbody>
             <tr>
               <td class="align-middle">{{status.get_result_display}}</td>
               <td class="align-middle">{{status.created_at}}</td>
             </tr>
+        </tbody>
           {% endfor %}
-        </tbody>
-        {% else %}
-        <tbody>
-          <tr><td>No checks</td></tr>
-        </tbody>
-        {% endif %}
       </table>
       <div class="col-1 "></div>
 
-      <table class="table jumbotron col-5 shadow-sm">
-      <tr class="danger">
-      <th>Users</th>
-
-      {% if request.user.is_superuser %}
-      <th>Action</th>
-      {% endif %}
-      </tr>
 
       {% comment %} {% if user_list %}
         {% for user in user_list %}
@@ -107,7 +68,6 @@
         <tr><td>No users added</td></tr>
       {% endif %} {% endcomment %}
 
-      </table>
       </div>
     {% comment %} </div> {% endcomment %}
 

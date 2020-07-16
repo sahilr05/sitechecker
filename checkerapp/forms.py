@@ -3,14 +3,8 @@ from django import forms
 from .models import BaseCheck
 from .models import HttpCheck
 from .models import PingCheck
-from .models import PluginList
 from .models import Service
 from .models import TcpCheck
-
-
-def get_plugins():
-    plugin_list = PluginList.objects.all()
-    return plugin_list
 
 
 class ServiceForm(forms.ModelForm):

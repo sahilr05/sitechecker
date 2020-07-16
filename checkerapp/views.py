@@ -31,9 +31,6 @@ from .tasks import http_check_task
 from .tasks import ping_check_task
 from .tasks import tcp_check_task
 
-# from django.views.generic import View
-# from .models import BaseCheck
-
 
 class MyView(View):
     def get(self, request):
@@ -162,10 +159,8 @@ def delete_service(request, service_pk):
 
 
 def http_info(request, pk):
-    http_results_obj = HttpCheck.objects.get(id=pk)  # fetch site name from HttpCheck
-    base_check_obj = (
-        http_results_obj.base_check.first()
-    )  # fetch interval, backoff count, etc.
+    http_results_obj = HttpCheck.objects.get(id=pk)
+    base_check_obj = http_results_obj.base_check.first()
     result = http_results_obj.results.all().order_by("id")  # fetch status (UP/DOWN)
     last_down_time = http_results_obj.results.filter(result=CheckResult.FAILURE).last()
 

@@ -27,7 +27,6 @@ class BaseCheck(models.Model):
         User, related_name="commoninfo_creator", on_delete=models.CASCADE
     )
     maintenance_mode = models.BooleanField(default=False)
-    # users = models.ManyToManyField(User)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.CharField(max_length=50)
     content_object = GenericForeignKey("content_type", "object_id")

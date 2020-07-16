@@ -130,7 +130,6 @@ def check_failure(task_obj):
         if result_obj.result == 0:
             failure_count += 1
     if failure_count >= backoff_count:
-        # return "Working"
         check_severity.apply_async(args=(task_obj,))
 
 
@@ -158,6 +157,7 @@ def last_alert_hour_check(task_obj):
 
 @shared_task
 def critical_severity(task_obj):
+    # disabled datetime check for testing
     # if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
     check_obj = task_obj["base_check_obj"]
     service_obj = check_obj.service_set.first()
@@ -171,6 +171,7 @@ def critical_severity(task_obj):
 
 @shared_task
 def warning_severity(task_obj):
+    # disabled datetime check for testing
     # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
     check_obj = task_obj["base_check_obj"]
     service_obj = check_obj.service_set.first()

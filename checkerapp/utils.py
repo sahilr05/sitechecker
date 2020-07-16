@@ -20,25 +20,3 @@ def check_tcp(ip, port):
     else:
         return False
     return True
-
-    # plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
-    # for plugin in plugins_obj:
-    #     if plugin.severe_level == 2:
-    #         plugin.send_alert_task(task_obj)
-
-
-# def socket_to_me():
-#     try:
-#         s = socket.socket()
-#         s.settimeout(2)
-#         s.connect(("192.168.95.148",21))
-#         ans = s.recv(1024)
-#         print(ans)
-#         s.shutdown(1) # By convention, but not actually necessary
-#         s.close()     # Remember to close sockets after use!
-#     except socket.error as socketerror:
-#         print("Error: ", socketerror)
-
-
-# if checkHost(ip, port):
-#         print(ip + " is UP")
