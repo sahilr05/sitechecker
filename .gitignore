@@ -14,3 +14,4 @@ checkerapp/jsonpickle
 .pre-commit-config.yaml
 /.backup_plugins/*
 checkerapp/socket
+docker-compose.backup
