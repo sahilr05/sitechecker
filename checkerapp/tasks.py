@@ -68,11 +68,11 @@ def check_interval():
             ping_type = ContentType.objects.get_for_model(PingCheck)
             # tcp_type = ContentType.objects.get_for_model(TcpCheck)
             if base_check_obj.content_type == http_type:
-                http_check_task.apply_async(args=(task_obj,))
+                http_check_task.apply_async(args=(task_obj,), queue="check_queue")
             elif base_check_obj.content_type == ping_type:
-                ping_check_task.apply_async(args=(task_obj,))
+                ping_check_task.apply_async(args=(task_obj,), queue="check_queue")
             else:
-                tcp_check_task.apply_async(args=(task_obj,))
+                tcp_check_task.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
@@ -85,7 +85,7 @@ def http_check_task(task_obj):
 
     final_result = CheckResult.objects.create(result=status)
     task_obj["base_check_obj"].content_object.results.add(final_result)
-    check_failure.apply_async(args=(task_obj,))
+    check_failure.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
@@ -98,7 +98,7 @@ def ping_check_task(task_obj):
 
     final_result = CheckResult.objects.create(result=status)
     task_obj["base_check_obj"].content_object.results.add(final_result)
-    check_failure.apply_async(args=(task_obj,))
+    check_failure.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
@@ -114,7 +114,7 @@ def tcp_check_task(task_obj):
 
     final_result = CheckResult.objects.create(result=status)
     task_obj["base_check_obj"].content_object.results.add(final_result)
-    check_failure.apply_async(args=(task_obj,))
+    check_failure.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
@@ -130,7 +130,7 @@ def check_failure(task_obj):
         if result_obj.result == 0:
             failure_count += 1
     if failure_count >= backoff_count:
-        check_severity.apply_async(args=(task_obj,))
+        check_severity.apply_async(args=(task_obj,), queue="check_queue")
 
 
 def last_alert_date_check(task_obj):
@@ -156,9 +156,8 @@ def last_alert_hour_check(task_obj):
 
 
 @shared_task
-def critical_severity(task_obj):
-    # disabled datetime check for testing
-    # if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+def send_alert(task_obj):
+    return "Inside send alert"
     check_obj = task_obj["base_check_obj"]
     service_obj = check_obj.service_set.first()
     service_plugins = list(service_obj.critical_severity.values_list("name", flat=True))
@@ -166,31 +165,31 @@ def critical_severity(task_obj):
 
     for plugin in installed_plugins:
         if plugin.__name__ in service_plugins:
-            plugin.send_alert_task.apply_async(args=(task_obj,))
+            plugin.send_alert_task.apply_async(args=(task_obj,), queue="alert_queue")
+
+
+@shared_task
+def critical_severity(task_obj):
+    # disabled datetime check for testing
+    # if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+    send_alert.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
 def warning_severity(task_obj):
     # disabled datetime check for testing
     # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-    check_obj = task_obj["base_check_obj"]
-    service_obj = check_obj.service_set.first()
-    service_plugins = list(service_obj.warning_severity.values_list("name", flat=True))
-    installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
-
-    for plugin in installed_plugins:
-        if plugin.__name__ in service_plugins:
-            plugin.send_alert_task.apply_async(args=(task_obj,))
+    send_alert.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
 def check_severity(task_obj):
     check_obj = task_obj["base_check_obj"]
     if check_obj.severe_level == 0:  # warning
-        warning_severity.apply_async(args=(task_obj,))
+        warning_severity.apply_async(args=(task_obj,), queue="check_queue")
 
     elif check_obj.severe_level == 1:  # critical
-        critical_severity.apply_async(args=(task_obj,))
+        critical_severity.apply_async(args=(task_obj,), queue="check_queue")
 
     else:  # nothing.. remove later
         pass

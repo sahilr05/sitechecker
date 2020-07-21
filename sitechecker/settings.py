@@ -30,8 +30,10 @@ def get_bool_from_env(name, default_value):
 
 def get_env_variable_or_default(name, default_value):
     if name not in os.environ:
-        return default_value
-    return (os.getenv(name),)
+        if type(default_value) == "int":
+            return int(default_value)
+        else:
+            return default_value
 
 
 def get_env_variable(var_name):
@@ -47,7 +49,7 @@ SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
 
 DEBUG = get_bool_from_env("DEBUG", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "sitechecker"]
 
 
 INSTALLED_APPS = [
@@ -107,7 +109,7 @@ TEMPLATES = [
 #         "USER": os.getenv("SQL_USER", "postgres"),
 #         "PASSWORD": os.getenv("SQL_PASSWORD"),
 #         "HOST": os.getenv("SQL_HOST", "localhost"),
-#         "PORT": os.getenv("SQL_PORT"),
+#         "PORT": os.getenv("SQL_PORT", 5432),
 #     }
 # }
 
@@ -120,7 +122,7 @@ DATABASES = {
         "USER": get_env_variable_or_default("SQL_USER", "postgres"),
         "PASSWORD": get_env_variable("SQL_PASSWORD"),
         "HOST": get_env_variable_or_default("SQL_HOST", "localhost"),
-        "PORT": get_env_variable_or_default("SQL_PORT", "5432"),
+        "PORT": get_env_variable_or_default("SQL_PORT", 5432),
     }
 }
 
@@ -152,8 +154,12 @@ LOGIN_REDIRECT_URL = "accounts:login"
 LOGIN_URL = "/accounts/login"
 
 STATIC_URL = "/static/"
+# as declared in NginX conf, it must match /opt/services/djangoapp/static/
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # EMAIL stuff
 EMAIL_HOST = "smtp.gmail.com"
@@ -173,6 +179,10 @@ CELERY_REDIS_DB = 0
 CELERY_ACCEPT_CONTENT = ["pickle"]
 CELERY_RESULT_SERIALIZER = "pickle"
 CELERY_TASK_SERIALIZER = "pickle"
+CELERY_ROUTES = {
+    "checkerapp.tasks.check_interval": {"queue": "check_queue"},
+    "checkerapp.tasks.send_alert": {"queue": "alert_queue"},
+}
 
 LOGGING = {
     "version": 1,
