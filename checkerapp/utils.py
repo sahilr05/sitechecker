@@ -19,4 +19,3 @@ def check_tcp(ip, port):
         return True
     else:
         return False
-    return True

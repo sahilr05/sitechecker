@@ -258,7 +258,7 @@ def add_http_check(request, service_pk):
             )
             service_obj.checks.add(http_base_check_obj)
             task_obj = {"base_check_obj": http_base_check_obj}
-            http_check_task.apply_async(args=(task_obj,))
+            http_check_task.apply_async(args=(task_obj,), queue="check_queue")
             messages.success(request, f" {site_name} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 
@@ -324,7 +324,7 @@ def add_ping_check(request, service_pk):
             )
             service_obj.checks.add(ping_base_check_obj)
             task_obj = {"base_check_obj": ping_base_check_obj}
-            ping_check_task.apply_async(args=(task_obj,))
+            ping_check_task.apply_async(args=(task_obj,), queue="check_queue")
             messages.success(request, f" {ip_address} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 
@@ -388,7 +388,7 @@ def add_tcp_check(request, service_pk):
             )
             service_obj.checks.add(tcp_base_check_obj)
             task_obj = {"base_check_obj": tcp_base_check_obj}
-            tcp_check_task.apply_async(args=(task_obj,))
+            tcp_check_task.apply_async(args=(task_obj,), queue="check_queue")
             messages.success(request, f" {ip_address} created !!")
             return redirect("checkerapp:service", pk=service_pk)
 

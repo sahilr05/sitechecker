@@ -67,10 +67,9 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_extensions",
     # Plugins
+    "bot",
     "sc_generic_plugin",
     "django_telegrambot",  # required for telegram_bot
-    "bot",
-    # test plugins
     "sc_sms_plugin",
 ]
 
@@ -120,7 +119,7 @@ DATABASES = {
         ),
         "NAME": get_env_variable_or_default("SQL_DATABASE", "sitechecker"),
         "USER": get_env_variable_or_default("SQL_USER", "postgres"),
-        "PASSWORD": get_env_variable("SQL_PASSWORD"),
+        "PASSWORD": get_env_variable_or_default("SQL_PASSWORD", 8149547570),
         "HOST": get_env_variable_or_default("SQL_HOST", "localhost"),
         "PORT": get_env_variable_or_default("SQL_PORT", 5432),
     }
@@ -161,13 +160,6 @@ if DEBUG:
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-# EMAIL stuff
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = ""
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
 
 # Celery
 BROKER_URL = get_env_variable_or_default("REDIS_HOST", "redis://127.0.0.1:6379/0")

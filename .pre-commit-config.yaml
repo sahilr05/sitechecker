@@ -18,7 +18,7 @@ repos:
     hooks:
     -   id: reorder-python-imports
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
-    sha: v1.1.7
+    rev: v1.1.9
     hooks:
     -   id: forbid-tabs
 -   repo: https://gitlab.com/pycqa/flake8

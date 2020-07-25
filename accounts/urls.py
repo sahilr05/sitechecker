@@ -39,7 +39,5 @@ urlpatterns = [
         include("sc_generic_plugin.urls", namespace="generic_plugin"),
     ),
     path("plugin/telegram_plugin", include("bot.urls", namespace="telegram_plugin")),
-    path(
-        "plugin/new_sms_plugin", include("sc_sms_plugin.urls", namespace="sms_plugin")
-    ),
+    path("plugin/sms_plugin", include("sc_sms_plugin.urls", namespace="sms_plugin")),
 ]
