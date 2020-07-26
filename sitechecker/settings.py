@@ -29,7 +29,9 @@ def get_bool_from_env(name, default_value):
 
 
 def get_env_variable_or_default(name, default_value):
-    if name not in os.environ:
+    if name in os.environ:
+        return os.getenv(name)
+    else:
         if type(default_value) == "int":
             return int(default_value)
         else:
@@ -153,7 +155,6 @@ LOGIN_REDIRECT_URL = "accounts:login"
 LOGIN_URL = "/accounts/login"
 
 STATIC_URL = "/static/"
-# as declared in NginX conf, it must match /opt/services/djangoapp/static/
 
 if DEBUG:
     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]

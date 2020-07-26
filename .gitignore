@@ -16,3 +16,4 @@ checkerapp/jsonpickle
 checkerapp/socket
 docker-compose.backup
 requirements.txt
+nginx.logs
