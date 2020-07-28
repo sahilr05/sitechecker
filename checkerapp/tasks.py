@@ -170,16 +170,16 @@ def send_alert(task_obj):
 
 @shared_task
 def critical_severity(task_obj):
-    # disabled datetime check for testing
-    # if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
-    send_alert.apply_async(args=(task_obj,), queue="check_queue")
+    # disable datetime check for testing
+    if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
+        send_alert.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
 def warning_severity(task_obj):
-    # disabled datetime check for testing
-    # if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-    send_alert.apply_async(args=(task_obj,), queue="check_queue")
+    # disable datetime check for testing
+    if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
+        send_alert.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
@@ -188,11 +188,8 @@ def check_severity(task_obj):
     if check_obj.severe_level == 0:  # warning
         warning_severity.apply_async(args=(task_obj,), queue="check_queue")
 
-    elif check_obj.severe_level == 1:  # critical
+    else:  # critical
         critical_severity.apply_async(args=(task_obj,), queue="check_queue")
-
-    else:  # nothing.. remove later
-        pass
 
 
 app.conf.beat_schedule = {
