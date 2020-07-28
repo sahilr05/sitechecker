@@ -40,16 +40,19 @@ def get_env_variable_or_default(name, default_value):
 
 def get_env_variable(var_name):
     try:
-        return (os.getenv(var_name),)
+        return os.getenv(var_name)
     except KeyError:
         error_msg = "Set the %s environment variable" % var_name
         raise ImproperlyConfigured(error_msg)
 
 
-# SECRET_KEY = (os.getenv("DJANGO_SECRET_KEY"),)
-SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
-
 DEBUG = get_bool_from_env("DEBUG", True)
+
+if DEBUG:
+    with open("secretkey.txt") as f:
+        SECRET_KEY = f.read().strip()
+else:
+    SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "sitechecker"]
 
@@ -68,6 +71,8 @@ INSTALLED_APPS = [
     "celery",
     "widget_tweaks",
     "django_extensions",
+    "storages",
+    "boto3",
     # Plugins
     "bot",
     "sc_generic_plugin",
@@ -102,17 +107,6 @@ TEMPLATES = [
         },
     }
 ]
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.postgresql"),
-#         "NAME": os.getenv("SQL_DATABASE", "sitechecker"),
-#         "USER": os.getenv("SQL_USER", "postgres"),
-#         "PASSWORD": os.getenv("SQL_PASSWORD"),
-#         "HOST": os.getenv("SQL_HOST", "localhost"),
-#         "PORT": os.getenv("SQL_PORT", 5432),
-#     }
-# }
 
 DATABASES = {
     "default": {
@@ -154,12 +148,32 @@ LOGOUT_REDIRECT_URL = "checkerapp:home"
 LOGIN_REDIRECT_URL = "accounts:login"
 LOGIN_URL = "/accounts/login"
 
-STATIC_URL = "/static/"
-
 if DEBUG:
+    STATIC_URL = "/static/"
     STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = get_env_variable("AWS_STORAGE_BUCKET_NAME")
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+    # s3 static settings
+    AWS_LOCATION = "static"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+# AWS_ACCESS_KEY_ID = 'AKIA2RVNWEAAWHO4PQBP'
+# AWS_SECRET_ACCESS_KEY = '***REMOVED***'
+# AWS_STORAGE_BUCKET_NAME = 's3.sitechecker'
+# AWS_DEFAULT_ACL = 'public-read'
+# AWS_S3_CUSTOM_DOMAIN = 's3.sitechecker.s3.amazonaws.com'
+# AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+# # s3 static settings
+# AWS_LOCATION = 'static'
+# # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+# STATIC_URL = 'https://s3.sitechecker.s3.amazonaws.com/static/'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 # Celery

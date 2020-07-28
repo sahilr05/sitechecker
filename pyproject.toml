@@ -30,7 +30,6 @@ idna = "2.9"
 jsonify = "0.5"
 kombu = "4.6.8"
 Pillow = "7.1.2"
-psycopg2 = "2.8.5"
 PyPDF2 = "1.26.0"
 python-dateutil = "2.8.1"
 pytz = "2020.1"
@@ -52,6 +51,9 @@ phonenumbers = "^8.12.6"
 jsonfield = "^3.1.0"
 django_extensions = "^3.0.3"
 django_telegrambot = "^1.0.1"
+boto3 = "^1.14.28"
+django-storages = "^1.9.1"
+psycopg2-binary = "^2.8.5"
 
 [tool.poetry.dev-dependencies]
 

@@ -8,7 +8,6 @@ dump.rdb
 .env
 used_commands.txt
 checkerapp/backup_tasks.py
-test_http.sh
 service_temp.html
 checkerapp/jsonpickle
 .pre-commit-config.yaml
@@ -17,3 +16,4 @@ checkerapp/socket
 docker-compose.backup
 requirements.txt
 nginx.logs
+secretkey.txt
