@@ -9,13 +9,9 @@ from polymorphic.models import PolymorphicModel
 
 logger = logging.getLogger(__name__)
 
-# from jsonfield import JSONField
-
 
 class BaseCheck(models.Model):
-    WARNING, CRITICAL = list(
-        range(2)
-    )  # Replace normal with warning...warning with critical
+    WARNING, CRITICAL = list(range(2))
     SEVERE_CHOICES = ((WARNING, "WARNING"), (CRITICAL, "CRITICAL"))
 
     interval = models.IntegerField(default=1)
@@ -68,7 +64,6 @@ class CheckResult(models.Model):
     RESULT_CHOICES = ((SUCCESS, "SUCCESS"), (FAILURE, "FAILURE"))
 
     result = models.SmallIntegerField(choices=RESULT_CHOICES)
-    # metadata = JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 

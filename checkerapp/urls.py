@@ -67,5 +67,4 @@ urlpatterns = [
         name="delete_warning_plugin",
     ),
     path("report/<int:pk>", Pdf.as_view(), name="report"),
-    path("test", views.MyView.as_view(), name="test"),
 ]

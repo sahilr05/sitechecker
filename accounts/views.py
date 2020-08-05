@@ -3,7 +3,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
@@ -13,9 +12,7 @@ from .forms import UserForm
 from checkerapp.models import AlertPlugin
 from checkerapp.models import Service
 
-
-def test(request):
-    return HttpResponse("Hi")
+# from django.http import HttpResponse
 
 
 @login_required

@@ -66,7 +66,6 @@ def check_interval():
             task_obj = {"base_check_obj": base_check_obj}
             http_type = ContentType.objects.get_for_model(HttpCheck)
             ping_type = ContentType.objects.get_for_model(PingCheck)
-            # tcp_type = ContentType.objects.get_for_model(TcpCheck)
             if base_check_obj.content_type == http_type:
                 http_check_task.apply_async(args=(task_obj,), queue="check_queue")
             elif base_check_obj.content_type == ping_type:
@@ -170,14 +169,12 @@ def send_alert(task_obj):
 
 @shared_task
 def critical_severity(task_obj):
-    # disable datetime check for testing
     if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
         send_alert.apply_async(args=(task_obj,), queue="check_queue")
 
 
 @shared_task
 def warning_severity(task_obj):
-    # disable datetime check for testing
     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
         send_alert.apply_async(args=(task_obj,), queue="check_queue")
 

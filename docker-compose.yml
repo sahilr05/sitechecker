@@ -19,7 +19,7 @@ services:
     command: bash -c 'celery -A sitechecker worker -l info -Q check_queue'
     environment:
       - C_FORCE_ROOT=true
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./.env
     depends_on:
@@ -33,7 +33,7 @@ services:
     command: bash -c 'celery -A sitechecker worker -l info -Q alert_queue'
     environment:
       - C_FORCE_ROOT=true
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./.env
     depends_on:
@@ -46,7 +46,7 @@ services:
   celery-beat:
     build: .
     command: celery -A sitechecker beat -l info
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./.env
     depends_on:

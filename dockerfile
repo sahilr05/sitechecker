@@ -11,7 +11,6 @@ RUN pip install "poetry==$POETRY_VERSION"
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-interaction
 COPY . /app
-# RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
