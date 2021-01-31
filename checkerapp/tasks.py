@@ -156,7 +156,7 @@ def last_alert_hour_check(task_obj):
 
 @shared_task
 def send_alert(task_obj):
-    return "Inside send alert"
+#     return "Inside send alert"
     check_obj = task_obj["base_check_obj"]
     service_obj = check_obj.service_set.first()
     service_plugins = list(service_obj.critical_severity.values_list("name", flat=True))
