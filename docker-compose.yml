@@ -57,10 +57,8 @@ services:
 
   db:
     image: postgres:12.2
-    environment:
-        - POSTGRES_PASSWORD=8149547570
-        - POSTGRES_USER=postgres
-        - POSTGRES_DB=sitechecker
+    env_file:
+      - ./database.env
     restart: on-failure
     networks:
       - db_network

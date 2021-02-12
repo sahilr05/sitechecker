@@ -12,8 +12,6 @@ from .forms import UserForm
 from checkerapp.models import AlertPlugin
 from checkerapp.models import Service
 
-# from django.http import HttpResponse
-
 
 @login_required
 def delete_user(request, pk):

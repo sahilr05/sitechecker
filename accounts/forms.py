@@ -3,6 +3,12 @@ from django.contrib.auth.models import User
 
 
 class UserForm(forms.ModelForm):
+    password = forms.CharField(
+        max_length=32,
+        widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),
+        required=True,
+    )
+
     confirm_password = forms.CharField(
         max_length=32,
         widget=forms.TextInput(attrs={"class": "form-control", "type": "password"}),

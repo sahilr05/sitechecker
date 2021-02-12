@@ -27,12 +27,6 @@ def check_site(hostname):
     return response
 
 
-# Save in metadata
-# To capture error :
-# except Exception as e:
-#     print(e)
-
-
 def ping_ip(ip_address):
     process = subprocess.Popen(
         ["ping", "-c", "5", ip_address], stdout=PIPE, stderr=PIPE
@@ -91,9 +85,9 @@ def http_check_task(task_obj):
 def ping_check_task(task_obj):
     result = ping_ip(task_obj["base_check_obj"].content_object.ip_address)
     if result > 70:
-        status = 1
-    else:
         status = 0
+    else:
+        status = 1
 
     final_result = CheckResult.objects.create(result=status)
     task_obj["base_check_obj"].content_object.results.add(final_result)
@@ -155,11 +149,8 @@ def last_alert_hour_check(task_obj):
 
 
 @shared_task
-def send_alert(task_obj):
-#     return "Inside send alert"
-    check_obj = task_obj["base_check_obj"]
-    service_obj = check_obj.service_set.first()
-    service_plugins = list(service_obj.critical_severity.values_list("name", flat=True))
+def send_alert(task_obj, plugins_obj):
+    service_plugins = list(plugins_obj["plugins"])
     installed_plugins = [cls for cls in AlertPlugin.__subclasses__()]
 
     for plugin in installed_plugins:
@@ -170,13 +161,21 @@ def send_alert(task_obj):
 @shared_task
 def critical_severity(task_obj):
     if int(datetime.now().strftime("%H")) > last_alert_hour_check(task_obj):
-        send_alert.apply_async(args=(task_obj,), queue="check_queue")
+        check_obj = task_obj["base_check_obj"]
+        service_obj = check_obj.service_set.first()
+        critical_plugins = service_obj.critical_severity.values_list("name", flat=True)
+        plugins_obj = {"plugins": critical_plugins}
+        send_alert.apply_async(args=(task_obj, plugins_obj), queue="check_queue")
 
 
 @shared_task
 def warning_severity(task_obj):
     if int(datetime.now().strftime("%d")) > last_alert_date_check(task_obj):
-        send_alert.apply_async(args=(task_obj,), queue="check_queue")
+        check_obj = task_obj["base_check_obj"]
+        service_obj = check_obj.service_set.first()
+        warning_plugins = service_obj.warning_severity.values_list("name", flat=True)
+        plugins_obj = {"plugins": warning_plugins}
+        send_alert.apply_async(args=(task_obj, plugins_obj), queue="check_queue")
 
 
 @shared_task

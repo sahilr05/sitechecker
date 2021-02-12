@@ -34,9 +34,9 @@ urlpatterns = [
     path("change_password", accounts_views.change_password, name="change_password"),
     path("view_plugin/<str:plugin>", accounts_views.view_plugin, name="view_plugin"),
     path("plugin_list", accounts_views.plugin_list, name="plugin_list"),
-    path(
-        "plugin/generic_plugin",
-        include("sc_generic_plugin.urls", namespace="generic_plugin"),
-    ),
-    path("plugin/telegram_plugin", include("bot.urls", namespace="telegram_plugin")),
+    # Plugin URL example
+    # path(
+    #     "plugin/generic_plugin",
+    #     include("sc_generic_plugin.urls", namespace="generic_plugin"),
+    # ),
 ]

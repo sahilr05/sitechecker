@@ -2,6 +2,7 @@ import os
 from distutils.util import strtobool
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -35,13 +36,20 @@ def get_env_variable(var_name):
         raise ImproperlyConfigured(error_msg)
 
 
+def generate_secret_key(filename):
+    f = open(filename, "w")
+    f.write(f"SECRET_KEY={get_random_secret_key()}")
+    f.close()
+
+
 DEBUG = get_bool_from_env("DEBUG", True)
 
-if DEBUG:
-    with open("secretkey.txt") as f:
-        SECRET_KEY = f.read().strip()
-else:
-    SECRET_KEY = get_env_variable("DJANGO_SECRET_KEY")
+try:
+    from secret_key import SECRET_KEY
+except ImportError:
+    SETTINGS_DIR = os.path.abspath(os.path.dirname(__file__))
+    generate_secret_key(os.path.join(SETTINGS_DIR, "secret_key.py"))
+    from secret_key import SECRET_KEY
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "sitechecker"]
 
@@ -63,9 +71,8 @@ INSTALLED_APPS = [
     "storages",
     "boto3",
     # Plugins
-    "bot",
-    "django_telegrambot",
-    "sc_generic_plugin",
+    # Plugin example
+    # "sc_generic_plugin"
 ]
 
 MIDDLEWARE = [
@@ -103,7 +110,7 @@ DATABASES = {
         ),
         "NAME": get_env_variable_or_default("SQL_DATABASE", "sitechecker"),
         "USER": get_env_variable_or_default("SQL_USER", "postgres"),
-        "PASSWORD": get_env_variable_or_default("SQL_PASSWORD", 8149547570),
+        "PASSWORD": get_env_variable_or_default("SQL_PASSWORD", "password"),
         "HOST": get_env_variable_or_default("SQL_HOST", "localhost"),
         "PORT": get_env_variable_or_default("SQL_PORT", 5432),
     }
@@ -182,10 +189,4 @@ LOGGING = {
         }
     },
     "loggers": {"": {"handlers": ["console"], "level": "INFO", "propagate": True}},
-}
-DJANGO_TELEGRAMBOT = {
-    "MODE": "POLLING",
-    "BOTS": [
-        {"TOKEN": get_env_variable_or_default("TG_BOT_TOKEN", "TELEGRAM_BOT_TOKEN")}
-    ],
 }
