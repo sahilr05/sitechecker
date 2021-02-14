@@ -44,7 +44,7 @@ def home(request):
     context = {"services": services}
     return render(request, "services.html", context)
 
-
+@login_required
 def service(request, pk):
     service_obj = Service.objects.get(id=pk)
     http_type = ContentType.objects.get_for_model(HttpCheck)
@@ -64,7 +64,7 @@ def service(request, pk):
     }
     return render(request, "service_checks.html", context)
 
-
+@login_required
 def add_service(request):
     if not request.user.is_superuser:
         return redirect("checkerapp:home")
@@ -96,7 +96,7 @@ def add_service(request):
     }
     return render(request, "add_service.html", context)
 
-
+@login_required
 def edit_service(request, service_pk):
     if not request.user.is_superuser:
         return redirect("checkerapp:home")
@@ -131,7 +131,7 @@ def edit_service(request, service_pk):
     }
     return render(request, "add_service.html", context)
 
-
+@login_required
 def delete_warning_plugin(request, service_pk, plugin_pk):
     service_obj = Service.objects.get(id=service_pk)
     plugin_obj = PluginList.objects.get(id=plugin_pk)
@@ -139,7 +139,7 @@ def delete_warning_plugin(request, service_pk, plugin_pk):
     messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
     return redirect("checkerapp:edit_service", service_pk=service_pk)
 
-
+@login_required
 def delete_critical_plugin(request, service_pk, plugin_pk):
     service_obj = Service.objects.get(id=service_pk)
     plugin_obj = PluginList.objects.get(id=plugin_pk)
@@ -147,7 +147,7 @@ def delete_critical_plugin(request, service_pk, plugin_pk):
     messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
     return redirect("checkerapp:edit_service", service_pk=service_pk)
 
-
+@login_required
 def delete_service(request, service_pk):
     service_obj = Service.objects.get(id=service_pk)
     base_checks = service_obj.checks.all()
@@ -157,7 +157,7 @@ def delete_service(request, service_pk):
     messages.success(request, f" {service_obj.name} deleted !!")
     return redirect("checkerapp:home")
 
-
+@login_required
 def http_info(request, pk):
     http_results_obj = HttpCheck.objects.get(id=pk)
     base_check_obj = http_results_obj.base_check.first()
@@ -182,7 +182,7 @@ def http_info(request, pk):
     }
     return render(request, "check_info/http_info.html", context)
 
-
+@login_required
 def ping_info(request, pk):
     ping_results_obj = PingCheck.objects.get(id=pk)
     base_check_obj = ping_results_obj.base_check.first()
@@ -207,7 +207,7 @@ def ping_info(request, pk):
     }
     return render(request, "check_info/ping_info.html", context)
 
-
+@login_required
 def tcp_info(request, pk):
     tcp_results_obj = TcpCheck.objects.get(id=pk)
     base_check_obj = tcp_results_obj.base_check.first()
@@ -232,7 +232,7 @@ def tcp_info(request, pk):
     }
     return render(request, "check_info/tcp_info.html", context)
 
-
+@login_required
 def add_http_check(request, service_pk):
     if request.method == "POST":
         http_check_form = HttpCheckForm(request.POST)
@@ -273,7 +273,7 @@ def add_http_check(request, service_pk):
     }
     return render(request, "add_check/add_http_check.html", context)
 
-
+@login_required
 def edit_http_check(request, service_pk, http_pk):
     flag = True
     http_check_obj = HttpCheck.objects.get(id=http_pk)
@@ -303,7 +303,7 @@ def edit_http_check(request, service_pk, http_pk):
     }
     return render(request, "add_check/add_http_check.html", context)
 
-
+@login_required
 def add_ping_check(request, service_pk):
     if request.method == "POST":
         ping_check_form = PingCheckForm(request.POST)
@@ -339,7 +339,7 @@ def add_ping_check(request, service_pk):
     }
     return render(request, "add_check/add_ping_check.html", context)
 
-
+@login_required
 def edit_ping_check(request, service_pk, ping_pk):
     flag = True
     ping_check_obj = PingCheck.objects.get(id=ping_pk)
@@ -367,7 +367,7 @@ def edit_ping_check(request, service_pk, ping_pk):
     }
     return render(request, "add_check/add_ping_check.html", context)
 
-
+@login_required
 def add_tcp_check(request, service_pk):
     if request.method == "POST":
         tcp_check_form = TcpCheckForm(request.POST)
@@ -403,7 +403,7 @@ def add_tcp_check(request, service_pk):
     }
     return render(request, "add_check/add_tcp_check.html", context)
 
-
+@login_required
 def edit_tcp_check(request, service_pk, tcp_pk):
     flag = True
     tcp_check_obj = TcpCheck.objects.get(id=tcp_pk)
@@ -430,7 +430,7 @@ def edit_tcp_check(request, service_pk, tcp_pk):
     }
     return render(request, "add_check/add_tcp_check.html", context)
 
-
+@login_required
 def maintenance(request, service_type_id, service_pk, pk):
     selected_service_type = (
         BaseCheck.objects.filter(content_type_id=service_type_id).first().content_type
@@ -448,7 +448,7 @@ def maintenance(request, service_type_id, service_pk, pk):
 
     return redirect("checkerapp:service", pk=service_pk)
 
-
+@login_required
 def delete_check(request, service_type_id, service_pk, pk):
     selected_service_type = (
         BaseCheck.objects.filter(content_type_id=service_type_id).first().content_type
@@ -460,7 +460,7 @@ def delete_check(request, service_type_id, service_pk, pk):
 
     return redirect("checkerapp:service", pk=service_pk)
 
-
+@login_required
 class RenderPDF:
     @staticmethod
     def render(path: str, params: dict):
@@ -471,7 +471,7 @@ class RenderPDF:
         if not pdf.err:
             return HttpResponse(response.getvalue(), content_type="application/pdf")
 
-
+@login_required
 class Pdf(View):
     def get(self, request, pk):
 

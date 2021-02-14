@@ -63,7 +63,7 @@ def add_user(request):
     context = {"form": UserForm()}
     return render(request, "add_user.html", context)
 
-
+@login_required
 def add_user_in_service(request, service_pk):
     selected_users = request.POST.getlist("listxblocks")
     service_obj = Service.objects.get(id=service_pk)
@@ -71,7 +71,7 @@ def add_user_in_service(request, service_pk):
         service_obj.users.add(user)
     return redirect("accounts:service_users", service_pk=service_pk)
 
-
+@login_required
 def remove_user_service(request, service_pk, user_pk):
     user = User.objects.get(id=user_pk)
     service_obj = Service.objects.get(id=service_pk)
@@ -79,7 +79,7 @@ def remove_user_service(request, service_pk, user_pk):
     messages.success(request, f"{user.username} removed from {service_obj.name} !")
     return redirect("accounts:service_users", service_pk=service_pk)
 
-
+@login_required
 def service_users(request, service_pk):
     service_obj = Service.objects.get(id=service_pk)
     service_users = service_obj.users.all()
@@ -87,7 +87,7 @@ def service_users(request, service_pk):
     context = {"users": service_users, "all_users": all_users, "service": service_obj}
     return render(request, "service_users.html", context)
 
-
+@login_required
 def my_account(request):
     user_info = User.objects.get(id=request.user.pk)
     if user_info:
@@ -102,7 +102,7 @@ def my_account(request):
     context = {"form": form}
     return render(request, "my_account.html", context)
 
-
+@login_required
 def change_password(request):
     if request.method == "POST":
         form = PasswordChangeForm(request.user, request.POST)
@@ -118,7 +118,7 @@ def change_password(request):
     context = {"form": PasswordChangeForm(request.user)}
     return render(request, "change_pass.html", context)
 
-
+@login_required
 def plugin_list(request):
     plugins_name = [cls.__name__ for cls in AlertPlugin.__subclasses__()]
     plugins_obj = [cls for cls in AlertPlugin.__subclasses__()]
@@ -127,7 +127,7 @@ def plugin_list(request):
     context["plugin_data"] = zip(plugins_name, plugins_obj)
     return render(request, "plugins/plugin_list.html", context)
 
-
+@login_required
 def view_plugin(request, plugin):
     plugin_obj = plugin()
     return redirect(plugin_obj.url)

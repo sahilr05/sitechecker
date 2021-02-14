@@ -9,14 +9,19 @@
 ### [Why should I use all checks ?](https://www.rapidspike.com/kb/ping-vs-tcp-vs-http-monitors/)
 
 ## Types of checks
-1. HTTP Checks:
-Checks for existence of pages for monitored website. 
+1. **HTTP Checks**:
+Sends HTTP GET request and compares expected response status code.
+<!-- This check sends a ```GET``` request to the specified URL and receives a ```Response``` object.
+Status code derived from ```Response``` object is compared with the one mentioned in ```Expected status code``` for the respective website. -->
 
-2. Ping Checks:
-Sends 5 ICMP packets to host IP address and waits for response using which determines whether address is available over a network or not
+2. **Ping Checks**:
+Sends ICMP echo request packets to the target host waiting for an ICMP echo reply to check whether the host is reachable or not.
 
-3. TCP Checks:
-Checks whether host is accessible on given port on the network device or not
+3. **TCP Checks**:
+Attempts to establish TCP connection to the mentioned host and post.
+<!-- TCP Check is used to check an arbitrary TCP port on a remote server, whether host is accessible on given port of the network device or not. -->
+
+If mismatch happens for more than back-off count then alerts are sent to registered users of respective service
 
 ## Types of severity
 1. Warning Severity: [One alert per day](https://github.com/sahilr05/sitechecker/blob/c30675001dbb3bc6317399bfb2d99e3fb22a401f/checkerapp/tasks.py#L177)
@@ -25,8 +30,7 @@ Checks whether host is accessible on given port on the network device or not
 
 ## Quickstart
 
-By default sitechecker doesn't comes with any plugin preinstalled
-
+* By default sitechecker doesn't comes with any plugin preinstalled
 ```
 git clone git@github.com:sahilr05/sitechecker.git
 ```
@@ -37,14 +41,13 @@ cp .env.example .env
 make up
 ```
 
-open new terminal window and create superuser 
-
+* Open new terminal window and create superuser 
 ```
 make login-web
 python manage.py createsuperuser
 ```
 
-use the same username and password to login into portal
+Use the same username and password to login into portal
 
 ## Running locally in virtual environment
 
@@ -75,12 +78,12 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-* Open new terminal tab and start redis server
+* Make sure redis is running and listening on the address mentioned in .env
 ```
 sudo redis-server
 ```
 
-* Execute following command to trigger celery workers
+* Execute following commands to trigger celery workers
 ```
 celery -A sitechecker worker -l info -Q check_queue 
 celery -A sitechecker worker -l info -Q alert_queue
@@ -88,9 +91,9 @@ celery -A sitechecker beat -l info
 ```
 
 ## Adding plugins
-[Telegram Plugin](https://github.com/sahilr05/sitechecker-telegram-plugin)
+Checkout [Telegram Plugin](https://github.com/sahilr05/sitechecker-telegram-plugin) made using [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/en/stable/)
 
-[Plugin Example](https://github.com/sahilr05/sitechecker-generic-plugin)
+Refer [Alert Plugin Example](https://github.com/sahilr05/sitechecker-generic-plugin) to create custom plugins
 
 1. Run the following command after adding plugin
 ```
