@@ -80,12 +80,12 @@ setInterval(blinker, 1000);
             <td>
                 {% if site.maintenance_mode %}
                     <a href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">
-                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
                     <a>
                     {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn on</a> {% endcomment %}
                 {% else %}
                     <a href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">
-                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
                     </a>
                     {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' site.content_type.id service.pk site.content_object.pk  %}">Turn off</a> {% endcomment %}
                 {% endif %}
@@ -154,12 +154,12 @@ setInterval(blinker, 1000);
             <td >
                 {% if ip_address.maintenance_mode %}
                     <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
-                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
                     {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a> {% endcomment %}
                 {% else %}
                     </a>
                     <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
-                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
                     </a>
                     {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a> {% endcomment %}
                 {% endif %}
@@ -228,12 +228,12 @@ setInterval(blinker, 1000);
             <td >
                 {% if ip_address.maintenance_mode %}
                     <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
-                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
                     {% comment %} <a class="btn btn-outline-danger" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn on</a> {% endcomment %}
                 {% else %}
                     </a>
                     <a href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk  %}">
-                    <img src='{% static "images/toggle_on.png" %}' width=40 height=40/>
+                    <img src='{% static "images/toggle_off.png" %}' width=40 height=40/>
                     </a>
                     {% comment %} <a class="btn btn-outline-success" href="{% url 'checkerapp:maintenance' ip_address.content_type.id service.pk ip_address.content_object.pk %}">Turn off</a> {% endcomment %}
                 {% endif %}

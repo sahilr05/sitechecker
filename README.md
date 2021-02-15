@@ -41,7 +41,7 @@ cp .env.example .env
 make up
 ```
 
-* Open new terminal window and create superuser 
+* Open new terminal window and create superuser
 ```
 make login-web
 python manage.py createsuperuser
@@ -53,7 +53,7 @@ Use the same username and password to login into portal
 
 * Setup and activate virtual environment
 ```
-virtualenv -p python3.8 venv        
+virtualenv -p python3.8 venv
 source venv/bin/activate
 ```
 
@@ -73,7 +73,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-* Use the same username and password to login into portal   
+* Use the same username and password to login into portal
 ```
 python manage.py runserver
 ```
@@ -85,7 +85,7 @@ sudo redis-server
 
 * Execute following commands to trigger celery workers
 ```
-celery -A sitechecker worker -l info -Q check_queue 
+celery -A sitechecker worker -l info -Q check_queue
 celery -A sitechecker worker -l info -Q alert_queue
 celery -A sitechecker beat -l info
 ```

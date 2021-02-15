@@ -32,17 +32,12 @@ from .tasks import ping_check_task
 from .tasks import tcp_check_task
 
 
-class MyView(View):
-    def get(self, request):
-        text = "Hello, World!"
-        return HttpResponse(text)
-
-
 @login_required
 def home(request):
     services = Service.objects.filter(users=request.user).order_by("id")
     context = {"services": services}
     return render(request, "services.html", context)
+
 
 @login_required
 def service(request, pk):
@@ -63,6 +58,7 @@ def service(request, pk):
         "tcp_checks": tcp_checks_info,
     }
     return render(request, "service_checks.html", context)
+
 
 @login_required
 def add_service(request):
@@ -95,6 +91,7 @@ def add_service(request):
         "critical_plugins": critical_plugins,
     }
     return render(request, "add_service.html", context)
+
 
 @login_required
 def edit_service(request, service_pk):
@@ -131,6 +128,7 @@ def edit_service(request, service_pk):
     }
     return render(request, "add_service.html", context)
 
+
 @login_required
 def delete_warning_plugin(request, service_pk, plugin_pk):
     service_obj = Service.objects.get(id=service_pk)
@@ -139,6 +137,7 @@ def delete_warning_plugin(request, service_pk, plugin_pk):
     messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
     return redirect("checkerapp:edit_service", service_pk=service_pk)
 
+
 @login_required
 def delete_critical_plugin(request, service_pk, plugin_pk):
     service_obj = Service.objects.get(id=service_pk)
@@ -146,6 +145,7 @@ def delete_critical_plugin(request, service_pk, plugin_pk):
     service_obj.critical_severity.remove(plugin_obj)
     messages.success(request, f"{plugin_obj.name} removed from {service_obj.name} !")
     return redirect("checkerapp:edit_service", service_pk=service_pk)
+
 
 @login_required
 def delete_service(request, service_pk):
@@ -156,6 +156,7 @@ def delete_service(request, service_pk):
     service_obj.delete()
     messages.success(request, f" {service_obj.name} deleted !!")
     return redirect("checkerapp:home")
+
 
 @login_required
 def http_info(request, pk):
@@ -182,6 +183,7 @@ def http_info(request, pk):
     }
     return render(request, "check_info/http_info.html", context)
 
+
 @login_required
 def ping_info(request, pk):
     ping_results_obj = PingCheck.objects.get(id=pk)
@@ -207,6 +209,7 @@ def ping_info(request, pk):
     }
     return render(request, "check_info/ping_info.html", context)
 
+
 @login_required
 def tcp_info(request, pk):
     tcp_results_obj = TcpCheck.objects.get(id=pk)
@@ -231,6 +234,7 @@ def tcp_info(request, pk):
         "last_down_time": last_down_time,
     }
     return render(request, "check_info/tcp_info.html", context)
+
 
 @login_required
 def add_http_check(request, service_pk):
@@ -273,6 +277,7 @@ def add_http_check(request, service_pk):
     }
     return render(request, "add_check/add_http_check.html", context)
 
+
 @login_required
 def edit_http_check(request, service_pk, http_pk):
     flag = True
@@ -302,6 +307,7 @@ def edit_http_check(request, service_pk, http_pk):
         "service": Service.objects.get(id=service_pk),
     }
     return render(request, "add_check/add_http_check.html", context)
+
 
 @login_required
 def add_ping_check(request, service_pk):
@@ -339,6 +345,7 @@ def add_ping_check(request, service_pk):
     }
     return render(request, "add_check/add_ping_check.html", context)
 
+
 @login_required
 def edit_ping_check(request, service_pk, ping_pk):
     flag = True
@@ -366,6 +373,7 @@ def edit_ping_check(request, service_pk, ping_pk):
         "service": Service.objects.get(id=service_pk),
     }
     return render(request, "add_check/add_ping_check.html", context)
+
 
 @login_required
 def add_tcp_check(request, service_pk):
@@ -403,6 +411,7 @@ def add_tcp_check(request, service_pk):
     }
     return render(request, "add_check/add_tcp_check.html", context)
 
+
 @login_required
 def edit_tcp_check(request, service_pk, tcp_pk):
     flag = True
@@ -430,6 +439,7 @@ def edit_tcp_check(request, service_pk, tcp_pk):
     }
     return render(request, "add_check/add_tcp_check.html", context)
 
+
 @login_required
 def maintenance(request, service_type_id, service_pk, pk):
     selected_service_type = (
@@ -448,6 +458,7 @@ def maintenance(request, service_type_id, service_pk, pk):
 
     return redirect("checkerapp:service", pk=service_pk)
 
+
 @login_required
 def delete_check(request, service_type_id, service_pk, pk):
     selected_service_type = (
@@ -460,7 +471,7 @@ def delete_check(request, service_type_id, service_pk, pk):
 
     return redirect("checkerapp:service", pk=service_pk)
 
-@login_required
+
 class RenderPDF:
     @staticmethod
     def render(path: str, params: dict):
@@ -471,7 +482,7 @@ class RenderPDF:
         if not pdf.err:
             return HttpResponse(response.getvalue(), content_type="application/pdf")
 
-@login_required
+
 class Pdf(View):
     def get(self, request, pk):
 

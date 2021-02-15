@@ -63,6 +63,7 @@ def add_user(request):
     context = {"form": UserForm()}
     return render(request, "add_user.html", context)
 
+
 @login_required
 def add_user_in_service(request, service_pk):
     selected_users = request.POST.getlist("listxblocks")
@@ -70,6 +71,7 @@ def add_user_in_service(request, service_pk):
     for user in selected_users:
         service_obj.users.add(user)
     return redirect("accounts:service_users", service_pk=service_pk)
+
 
 @login_required
 def remove_user_service(request, service_pk, user_pk):
@@ -79,6 +81,7 @@ def remove_user_service(request, service_pk, user_pk):
     messages.success(request, f"{user.username} removed from {service_obj.name} !")
     return redirect("accounts:service_users", service_pk=service_pk)
 
+
 @login_required
 def service_users(request, service_pk):
     service_obj = Service.objects.get(id=service_pk)
@@ -86,6 +89,7 @@ def service_users(request, service_pk):
     all_users = User.objects.all()
     context = {"users": service_users, "all_users": all_users, "service": service_obj}
     return render(request, "service_users.html", context)
+
 
 @login_required
 def my_account(request):
@@ -101,6 +105,7 @@ def my_account(request):
 
     context = {"form": form}
     return render(request, "my_account.html", context)
+
 
 @login_required
 def change_password(request):
@@ -118,6 +123,7 @@ def change_password(request):
     context = {"form": PasswordChangeForm(request.user)}
     return render(request, "change_pass.html", context)
 
+
 @login_required
 def plugin_list(request):
     plugins_name = [cls.__name__ for cls in AlertPlugin.__subclasses__()]
@@ -126,6 +132,7 @@ def plugin_list(request):
     context = {}
     context["plugin_data"] = zip(plugins_name, plugins_obj)
     return render(request, "plugins/plugin_list.html", context)
+
 
 @login_required
 def view_plugin(request, plugin):

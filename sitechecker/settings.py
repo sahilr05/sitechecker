@@ -45,11 +45,11 @@ def generate_secret_key(filename):
 DEBUG = get_bool_from_env("DEBUG", True)
 
 try:
-    from secret_key import SECRET_KEY
+    from secret_key import SECRET_KEY  # NOQA
 except ImportError:
     SETTINGS_DIR = os.path.abspath(os.path.dirname(__file__))
     generate_secret_key(os.path.join(SETTINGS_DIR, "secret_key.py"))
-    from secret_key import SECRET_KEY
+    from secret_key import SECRET_KEY  # NOQA
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "sitechecker"]
 
