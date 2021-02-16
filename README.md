@@ -11,15 +11,12 @@
 ## Types of checks
 1. **HTTP Checks**:
 Sends HTTP GET request and compares expected response status code.
-<!-- This check sends a ```GET``` request to the specified URL and receives a ```Response``` object.
-Status code derived from ```Response``` object is compared with the one mentioned in ```Expected status code``` for the respective website. -->
 
 2. **Ping Checks**:
 Sends ICMP echo request packets to the target host waiting for an ICMP echo reply to check whether the host is reachable or not.
 
 3. **TCP Checks**:
-Attempts to establish TCP connection to the mentioned host and post.
-<!-- TCP Check is used to check an arbitrary TCP port on a remote server, whether host is accessible on given port of the network device or not. -->
+Attempts to establish TCP connection to the mentioned host and port.
 
 If mismatch happens for more than back-off count then alerts are sent to registered users of respective service
 
