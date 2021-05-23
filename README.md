@@ -27,11 +27,8 @@ If mismatch happens for more than back-off count then alerts are sent to registe
 
 ## Quickstart
 
-* By default sitechecker doesn't comes with any plugin preinstalled
-```
-git clone git@github.com:sahilr05/sitechecker.git
-```
-
+#### Note: By default sitechecker doesn't comes with any plugin preinstalled
+* Clone this repo
 * Add your keys in ```.env``` using ```.env.example``` as template
 ```
 cp .env.example .env
@@ -50,7 +47,7 @@ Use the same username and password to login into portal
 
 * Setup and activate virtual environment
 ```
-virtualenv -p python3.8 venv
+virtualenv -p python3.x venv
 source venv/bin/activate
 ```
 
